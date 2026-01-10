@@ -16,7 +16,7 @@ export default function AppLoaderWrapper({
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 4000); // ⏳ 4 seconds
+    }, 3500); // ⏳ 4 seconds
 
     return () => clearTimeout(timer);
   }, []);
