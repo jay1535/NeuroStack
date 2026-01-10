@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
 import "./globals.css";
+import AppLoaderWrapper from "@/components/AppLoaderWrapper";
+import { Exo_2 } from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const exo2 = Exo_2({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-exo2",
 });
 
 export const metadata: Metadata = {
@@ -21,13 +18,13 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>): JSX.Element {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${exo2.className}  antialiased`}
       >
-        {children}
+        <AppLoaderWrapper>{children}</AppLoaderWrapper>
       </body>
     </html>
   );
