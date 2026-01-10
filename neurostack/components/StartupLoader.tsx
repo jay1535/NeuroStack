@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function StartupLoader(): JSX.Element {
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black overflow-hidden"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black overflow-hidden px-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -17,20 +17,20 @@ export default function StartupLoader(): JSX.Element {
 
       {/* MAIN STACK */}
       <motion.div
-        className="relative flex min-h-[460px] flex-col items-center justify-center"
+        className="relative flex min-h-[360px] sm:min-h-[460px] flex-col items-center justify-center"
         initial={{ scale: 0.985 }}
         animate={{ scale: 1 }}
         transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Subtle gray depth */}
+        {/* Subtle depth */}
         <div className="pointer-events-none absolute -inset-24 rounded-full bg-gradient-to-b from-gray-700/25 via-gray-600/10 to-transparent blur-3xl" />
         <div className="pointer-events-none absolute -inset-32 rounded-full bg-gray-500/10 blur-[120px]" />
 
-        {/* LOGO — FAST 3 SMOOTH BOUNCES */}
+        {/* LOGO */}
         <motion.div
-          initial={{ y: -140, scale: 0.96, opacity: 0 }}
+          initial={{ y: -120, scale: 0.96, opacity: 0 }}
           animate={{
-            y: [-140, 18, -10, 6, -3, 0],
+            y: [-120, 16, -8, 5, -3, 0],
             opacity: 1,
             scale: 1,
           }}
@@ -38,9 +38,9 @@ export default function StartupLoader(): JSX.Element {
             duration: 1.9,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="relative mb-14"
+          className="relative mb-10 sm:mb-14"
         >
-          {/* Dark rose aura (breathing) */}
+          {/* Dark rose aura */}
           <motion.div
             className="absolute inset-0 rounded-full blur-3xl bg-rose-700/14"
             animate={{ opacity: [0.08, 0.18, 0.12] }}
@@ -51,7 +51,7 @@ export default function StartupLoader(): JSX.Element {
             }}
           />
 
-          {/* LOGO with animated dark-rose drop blur */}
+          {/* Logo with animated drop blur */}
           <motion.div
             animate={{
               filter: [
@@ -70,17 +70,17 @@ export default function StartupLoader(): JSX.Element {
             <Image
               src="/logo.png"
               alt="NeuroStack Logo"
-              width={120}
-              height={120}
+              width={96}
+              height={96}
               priority
-              className="rounded-full"
+              className="rounded-full sm:w-[120px] sm:h-[120px]"
             />
           </motion.div>
         </motion.div>
 
         {/* BRAND NAME */}
         <div className="overflow-visible">
-          <div className="flex text-[4.4rem] font-bold tracking-[0.025em] leading-none">
+          <div className="flex text-[2.8rem] sm:text-[4.4rem] font-bold tracking-[0.02em] leading-none">
             {/* Neuro */}
             <motion.span
               className="text-white"
@@ -95,14 +95,14 @@ export default function StartupLoader(): JSX.Element {
               Neuro
             </motion.span>
 
-            {/* Stack — JUMPING FROM RIGHT (3 JUMPS) */}
+            {/* Stack — jumping from right */}
             <motion.span
               className="text-rose-500"
-              initial={{ opacity: 0, x: 260, y: 0 }}
+              initial={{ opacity: 0, x: 180, y: 0 }}
               animate={{
                 opacity: 1,
-                x: [260, 160, 80, 0],
-                y: [0, -32, 0, -18, 0, -8, 0],
+                x: [180, 120, 60, 0],
+                y: [0, -26, 0, -14, 0, -6, 0],
               }}
               transition={{
                 delay: 1.3,
@@ -117,7 +117,7 @@ export default function StartupLoader(): JSX.Element {
 
         {/* TAGLINE */}
         <motion.span
-          className="mt-6 text-[15px] tracking-[0.4em] uppercase text-gray-300"
+          className="mt-5 sm:mt-6 text-[11px] sm:text-[15px] tracking-[0.35em] sm:tracking-[0.4em] uppercase text-gray-300 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{

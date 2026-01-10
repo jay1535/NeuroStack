@@ -1,4 +1,10 @@
 "use client";
+import Link from "next/link";
+import FooterDialog from "@/components/footer-dialog";
+import {
+  PrivacyPolicyContent,
+  TermsContent,
+} from "@/app/content/footer-content";
 
 import { motion } from "framer-motion";
 
@@ -12,62 +18,133 @@ export default function Home() {
     <main className="bg-black text-white overflow-x-hidden">
 
       {/* ================= HERO ================= */}
-      <section className="relative min-h-screen flex items-center justify-center px-6">
-        {/* Dark rose ambient glow (ONLY HERE) */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(190,18,60,0.22),transparent_55%)]" />
+    <section className="relative min-h-screen flex items-center justify-center px-5 sm:px-6">
+  {/* Dark rose ambient glow (ONLY HERE) */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(190,18,60,0.22),transparent_55%)]" />
 
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          transition={{ duration: 0.9 }}
-          className="relative max-w-4xl text-center"
-        >
-          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
-            AI-Powered{" "}
-            <span className="text-rose-500">UI/UX Design</span>
-            <br /> for Mobile & Web
-          </h1>
+  <motion.div
+    variants={fadeUp}
+    initial="hidden"
+    animate="visible"
+    transition={{ duration: 0.9 }}
+    className="relative max-w-5xl text-center"
+  >
+    {/* Eyebrow */}
+    <span className="
+      inline-block mb-4
+      mt-3
+      px-3 py-1
+      rounded-full
+      bg-white/5
+      text-[11px] sm:text-xs
+      tracking-widest
+      text-gray-300
+    ">
+      AI UI/UX PLATFORM
+    </span>
 
-          <p className="mt-6 text-lg text-gray-400 max-w-2xl mx-auto">
-            NeuroStack generates clean, modern, production-ready UI/UX
-            for mobile apps and websites — powered by AI.
-          </p>
+    {/* Headline */}
+    <h1 className="
+      text-4xl
+      sm:text-5xl
+      md:text-6xl
+      font-extrabold
+      leading-tight
+    ">
+      AI-Powered{" "}
+      <span className="text-rose-500">UI/UX Design</span>
+      <br /> for Mobile & Web
+    </h1>
 
-          {/* ✅ RESPONSIVE BUTTONS */}
-          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            <button
-              className="
-                w-full sm:w-auto
-                px-6 sm:px-8 py-3
-                rounded-xl
-                bg-white text-black font-semibold
-                transition-all duration-300
-                hover:bg-gray-200
-                hover:-translate-y-0.5
-                hover:shadow-[0_8px_24px_rgba(255,255,255,0.25)]
-              "
-            >
-              Get Started
-            </button>
+    {/* Description */}
+    <p className="
+      mt-5
+      text-base sm:text-lg
+      text-gray-400
+      max-w-3xl
+      mx-auto
+      leading-relaxed
+    ">
+      NeuroStack helps teams design stunning, user-centric interfaces in minutes.
+      From mobile apps to full web platforms, our AI transforms ideas into
+      production-ready UI/UX — faster, smarter, and scalable by default.
+    </p>
 
-            <button
-              className="
-                w-full sm:w-auto
-                px-6 sm:px-8 py-3
-                rounded-xl
-                border border-white/20 text-white
-                transition-all duration-300
-                hover:bg-white/5
-                hover:border-rose-600/60
-                hover:-translate-y-0.5
-              "
-            >
-              View Features
-            </button>
-          </div>
-        </motion.div>
-      </section>
+    {/* Trust line */}
+    <p className="mt-3 text-sm text-gray-500">
+      Built for startups, designers, developers, and modern product teams.
+    </p>
+
+    {/* CTA Buttons */}
+    <div className="
+      mt-10
+      flex flex-col
+      sm:flex-row
+      justify-center
+      gap-4
+    ">
+      <button
+        className="
+          w-full sm:w-auto
+          px-6 sm:px-10
+          py-3
+          rounded-xl
+          bg-white
+          text-black
+          font-semibold
+          transition-all duration-300
+          hover:bg-gray-200
+          hover:-translate-y-0.5
+          hover:shadow-[0_8px_24px_rgba(255,255,255,0.25)]
+        "
+      >
+        Get Started Free
+      </button>
+
+      <button
+        className="
+          w-full sm:w-auto
+          px-6 sm:px-10
+          py-3
+          rounded-xl
+          border border-white/20
+          text-white
+          transition-all duration-300
+          hover:bg-white/5
+          hover:border-rose-600/60
+          hover:-translate-y-0.5
+        "
+      >
+        Explore Features
+      </button>
+    </div>
+
+    {/* Feature strip */}
+    <div className="
+      mt-12
+      grid grid-cols-1
+      sm:grid-cols-3
+      gap-4 sm:gap-6
+      text-sm
+      text-gray-400
+    ">
+      <div className="flex items-center justify-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-rose-600" />
+        AI-generated UI screens
+      </div>
+      <div className="flex items-center justify-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-rose-600" />
+        Mobile & web ready layouts
+      </div>
+      <div className="flex items-center justify-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-rose-600" />
+        UX best practices built-in
+      </div>
+    </div>
+  </motion.div>
+</section>
+
+
 
       {/* ================= FEATURES ================= */}
       <section className="py-32 px-6 min-h-screen">
@@ -214,37 +291,98 @@ export default function Home() {
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="border-t border-white/10 py-14 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-sm text-gray-400">
-          <div>
-            <h3 className="text-white font-semibold">NeuroStack</h3>
-            <p className="mt-3">
-              AI-powered UI/UX generation for mobile and web products.
-            </p>
-          </div>
+      <footer className="border-t border-white/10 py-20 px-6">
+  <div className="max-w-6xl mx-auto grid gap-14 md:grid-cols-4 text-sm text-gray-400">
 
-          <div>
-            <h4 className="text-white font-semibold">Product</h4>
-            <ul className="mt-3 space-y-2">
-              <li className="hover:text-rose-500 cursor-pointer">Features</li>
-              <li className="hover:text-rose-500 cursor-pointer">Pricing</li>
-            </ul>
-          </div>
+    {/* BRAND */}
+    <div>
+      <h3 className="text-white text-lg font-semibold">NeuroStack</h3>
+      <p className="mt-4 leading-relaxed">
+        NeuroStack is an AI-powered UI/UX generation platform that helps teams
+        design modern, scalable interfaces for mobile apps and web products —
+        faster than ever.
+      </p>
+    </div>
 
-          <div>
-            <h4 className="text-white font-semibold">Company</h4>
-            <ul className="mt-3 space-y-2">
-              <li className="hover:text-rose-500 cursor-pointer">About</li>
-              <li className="hover:text-rose-500 cursor-pointer">Privacy</li>
-              <li className="hover:text-rose-500 cursor-pointer">Contact</li>
-            </ul>
-          </div>
-        </div>
+    {/* PRODUCT */}
+    <div>
+      <h4 className="text-white font-semibold">Product</h4>
+      <ul className="mt-4 space-y-3">
+        <li>
+          <Link href="/product/features" className="hover:text-rose-500 transition">
+            Features
+          </Link>
+        </li>
+        <li>
+          <Link href="/product/pricing" className="hover:text-rose-500 transition">
+            Pricing
+          </Link>
+        </li>
+        <li>
+          <Link href="/product/roadmap" className="hover:text-rose-500 transition">
+            Roadmap
+          </Link>
+        </li>
+      </ul>
+    </div>
 
-        <p className="mt-12 text-center text-gray-500 text-xs">
-          © {new Date().getFullYear()} NeuroStack. All rights reserved.
-        </p>
-      </footer>
+    {/* COMPANY */}
+    <div>
+      <h4 className="text-white font-semibold">Company</h4>
+      <ul className="mt-4 space-y-3">
+        <li>
+          <Link href="/company/about" className="hover:text-rose-500 transition">
+            About Us
+          </Link>
+        </li>
+        <li>
+          <Link href="/company/contact" className="hover:text-rose-500 transition">
+            Contact
+          </Link>
+        </li>
+        <li>
+          <Link href="/company/careers" className="hover:text-rose-500 transition">
+            Careers
+          </Link>
+        </li>
+      </ul>
+    </div>
+
+    {/* LEGAL */}
+    <div>
+  <h4 className="text-white font-semibold">Legal</h4>
+  <ul className="mt-4 space-y-3">
+    <li>
+      <FooterDialog
+        title="Privacy Policy"
+        content={PrivacyPolicyContent}
+        storageKey="privacy-accepted"
+      />
+    </li>
+
+    <li>
+      <FooterDialog
+        title="Terms & Conditions"
+        content={TermsContent}
+        storageKey="terms-accepted"
+      />
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+  {/* BOTTOM BAR */}
+  <div className="mt-16 pt-8 border-t border-white/10 text-center">
+    <p className="text-xs text-gray-500">
+      © {new Date().getFullYear()} NeuroStack. All rights reserved.
+    </p>
+    <p className="mt-2 text-xs text-gray-600">
+      Built with AI • Designed for modern product teams
+    </p>
+  </div>
+</footer>
+
 
     </main>
   );
