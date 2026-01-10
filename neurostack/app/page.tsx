@@ -98,7 +98,7 @@ export default function Home() {
           hover:shadow-[0_8px_24px_rgba(255,255,255,0.25)]
         "
       >
-        Get Started Free
+        Get Started 
       </button>
 
       <button

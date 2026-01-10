@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,9 +22,18 @@ export default function FooterDialog({
   storageKey,
 }: FooterDialogProps) {
   const [open, setOpen] = useState(false);
+  const [accepted, setAccepted] = useState(false);
+
+  // 🔐 Check acceptance when dialog opens
+  useEffect(() => {
+    if (open) {
+      setAccepted(localStorage.getItem(storageKey) === "accepted");
+    }
+  }, [open, storageKey]);
 
   const handleAccept = () => {
     localStorage.setItem(storageKey, "accepted");
+    setAccepted(true);
     setOpen(false);
   };
 
@@ -53,6 +62,7 @@ export default function FooterDialog({
           </div>
 
           <DialogFooter className="mt-6 flex gap-3">
+            {/* Close always visible */}
             <Button
               variant="secondary"
               onClick={() => setOpen(false)}
@@ -61,12 +71,15 @@ export default function FooterDialog({
               Close
             </Button>
 
-            <Button
-              onClick={handleAccept}
-              className="bg-rose-600 hover:bg-rose-700 text-white"
-            >
-              Accept
-            </Button>
+            {/* ✅ Accept ONLY if not already accepted */}
+            {!accepted && (
+              <Button
+                onClick={handleAccept}
+                className="bg-rose-600 hover:bg-rose-700 text-white"
+              >
+                Accept
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
