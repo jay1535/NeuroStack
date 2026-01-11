@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import FooterDialog from "@/components/footer-dialog";
 import {
@@ -7,6 +8,8 @@ import {
 } from "@/app/content/footer-content";
 
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useUser, useClerk } from "@clerk/nextjs";
 import AppHeader from "@/components/AppHeader";
 
 const fadeUp = {
@@ -15,114 +18,125 @@ const fadeUp = {
 };
 
 export default function Home() {
-  
+  const router = useRouter();
+  const { isSignedIn } = useUser();
+  const { openSignUp } = useClerk();
 
+  const handlePrimaryCTA = () => {
+    if (isSignedIn) {
+      router.push("/dashboard");
+    } else {
+      openSignUp();
+    }
+  };
 
   return (
-    <main className="bg-white text-black dark:bg-black dark:text-white overflow-x-hidden">
+    <>
       <AppHeader />
+    <main className="bg-white text-black dark:bg-black dark:text-white overflow-x-hidden">
 
       {/* ================= HERO ================= */}
       <section className="relative min-h-screen flex items-center justify-center px-5 sm:px-6">
-  {/* Ambient glow */}
- <div
-  className="
-    absolute inset-0
-    bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.38),transparent_55%)]
-    dark:bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.20),transparent_55%)]
-  "
-/>
 
+        {/* Ambient glow */}
+        <div
+          className="
+            absolute inset-0
+    bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.45),transparent_55%)]
+            dark:bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.20),transparent_55%)]
+          "
+        />
 
-  <motion.div
-    variants={fadeUp}
-    initial="hidden"
-    animate="visible"
-    transition={{ duration: 0.9 }}
-    className="relative max-w-4xl text-center"
-  >
-    {/* Eyebrow */}
-    <span
-      className="
-        inline-block mb-4 mt-3 px-3 py-1 rounded-full
-        bg-black/5 text-gray-600
-        dark:bg-white/5 dark:text-gray-300
-        text-[11px] sm:text-xs tracking-widest
-      "
-    >
-      AI UI/UX PLATFORM
-    </span>
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.9 }}
+          className="relative max-w-4xl text-center"
+        >
+          {/* Eyebrow */}
+          <span
+            className="
+              inline-block mb-4 mt-3 px-3 py-1 rounded-full
+              bg-black/5 text-gray-600
+              dark:bg-white/5 dark:text-gray-300
+              text-[11px] sm:text-xs tracking-widest
+            "
+          >
+            AI UI/UX PLATFORM
+          </span>
 
-    {/* Headline */}
-    <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
-      AI-Powered{" "}
-      <span className="text-rose-500">UI/UX Design</span>
-      <br /> for Mobile & Web
-    </h1>
+          {/* Headline */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
+            AI-Powered{" "}
+            <span className="dark:dark:text-rose-500 text-purple-700">UI/UX Design</span>
+            <br /> for Mobile & Web
+          </h1>
 
-    {/* Shorter description */}
-    <p
-      className="
-        mt-5 text-base sm:text-lg
-        text-gray-600 dark:text-gray-400
-        max-w-2xl mx-auto leading-relaxed
-      "
-    >
-      NeuroStack turns product ideas into clean, production-ready UI/UX for
-      mobile apps and modern web platforms — in minutes.
-    </p>
+          {/* Description */}
+          <p
+            className="
+              mt-5 text-base sm:text-lg
+              text-gray-600 dark:text-gray-400
+              max-w-2xl mx-auto leading-relaxed
+            "
+          >
+            NeuroStack turns product ideas into clean, production-ready UI/UX for
+            mobile apps and modern web platforms — in minutes.
+          </p>
 
-    {/* CTA Buttons */}
-    <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-      <button
-        className="
-          w-full sm:w-auto
-          px-6 sm:px-10 py-3 rounded-xl
-          bg-black text-white
-          dark:bg-white dark:text-black
-          font-semibold
-          transition-all duration-300
-          hover:opacity-90
-        "
-      >
-        Get Started
-      </button>
+          {/* CTA Buttons */}
+          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+            <button
+              onClick={handlePrimaryCTA}
+              className="
+                w-full sm:w-auto
+                px-6 sm:px-10 py-3 rounded-xl
+                bg-black text-white
+                dark:bg-white dark:text-black
+                font-semibold
+                transition-all duration-300
+                hover:opacity-90
+              "
+            >
+              Get Started
+            </button>
 
-      <button
-        className="
-          w-full sm:w-auto
-          px-6 sm:px-10 py-3 rounded-xl
-          border border-black/20 text-black
-          dark:border-white/20 dark:text-white
-          transition-all duration-300
-          hover:bg-black/5 dark:hover:bg-white/5
-        "
-      >
-        Explore Features
-      </button>
-    </div>
+            <button
+              onClick={handlePrimaryCTA}
+              className="
+                w-full sm:w-auto
+                px-6 sm:px-10 py-3 rounded-xl
+                border border-black/20 text-black
+                dark:border-white/20 dark:text-white
+                transition-all duration-300
+                hover:bg-black/5 dark:hover:bg-white/5
+              "
+            >
+              Try NeuroStack
+            </button>
+          </div>
 
-    {/* Reduced feature strip */}
-    <div
-      className="
-        mt-10 grid grid-cols-1 sm:grid-cols-2
-        gap-4 text-sm
-        text-gray-600 dark:text-gray-400
-      "
-    >
-      {[
-        "AI-generated UI screens",
-        "Mobile & web-ready layouts",
-      ].map((item, i) => (
-        <div key={i} className="flex items-center justify-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-rose-600" />
-          {item}
-        </div>
-      ))}
-    </div>
-  </motion.div>
-</section>
-
+          {/* Feature strip */}
+          <div
+            className="
+              mt-10 grid grid-cols-1 sm:grid-cols-2
+              gap-4 text-sm
+              text-gray-600 dark:text-gray-400
+            "
+          >
+            {[
+              "AI-generated UI screens",
+              "Mobile & web-ready layouts",
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-rose-600" />
+                {item}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
 
       {/* ================= FEATURES ================= */}
       <section className="py-32 px-6 min-h-screen">
@@ -157,7 +171,7 @@ export default function Home() {
                   hover:-translate-y-1
                 "
               >
-                <h3 className="text-lg font-semibold text-rose-500">
+                <h3 className="text-lg font-semibold dark:text-rose-500 text-purple-700">
                   {title}
                 </h3>
                 <p className="mt-3 text-gray-600 dark:text-gray-400">
@@ -190,7 +204,7 @@ export default function Home() {
 
             <h2 className="text-4xl font-extrabold leading-tight">
               From Prompt to{" "}
-              <span className="text-rose-500">Production UI</span>
+              <span className="dark:text-rose-500 text-purple-700">Production UI</span>
             </h2>
 
             <p className="mt-6 text-gray-600 dark:text-gray-400 max-w-xl">
@@ -226,7 +240,7 @@ export default function Home() {
               dark:border-white/10 dark:bg-white/5
               backdrop-blur-xl p-6
             ">
-              <div className="h-full rounded-2xl bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center">
+              <div className="h-full rounded-2xl bg-linear-to-br from-white/10 to-transparent flex items-center justify-center">
                 <p className="text-gray-600 dark:text-gray-400 text-sm tracking-wide">
                   AI-GENERATED UI PREVIEW
                 </p>
@@ -246,32 +260,37 @@ export default function Home() {
           transition={{ duration: 0.8 }}
           className="max-w-3xl mx-auto text-center"
         >
-          <span className="
-            inline-block mb-6 px-4 py-1 rounded-full
-            bg-black/5 text-gray-600
-            dark:bg-white/5 dark:text-gray-300
-            text-xs tracking-widest
-          ">
+          <span
+            className="
+              inline-block mb-6 px-4 py-1 rounded-full
+              bg-black/5 text-gray-600
+              dark:bg-white/5 dark:text-gray-300
+              text-xs tracking-widest
+            "
+          >
             GET STARTED
           </span>
 
           <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
             Design Faster with{" "}
-            <span className="text-rose-500">NeuroStack</span>
+            <span className="dark:text-rose-500 text-purple-700">NeuroStack</span>
           </h2>
 
           <p className="mt-6 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
             Turn ideas into beautiful, production-ready UI/UX in minutes.
           </p>
 
-          <button className="
-            mt-12 w-full sm:w-auto
-            px-8 sm:px-12 py-3 rounded-xl
-            bg-black text-white
-            dark:bg-white dark:text-black
-            font-semibold transition-all duration-300
-            hover:opacity-90
-          ">
+          <button
+            onClick={handlePrimaryCTA}
+            className="
+              mt-12 w-full sm:w-auto
+              px-8 sm:px-12 py-3 rounded-xl
+              bg-black text-white
+              dark:bg-white dark:text-black
+              font-semibold transition-all duration-300
+              hover:opacity-90
+            "
+          >
             Try NeuroStack
           </button>
 
@@ -343,5 +362,6 @@ export default function Home() {
         </div>
       </footer>
     </main>
+    </>
   );
 }
