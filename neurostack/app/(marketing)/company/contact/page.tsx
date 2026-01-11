@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Mail, Linkedin, Github, Instagram, Send } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -30,10 +31,39 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="bg-black text-white min-h-screen px-6 py-32">
-      <div className="max-w-5xl mx-auto">
+    <main
+      className="
+        bg-white text-black
+        dark:bg-black dark:text-white
+        min-h-screen px-6 py-32
+        relative
+      "
+    >
+      {/* ================= BACK RIBBON ================= */}
+      <Link
+        href="/"
+        aria-label="Back to Home"
+        className="fixed top-6 left-0 z-50 group"
+      >
+        <div
+          className="
+            pl-6 pr-5 py-2
+            bg-rose-500
+            text-white
+            font-semibold text-sm
+            rounded-r-full
+            shadow-lg
+            transition-all duration-300
+            hover:bg-rose-600
+            hover:pl-8
+          "
+        >
+          ← Back
+        </div>
+      </Link>
 
-        {/* HEADER */}
+      <div className="max-w-5xl mx-auto">
+        {/* ================= HEADER ================= */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -42,25 +72,25 @@ export default function ContactPage() {
           Contact NeuroStack
         </motion.h1>
 
-        <p className="mt-6 text-gray-400 text-center max-w-2xl mx-auto">
-          Have a question, feedback, or partnership idea?  
+        <p className="mt-6 text-gray-600 dark:text-gray-400 text-center max-w-2xl mx-auto">
+          Have a question, feedback, or partnership idea?
           Send us a message or connect via social platforms.
         </p>
 
         {/* ================= CONTACT GRID ================= */}
         <div className="mt-16 grid md:grid-cols-2 gap-14">
-
           {/* ================= SEND MESSAGE FORM ================= */}
           <motion.form
             onSubmit={handleSubmit}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="
-              bg-white/5 border border-white/10
               rounded-2xl p-8
+              bg-black/5 border border-black/10
+              dark:bg-white/5 dark:border-white/10
             "
           >
-            <h2 className="text-xl font-semibold text-white mb-6">
+            <h2 className="text-xl font-semibold mb-6">
               Send us a message
             </h2>
 
@@ -69,7 +99,13 @@ export default function ContactPage() {
                 name="name"
                 required
                 placeholder="Your Name"
-                className="w-full px-4 py-3 rounded-xl bg-black border border-white/15 text-white focus:border-rose-500 outline-none"
+                className="
+                  w-full px-4 py-3 rounded-xl
+                  bg-white border border-black/15
+                  dark:bg-black dark:border-white/15
+                  text-black dark:text-white
+                  focus:border-rose-500 outline-none
+                "
               />
 
               <input
@@ -77,7 +113,13 @@ export default function ContactPage() {
                 type="email"
                 required
                 placeholder="Your Email"
-                className="w-full px-4 py-3 rounded-xl bg-black border border-white/15 text-white focus:border-rose-500 outline-none"
+                className="
+                  w-full px-4 py-3 rounded-xl
+                  bg-white border border-black/15
+                  dark:bg-black dark:border-white/15
+                  text-black dark:text-white
+                  focus:border-rose-500 outline-none
+                "
               />
 
               <textarea
@@ -85,7 +127,14 @@ export default function ContactPage() {
                 required
                 placeholder="Your Message"
                 rows={5}
-                className="w-full px-4 py-3 rounded-xl bg-black border border-white/15 text-white focus:border-rose-500 outline-none resize-none"
+                className="
+                  w-full px-4 py-3 rounded-xl
+                  bg-white border border-black/15
+                  dark:bg-black dark:border-white/15
+                  text-black dark:text-white
+                  focus:border-rose-500 outline-none
+                  resize-none
+                "
               />
             </div>
 
@@ -106,13 +155,13 @@ export default function ContactPage() {
             </button>
 
             {status === "success" && (
-              <p className="mt-4 text-sm text-green-400">
+              <p className="mt-4 text-sm text-green-500">
                 Message sent successfully ✔
               </p>
             )}
 
             {status === "error" && (
-              <p className="mt-4 text-sm text-red-400">
+              <p className="mt-4 text-sm text-red-500">
                 Something went wrong. Try again.
               </p>
             )}
@@ -124,11 +173,11 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col justify-center"
           >
-            <h2 className="text-xl font-semibold text-white mb-8">
+            <h2 className="text-xl font-semibold mb-8">
               Connect with us
             </h2>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               {[
                 { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com" },
                 { icon: Github, label: "GitHub", href: "https://github.com" },
@@ -141,34 +190,36 @@ export default function ContactPage() {
                   target="_blank"
                   className="
                     group relative flex items-center
-                    h-12 w-12
+                    h-12 w-12 hover:w-36
                     rounded-xl
-                    bg-white/5 border border-white/10
+                    bg-black/5 border border-black/10
+                    dark:bg-white/5 dark:border-white/10
                     overflow-hidden
                     transition-all duration-300
                     hover:border-rose-600/40
-                    hover:w-36
                   "
                 >
                   <div className="flex h-12 w-12 items-center justify-center">
                     <Icon className="text-rose-500" size={20} />
                   </div>
 
-                  <span className="
-                    absolute left-12
-                    text-sm text-gray-300
-                    opacity-0 translate-x-4
-                    transition-all duration-300
-                    group-hover:opacity-100
-                    group-hover:translate-x-0
-                  ">
+                  <span
+                    className="
+                      absolute left-12
+                      text-sm
+                      text-gray-600 dark:text-gray-300
+                      opacity-0 translate-x-4
+                      transition-all duration-300
+                      group-hover:opacity-100
+                      group-hover:translate-x-0
+                    "
+                  >
                     {label}
                   </span>
                 </a>
               ))}
             </div>
           </motion.div>
-
         </div>
       </div>
     </main>

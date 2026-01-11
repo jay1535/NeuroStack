@@ -42,14 +42,22 @@ export default function FooterDialog({
       {/* Trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="hover:text-rose-500 transition"
+        className="transition hover:text-rose-500"
       >
         {title}
       </button>
 
       {/* Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl bg-black text-white border border-white/10">
+        <DialogContent
+          className="
+            max-w-3xl
+            bg-white text-black
+            dark:bg-black dark:text-white
+            border border-black/10
+            dark:border-white/10
+          "
+        >
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-rose-500">
               {title}
@@ -57,25 +65,39 @@ export default function FooterDialog({
           </DialogHeader>
 
           {/* Scrollable content */}
-          <div className="mt-4 max-h-[60vh] overflow-y-auto text-sm text-gray-300 leading-relaxed space-y-4">
+          <div
+            className="
+              mt-4 max-h-[60vh] overflow-y-auto
+              text-sm leading-relaxed space-y-4
+              text-black dark:text-gray-300
+            "
+          >
             {content}
           </div>
 
           <DialogFooter className="mt-6 flex gap-3">
-            {/* Close always visible */}
+            {/* Close button */}
             <Button
               variant="secondary"
               onClick={() => setOpen(false)}
-              className="bg-white/10 text-white hover:bg-white/20"
+              className="
+                bg-black text-white
+                hover:bg-black/10
+                dark:bg-white/30 dark:text-white
+                dark:hover:bg-white/20
+              "
             >
               Close
             </Button>
 
-            {/* ✅ Accept ONLY if not already accepted */}
+            {/* Accept button (only if not accepted) */}
             {!accepted && (
               <Button
                 onClick={handleAccept}
-                className="bg-rose-600 hover:bg-rose-700 text-white"
+                className="
+                  bg-rose-600 text-white
+                  hover:bg-rose-700
+                "
               >
                 Accept
               </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -9,10 +10,39 @@ const fadeUp = {
 
 export default function FeaturesPage() {
   return (
-    <main className="bg-black text-white min-h-screen px-6 py-32 overflow-x-hidden">
-      <div className="max-w-6xl mx-auto">
+    <main
+      className="
+        bg-white text-black
+        dark:bg-black dark:text-white
+        min-h-screen px-6 py-32
+        overflow-x-hidden relative
+      "
+    >
+      {/* ================= BACK RIBBON ================= */}
+      <Link
+        href="/"
+        aria-label="Back to Home"
+        className="fixed top-6 left-0 z-50 group"
+      >
+        <div
+          className="
+            pl-6 pr-5 py-2
+            bg-rose-500
+            text-white
+            font-semibold text-sm
+            rounded-r-full
+            shadow-lg
+            transition-all duration-300
+            hover:bg-rose-600
+            hover:pl-8
+          "
+        >
+          ← Back
+        </div>
+      </Link>
 
-        {/* HEADER */}
+      <div className="max-w-6xl mx-auto">
+        {/* ================= HEADER ================= */}
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -20,11 +50,11 @@ export default function FeaturesPage() {
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold text-rose-500">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-black">
             NeuroStack Features
           </h1>
 
-          <p className="mt-6 text-gray-400 leading-relaxed">
+          <p className="mt-6 text-gray-600 dark:text-gray-400 leading-relaxed">
             NeuroStack is designed to eliminate the friction between ideas and
             execution. Every feature is built to help teams design faster,
             smarter, and with confidence — without compromising UX quality.
@@ -68,16 +98,17 @@ export default function FeaturesPage() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="
                 rounded-2xl p-8
-                bg-white/5 border border-white/10
+                bg-black/5 border border-black/10
+                dark:bg-white/5 dark:border-white/10
                 transition-all duration-300
                 hover:border-rose-600/40
                 hover:-translate-y-1
               "
             >
-              <h3 className="text-lg font-semibold text-rose-500">
+              <h3 className="text-lg font-semibold text-black">
                 {item.title}
               </h3>
-              <p className="mt-3 text-gray-400 leading-relaxed">
+              <p className="mt-3 text-gray-600 dark:text-gray-400 leading-relaxed">
                 {item.desc}
               </p>
             </motion.div>
@@ -97,7 +128,7 @@ export default function FeaturesPage() {
             How NeuroStack Works
           </motion.h2>
 
-          <div className="space-y-8 text-gray-400 leading-relaxed">
+          <div className="space-y-8 text-gray-600 dark:text-gray-400 leading-relaxed">
             <p>
               NeuroStack begins with your idea — expressed in natural language.
               Whether you describe a mobile app, a dashboard, or a marketing
@@ -160,15 +191,16 @@ export default function FeaturesPage() {
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="
                   rounded-2xl p-6
-                  bg-white/5 border border-white/10
+                  bg-black/5 border border-black/10
+                  dark:bg-white/5 dark:border-white/10
                   hover:border-rose-600/40
                   transition-all duration-300
                 "
               >
-                <p className="text-rose-500 font-semibold">
+                <p className="text-black font-semibold">
                   {item.title}
                 </p>
-                <p className="mt-3 text-sm text-gray-400">
+                <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
                   {item.desc}
                 </p>
               </motion.div>
@@ -189,17 +221,16 @@ export default function FeaturesPage() {
             Built to Scale With You
           </motion.h2>
 
-          <p className="mt-6 text-gray-400 leading-relaxed">
+          <p className="mt-6 text-gray-600 dark:text-gray-400 leading-relaxed">
             NeuroStack is not just a UI generator — it’s a design acceleration
             platform. As your product grows, our AI adapts to support more
             complex workflows, layouts, and product structures.
           </p>
 
-          <p className="mt-4 text-gray-400">
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
             Design faster. Iterate smarter. Ship with confidence.
           </p>
         </section>
-
       </div>
     </main>
   );
