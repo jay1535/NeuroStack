@@ -37,7 +37,7 @@ export default function AppHeader(): JSX.Element {
       className="
         fixed top-0 z-50 w-full
         border-b backdrop-blur-xl
-        bg-white/90 dark:bg-background/95
+        bg-background/90 dark:bg-background/95
         border-pink-200 dark:border-border
       "
     >

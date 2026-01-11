@@ -33,7 +33,7 @@ export default function FeaturesPage() {
             rounded-r-full
             shadow-lg
             transition-all duration-300
-            hover:bg-rose-600
+            hover:dark:bg-rose-600 hover:bg-purple-900
             hover:pl-8
           "
         >

@@ -54,7 +54,7 @@ export default function ContactPage() {
             rounded-r-full
             shadow-lg
             transition-all duration-300
-            hover:bg-rose-600
+            hover:dark:bg-rose-600 hover:bg-purple-900
             hover:pl-8
           "
         >
@@ -144,9 +144,9 @@ export default function ContactPage() {
               className="
                 mt-6 w-full flex items-center justify-center gap-2
                 px-6 py-3 rounded-xl
-                bg-rose-600 text-white font-semibold
+                dark:bg-rose-600 bg-purple-700 text-white font-semibold
                 transition-all duration-300
-                hover:bg-rose-700
+                hover:dark:bg-rose-700 hover:bg-purple-700
                 disabled:opacity-60
               "
             >

@@ -33,7 +33,7 @@ export default function PricingPage() {
             rounded-r-full
             shadow-lg
             transition-all duration-300
-            hover:bg-rose-600
+            hover:dark:dark:bg-rose-600 bg-purple-700 hover:bg-purple-900
             hover:pl-8
           "
         >
@@ -127,7 +127,7 @@ export default function PricingPage() {
               className="
                 absolute -top-3 left-1/2 -translate-x-1/2
                 px-4 py-1 text-xs rounded-full
-                bg-rose-600 text-white
+                dark:bg-rose-600 bg-purple-700 text-white
               "
             >
               MOST POPULAR
@@ -159,9 +159,9 @@ export default function PricingPage() {
               className="
                 mt-8 w-full
                 px-6 py-3 rounded-xl
-                bg-rose-600 text-white font-semibold
+                dark:bg-rose-600 bg-purple-700 text-white font-semibold
                 transition-all duration-300
-                hover:bg-rose-700
+                hover:dark:bg-rose-700 hover:bg-purple-700
                 hover:-translate-y-0.5
               "
             >
