@@ -51,7 +51,7 @@ export default function AboutPage() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-rose-500">
+          <h1 className="text-4xl sm:text-5xl font-extrabold dark:text-rose-500 text-black">
             About NeuroStack
           </h1>
 
@@ -150,7 +150,7 @@ export default function AboutPage() {
                   transition
                 "
               >
-                <h3 className="text-xl font-semibold text-rose-500">
+                <h3 className="text-xl font-semibold dark:text-rose-500 text-black">
                   {item.title}
                 </h3>
 
@@ -186,7 +186,7 @@ export default function AboutPage() {
                   transition
                 "
               >
-                <p className="text-rose-500 font-semibold">
+                <p className="dark:text-rose-500 text-black font-semibold">
                   {role}
                 </p>
 
@@ -219,7 +219,7 @@ export default function AboutPage() {
                   p-8
                 "
               >
-                <h3 className="text-lg font-semibold text-rose-500">
+                <h3 className="text-lg font-semibold dark:text-rose-500 text-black">
                   {v.title}
                 </h3>
 
