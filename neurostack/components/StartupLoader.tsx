@@ -17,13 +17,13 @@ export default function StartupLoader(): JSX.Element {
 
       {/* MAIN STACK */}
       <motion.div
-        className="relative flex min-h-[360px] sm:min-h-[460px] flex-col items-center justify-center"
+        className="relative flex min-h-90 sm:min-h-115 flex-col items-center justify-center"
         initial={{ scale: 0.985 }}
         animate={{ scale: 1 }}
         transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* Subtle depth */}
-        <div className="pointer-events-none absolute -inset-24 rounded-full bg-gradient-to-b from-gray-700/25 via-gray-600/10 to-transparent blur-3xl" />
+        <div className="pointer-events-none absolute -inset-24 rounded-full bg-linear-to-b from-gray-700/25 via-gray-600/10 to-transparent blur-3xl" />
         <div className="pointer-events-none absolute -inset-32 rounded-full bg-gray-500/10 blur-[120px]" />
 
         {/* LOGO */}
@@ -73,7 +73,7 @@ export default function StartupLoader(): JSX.Element {
               width={96}
               height={96}
               priority
-              className="rounded-full sm:w-[120px] sm:h-[120px]"
+              className="rounded-full sm:w-30 sm:h-30"
             />
           </motion.div>
         </motion.div>
@@ -97,7 +97,7 @@ export default function StartupLoader(): JSX.Element {
 
             {/* Stack — jumping from right */}
             <motion.span
-              className="text-rose-500"
+              className="dark:text-rose-500 text-purple-700"
               initial={{ opacity: 0, x: 180, y: 0 }}
               animate={{
                 opacity: 1,

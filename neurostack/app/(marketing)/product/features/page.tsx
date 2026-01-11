@@ -27,7 +27,7 @@ export default function FeaturesPage() {
         <div
           className="
             pl-6 pr-5 py-2
-            bg-rose-500
+            dark:bg-rose-500 bg-purple-700
             text-white
             font-semibold text-sm
             rounded-r-full

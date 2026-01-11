@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
+import {
+  ClerkProvider,
+} from '@clerk/nextjs'
 
 import AppLoaderWrapper from "@/components/AppLoaderWrapper";
 import { Exo_2 } from "next/font/google";
@@ -23,6 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>): JSX.Element {
   return (
+    <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
       <body className={`${exo2.className} antialiased`}>
         <Provider>
@@ -32,5 +35,6 @@ export default function RootLayout({
        </Provider>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

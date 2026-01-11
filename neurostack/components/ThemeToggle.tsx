@@ -33,7 +33,7 @@ export function ThemeToggleButton() {
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
       className="
         p-1.5
-        w-10 h-9.5
+        w-8 h-8
         flex items-center justify-center
         rounded-full
         border
