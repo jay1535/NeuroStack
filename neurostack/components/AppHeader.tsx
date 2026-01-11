@@ -36,8 +36,8 @@ export default function AppHeader(): JSX.Element {
       className="
         fixed top-0 z-50 w-full
         border-b backdrop-blur-xl
-        bg-rose-50/80 dark:bg-background/95
-        border-rose-200 dark:border-border
+        bg-pink-50/90 dark:bg-background/95
+        border-pink-200 dark:border-border
       "
     >
       {/* subtle rose glow */}
