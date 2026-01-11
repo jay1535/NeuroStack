@@ -50,7 +50,7 @@ export default function FeaturesPage() {
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold text-black">
+          <h1 className="text-4xl md:text-5xl font-extrabold dark:text-rose-500 text-black">
             NeuroStack Features
           </h1>
 
@@ -105,7 +105,7 @@ export default function FeaturesPage() {
                 hover:-translate-y-1
               "
             >
-              <h3 className="text-lg font-semibold text-black">
+              <h3 className="text-lg font-semibold dark:text-rose-500 text-black">
                 {item.title}
               </h3>
               <p className="mt-3 text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -197,7 +197,7 @@ export default function FeaturesPage() {
                   transition-all duration-300
                 "
               >
-                <p className="text-black font-semibold">
+                <p className="dark:text-rose-500 text-black font-semibold">
                   {item.title}
                 </p>
                 <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">

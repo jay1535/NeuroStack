@@ -67,7 +67,7 @@ export default function ContactPage() {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-4xl md:text-5xl font-extrabold text-rose-500 text-center"
+          className="text-4xl md:text-5xl font-extrabold dark:text-rose-500 text-black text-center"
         >
           Contact NeuroStack
         </motion.h1>
@@ -200,7 +200,7 @@ export default function ContactPage() {
                   "
                 >
                   <div className="flex h-12 w-12 items-center justify-center">
-                    <Icon className="text-rose-500" size={20} />
+                    <Icon className="dark:text-rose-500 text-black" size={20} />
                   </div>
 
                   <span

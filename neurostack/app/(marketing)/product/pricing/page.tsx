@@ -50,7 +50,7 @@ export default function PricingPage() {
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold text-black">
+          <h1 className="text-4xl md:text-5xl font-extrabold dark:text-rose-500 text-black">
             Simple, Transparent Pricing
           </h1>
 
@@ -78,7 +78,7 @@ export default function PricingPage() {
               hover:border-rose-600/40
             "
           >
-            <h3 className="text-lg font-semibold text-black">Free</h3>
+            <h3 className="text-lg font-semibold dark:text-rose-500 text-black">Free</h3>
 
             <p className="text-3xl font-extrabold mt-4">₹0</p>
 
@@ -133,10 +133,10 @@ export default function PricingPage() {
               MOST POPULAR
             </span>
 
-            <h3 className="text-lg font-semibold text-black">Pro</h3>
+            <h3 className="text-lg font-semibold dark:text-rose-500 text-black">Pro</h3>
 
             <p className="text-3xl font-extrabold mt-4">
-              ₹999{" "}
+              ₹99{" "}
               <span className="text-base font-normal text-gray-500 dark:text-gray-400">
                 / month
               </span>
@@ -184,7 +184,7 @@ export default function PricingPage() {
               hover:border-rose-600/40
             "
           >
-            <h3 className="text-lg font-semibold text-black">
+            <h3 className="text-lg font-semibold dark:text-rose-500 text-black">
               Team / Enterprise
             </h3>
 
