@@ -50,9 +50,9 @@ export function ThemeToggleButton() {
         `}
       >
         {theme === "light" ? (
-          <Sun className="w-4 h-4 text-red-600" />
+          <Sun className="w-4 h-4  text-purple-900" />
         ) : (
-          <Moon className="w-4 h-4 text-purple-600" />
+          <Moon className="w-4 h-4 text-rose-500 " />
         )}
       </div>
     </button>

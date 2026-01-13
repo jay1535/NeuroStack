@@ -54,13 +54,13 @@ export default function AppHeader(): JSX.Element {
               <Image
                 src={logoSrc}
                 alt="NeuroStack"
-                width={34}
-                height={34}
+                width={38}
+                height={38}
                 className="rounded-lg"
                 priority
               />
             )}
-            <span className="text-xl font-bold tracking-tight">
+            <span className="text-2xl font-bold tracking-tight">
               Neuro
               <span className="text-purple-600 dark:text-rose-500">
                 Stack
@@ -73,7 +73,7 @@ export default function AppHeader(): JSX.Element {
             {mounted && (
               <SignedIn>
                 <>
-                  <NavLink href="/" label="Home" />
+                  <NavLink href="/" label="Home"  />
                   <NavLink href="/dashboard" label="Dashboard" />
                   <NavLink href="/product/pricing" label="Pricing" />
                 </>
@@ -104,7 +104,7 @@ export default function AppHeader(): JSX.Element {
                 )}
 
                 {/* Branded Theme Toggle */}
-                <div className="rounded-full p-[2px] bg-gradient-to-r from-purple-500 to-rose-500">
+                <div className="rounded-full p-0.5 bg-purple-300 dark:bg-rose-900">
                   <div className="rounded-full bg-white dark:bg-black">
                     <ThemeToggleButton />
                   </div>
@@ -208,7 +208,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
   const active = pathname === href;
 
   return (
-    <Link href={href} className="relative px-2 py-1 text-sm font-semibold">
+    <Link href={href} className="relative px-2 py-1 text-lg font-semibold">
       <span
         className={
           active
@@ -221,8 +221,8 @@ function NavLink({ href, label }: { href: string; label: string }) {
 
       {active && (
         <>
-          <span className="absolute left-1/2 bottom-0 w-[45%] h-[2px] -translate-x-1/2 bg-purple-500 dark:bg-rose-500 rounded-full" />
-          <span className="absolute left-1/2 bottom-1 w-[90%] h-[18px] -translate-x-1/2 bg-purple-500/30 dark:bg-rose-500/30 blur-[14px]" />
+          <span className="absolute left-1/2 bottom-0 w-[45%] h-0.5 -translate-x-1/2 bg-purple-500 dark:bg-rose-500 rounded-full" />
+          <span className="absolute left-1/2 bottom-1 w-[90%] h-4.5 -translate-x-1/2 bg-purple-500/30 dark:bg-rose-500/30 blur-[14px]" />
         </>
       )}
     </Link>
