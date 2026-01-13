@@ -31,7 +31,7 @@ export default function Home() {
  <div
   className="
     absolute inset-0
-    bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.45),transparent_55%)]
+    bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.25),transparent_55%)]
 
     dark:bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.20),transparent_55%)]
   "

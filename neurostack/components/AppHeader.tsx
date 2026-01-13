@@ -2,216 +2,271 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { GithubIcon, Instagram } from "lucide-react";
+import Link from "next/link";
+import {
+  GithubIcon,
+  Instagram,
+  Menu,
+  X,
+  Home,
+  LayoutDashboard,
+  Tag,
+  SunMoon,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggleButton } from "./ThemeToggle";
 import { useTheme } from "next-themes";
-import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import {
+  UserButton,
+  SignedIn,
+  SignedOut,
+  SignInButton,
+} from "@clerk/nextjs";
 
 const GITHUB_URL = "https://github.com/jay1535";
 const INSTAGRAM_URL = "https://www.instagram.com/jayant._.762/";
 
 export default function AppHeader(): JSX.Element {
   const pathname = usePathname();
-  const isHome = pathname === "/";
+  const isDashboard = pathname.startsWith("/dashboard");
 
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
-  React.useEffect(() => setMounted(true), []);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const currentTheme = theme === "system" ? systemTheme : theme;
   const logoSrc =
-    mounted && currentTheme === "light"
-      ? "/black-logo.png"
-      : "/logo.png";
-
-  const openGithub = () =>
-    window.open(GITHUB_URL, "_blank", "noopener,noreferrer");
-
-  const openInstagram = () =>
-    window.open(INSTAGRAM_URL, "_blank", "noopener,noreferrer");
+    mounted && currentTheme === "light" ? "/black-logo.png" : "/logo.png";
 
   return (
-    <header
-      className="
-        fixed top-0 z-50 w-full
-        border-b backdrop-blur-xl
-        bg-background/90 dark:bg-background/95
-        border-pink-200 dark:border-border
-      "
-    >
-      {/* subtle rose glow */}
-      <div
-        className="
-          pointer-events-none absolute inset-0
-          bg-linear-to-b from-white/40 to-transparent
-          dark:from-transparent
-        "
-      />
+    <>
+      {/* ================= HEADER ================= */}
+      <header className="fixed top-0 z-50 w-full backdrop-blur-xl bg-white/70 dark:bg-black/70 border-b border-black/10 dark:border-rose-500/15 shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
+        <div className="max-w-7xl mx-auto px-6 py-4 grid grid-cols-3 items-center">
 
-      <div
-        className="
-          relative flex items-center justify-between
-          px-4 sm:px-5 py-2.5 sm:py-3
-          max-w-7xl mx-auto
-        "
-      >
-        {/* LEFT — BRAND */}
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          {mounted && (
-            <Image
-              src={logoSrc}
-              alt="NeuroStack Logo"
-              width={28}
-              height={28}
-              priority
-              className="sm:w-8 sm:h-8 rounded-md transition-transform hover:scale-110"
-            />
-          )}
-
-          <h1
-            className="
-              font-extrabold tracking-tight
-              text-lg sm:text-xl md:text-2xl
-              whitespace-nowrap
-            "
-          >
-            Neuro<span className="dark:text-rose-500 text-purple-700">Stack</span>
-          </h1>
-        </div>
-
-        {/* RIGHT — ACTIONS */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* GitHub */}
-          {isHome && (
-            <button
-              onClick={openGithub}
-              aria-label="NeuroStack GitHub"
-              className="
-                group relative
-                h-8 w-8 sm:h-10 sm:w-10
-                sm:hover:w-28
-                rounded-full border
-                bg-white/70 dark:bg-background/80
-                backdrop-blur overflow-hidden
-                transition-all duration-500
-                hover:bg-rose-200/60 dark:hover:bg-primary/10
-                hover:border-rose-400 dark:hover:border-primary
-              "
-            >
-              <GithubIcon
-                className="
-                  absolute left-1/2 top-1/2
-                  -translate-x-1/2 -translate-y-1/2
-                  h-4.5 w-4.5 sm:h-5 sm:w-5
-                  transition-all duration-300
-                  sm:group-hover:left-4 sm:group-hover:translate-x-0
-                  text-rose-600 dark:text-primary
-                "
+          {/* LOGO */}
+          <div className="flex items-center gap-3">
+            {mounted && (
+              <Image
+                src={logoSrc}
+                alt="NeuroStack"
+                width={34}
+                height={34}
+                className="rounded-lg"
+                priority
               />
-              <span
-                className="
-                  hidden sm:block
-                  absolute right-4 top-1/2 -translate-y-1/2
-                  text-sm font-medium
-                  text-rose-600 dark:text-primary
-                  opacity-0 translate-x-4
-                  transition-all duration-300
-                  group-hover:opacity-100 group-hover:translate-x-0
-                "
-              >
-                Follow
+            )}
+            <span className="text-xl font-bold tracking-tight">
+              Neuro
+              <span className="text-purple-600 dark:text-rose-500">
+                Stack
               </span>
-            </button>
-          )}
+            </span>
+          </div>
 
-          {/* Instagram */}
-          {isHome && (
-            <button
-              onClick={openInstagram}
-              aria-label="NeuroStack Instagram"
-              className="
-                group relative
-                h-8 w-8 sm:h-10 sm:w-10
-                sm:hover:w-28
-                rounded-full border
-                bg-white/70 dark:bg-background/80
-                backdrop-blur overflow-hidden
-                transition-all duration-500
-                hover:bg-pink-200/60 hover:border-pink-400
-              "
-            >
-              <Instagram
-                className="
-                  absolute left-1/2 top-1/2
-                  -translate-x-1/2 -translate-y-1/2
-                  h-3 w-3 sm:h-5 sm:w-5
-                  transition-all duration-300
-                  sm:group-hover:left-4 sm:group-hover:translate-x-0
-                  text-pink-600
-                "
-              />
-              <span
-                className="
-                  hidden sm:block
-                  absolute right-4 top-1/2 -translate-y-1/2
-                  text-sm font-medium
-                  bg-linear-to-r from-pink-500 to-purple-500
-                  bg-clip-text text-transparent
-                  opacity-0 translate-x-4
-                  transition-all duration-300
-                  group-hover:opacity-100 group-hover:translate-x-0
-                "
-              >
-                Follow
-              </span>
-            </button>
-          )}
+          {/* NAV (stable element, condition inside) */}
+          <nav className="hidden md:flex justify-center items-center gap-10">
+            {mounted && (
+              <SignedIn>
+                <>
+                  <NavLink href="/" label="Home" />
+                  <NavLink href="/dashboard" label="Dashboard" />
+                  <NavLink href="/product/pricing" label="Pricing" />
+                </>
+              </SignedIn>
+            )}
+          </nav>
 
-          {/* Theme Toggle */}
-          <ThemeToggleButton />
+          {/* ACTIONS */}
+          <div className="hidden md:flex items-center justify-end gap-3">
+            {mounted && (
+              <>
+                {!isDashboard && (
+                  <>
+                    <HoverIcon
+                      label="GitHub"
+                      onClick={() => window.open(GITHUB_URL)}
+                    >
+                      <GithubIcon size={18} />
+                    </HoverIcon>
 
-          {/* Clerk User */}
-          <div className="flex items-center justify-center">
-            <SignedIn>
-  <UserButton
-    appearance={{
-      elements: {
-        avatarBox: `
-          h-12 w-12 sm:h-14 sm:w-14
-          rounded-full
-          border-2 border-black/15 dark:border-white/15
-          transition
-          hover:ring-2 hover:ring-rose-500/40
-        `,
-        avatarImage: "h-full w-full object-cover",
-      },
-    }}
-  />
-</SignedIn>
+                    <HoverIcon
+                      label="Instagram"
+                      onClick={() => window.open(INSTAGRAM_URL)}
+                    >
+                      <Instagram size={18} />
+                    </HoverIcon>
+                  </>
+                )}
 
+                {/* Branded Theme Toggle */}
+                <div className="rounded-full p-[2px] bg-gradient-to-r from-purple-500 to-rose-500">
+                  <div className="rounded-full bg-white dark:bg-black">
+                    <ThemeToggleButton />
+                  </div>
+                </div>
 
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button
-                  className="
-                    h-9 w-9
-                    rounded-full border
-                    bg-white/70 dark:bg-background/80
-                    hover:bg-rose-200/60 dark:hover:bg-accent
-                    transition
-                    text-sm font-semibold
-                  "
-                  title="Sign in"
-                >
-                  👤
-                </button>
-              </SignInButton>
-            </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <button className="h-9 w-9 rounded-full border hover:bg-purple-600 hover:text-white dark:hover:bg-rose-500 transition">
+                      👤
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+              </>
+            )}
+          </div>
+
+          {/* MOBILE */}
+          <div className="md:hidden col-span-2 flex justify-end">
+            {mounted && (
+              <SignedIn>
+                <IconButton onClick={() => setMenuOpen(true)}>
+                  <Menu size={18} />
+                </IconButton>
+              </SignedIn>
+            )}
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* ================= SIDEBAR ================= */}
+      {mounted && (
+        <SignedIn>
+          {menuOpen && (
+            <div className="fixed inset-0 z-50 md:hidden">
+              <div
+                className="absolute inset-0 bg-black/50"
+                onClick={() => setMenuOpen(false)}
+              />
+
+              <aside className="absolute right-0 top-0 h-full w-[80%] max-w-sm backdrop-blur-xl bg-white/90 dark:bg-black/90 border-l border-black/10 dark:border-rose-500/20 shadow-2xl flex flex-col">
+
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 py-4 border-b">
+                  <span className="text-lg font-semibold">
+                    Neuro
+                    <span className="text-purple-600 dark:text-rose-500">
+                      Stack
+                    </span>
+                  </span>
+                  <button
+                    onClick={() => setMenuOpen(false)}
+                    className="h-8 w-8 rounded-full hover:bg-black/10"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Nav */}
+                <nav className="flex flex-col gap-1 px-4 py-4">
+                  <SidebarButton href="/" icon={<Home size={18} />} label="Home" onClick={() => setMenuOpen(false)} />
+                  <SidebarButton href="/dashboard" icon={<LayoutDashboard size={18} />} label="Dashboard" onClick={() => setMenuOpen(false)} />
+                  <SidebarButton href="/product/pricing" icon={<Tag size={18} />} label="Pricing" onClick={() => setMenuOpen(false)} />
+                </nav>
+
+                {/* THEME CARD */}
+                <div className="mx-4 mb-4 rounded-xl border border-black/10 dark:border-white/10 bg-gradient-to-r from-purple-500/10 to-rose-500/10 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <SunMoon size={18} className="text-purple-600 dark:text-rose-400" />
+                    <span className="text-sm font-medium">Appearance</span>
+                  </div>
+
+                  <div className="rounded-full p-[2px] bg-gradient-to-r from-purple-500 to-rose-500">
+                    <div className="rounded-full bg-white dark:bg-black">
+                      <ThemeToggleButton />
+                    </div>
+                  </div>
+                </div>
+
+                {/* USER */}
+                <div className="mt-auto px-4 py-4 border-t flex gap-3 items-center">
+                  <UserButton />
+                  <span className="text-sm font-medium">Account</span>
+                </div>
+              </aside>
+            </div>
+          )}
+        </SignedIn>
+      )}
+    </>
+  );
+}
+
+/* ================= COMPONENTS ================= */
+
+function NavLink({ href, label }: { href: string; label: string }) {
+  const pathname = usePathname();
+  const active = pathname === href;
+
+  return (
+    <Link href={href} className="relative px-2 py-1 text-sm font-semibold">
+      <span
+        className={
+          active
+            ? "text-purple-700 dark:text-rose-400"
+            : "text-black/70 dark:text-white/70 hover:text-purple-600 dark:hover:text-rose-400"
+        }
+      >
+        {label}
+      </span>
+
+      {active && (
+        <>
+          <span className="absolute left-1/2 bottom-0 w-[45%] h-[2px] -translate-x-1/2 bg-purple-500 dark:bg-rose-500 rounded-full" />
+          <span className="absolute left-1/2 bottom-1 w-[90%] h-[18px] -translate-x-1/2 bg-purple-500/30 dark:bg-rose-500/30 blur-[14px]" />
+        </>
+      )}
+    </Link>
+  );
+}
+
+function IconButton({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="h-9 w-9 rounded-full border flex items-center justify-center hover:scale-105 hover:bg-purple-600 hover:text-white dark:hover:bg-rose-500 transition"
+    >
+      {children}
+    </button>
+  );
+}
+
+function SidebarButton({ href, icon, label, onClick }: any) {
+  const pathname = usePathname();
+  const active = pathname === href;
+
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition ${
+        active
+          ? "bg-purple-600/15 text-purple-700 dark:bg-rose-500/20 dark:text-rose-400"
+          : "hover:bg-purple-600/10 dark:hover:bg-rose-500/10"
+      }`}
+    >
+      {icon}
+      {label}
+    </Link>
+  );
+}
+
+function HoverIcon({ children, label, onClick }: any) {
+  return (
+    <div className="relative group">
+      <IconButton onClick={onClick}>{children}</IconButton>
+      <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-1 text-xs rounded-md bg-black text-white dark:bg-white dark:text-black opacity-0 group-hover:opacity-100 transition">
+        {label}
+      </span>
+    </div>
   );
 }
