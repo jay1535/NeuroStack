@@ -174,18 +174,77 @@ export default function AppHeader(): JSX.Element {
                 </nav>
 
                 {/* THEME CARD */}
-                <div className="mx-4 mb-4 rounded-xl border border-black/10 dark:border-white/10 bg-gradient-to-r from-purple-500/10 to-rose-500/10 px-4 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <SunMoon size={18} className="text-purple-600 dark:text-rose-400" />
-                    <span className="text-sm font-medium">Appearance</span>
-                  </div>
+        <div
+  className="
+    group mx-4 mb-4
+    relative
+    rounded-2xl
+    border border-black/10 dark:border-white/10
+    bg-white/70 dark:bg-black/60
+    backdrop-blur-xl
+    px-4 py-3
+    flex items-center justify-between
+    shadow-sm
+    transition-all duration-300
+    hover:shadow-md
+  "
+>
+  {/* subtle ambient glow */}
+  <div
+    className="
+      pointer-events-none absolute inset-0 rounded-2xl
+      opacity-0 group-hover:opacity-100
+      transition-opacity duration-500
+      bg-[radial-gradient(circle_at_20%_20%,rgba(168,85,247,0.15),transparent_50%)]
+      dark:bg-[radial-gradient(circle_at_20%_20%,rgba(236,72,153,0.15),transparent_50%)]
+    "
+  />
 
-                  <div className="rounded-full p-[2px] bg-gradient-to-r from-purple-500 to-rose-500">
-                    <div className="rounded-full bg-white dark:bg-black">
-                      <ThemeToggleButton />
-                    </div>
-                  </div>
-                </div>
+  {/* LEFT */}
+  <div className="relative z-10 flex items-center gap-4">
+    {/* Icon bubble */}
+    <div
+      className="
+        relative h-10 w-10 rounded-full
+        flex items-center justify-center
+        bg-linear-to-br from-purple-500/20 to-rose-500/20
+        ring-1 ring-purple-500/30 dark:ring-rose-500/30
+      "
+    >
+      <SunMoon
+        size={18}
+        className="text-purple-600 dark:text-rose-400"
+      />
+    </div>
+
+    {/* Text */}
+    <div className="flex flex-col leading-tight">
+      <span className="text-sm font-semibold tracking-wide">
+        Appearance
+      </span>
+      <span className="text-xs text-black/60 dark:text-white/60">
+        Theme preference
+      </span>
+    </div>
+  </div>
+
+  {/* RIGHT – Toggle */}
+  <div className="relative z-10">
+    <div
+      className="
+        rounded-full p-0.5
+        bg-linear-to-r from-purple-500 to-rose-500
+        shadow-lg
+      "
+    >
+      <div className="rounded-full bg-white dark:bg-black">
+        <ThemeToggleButton />
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
                 {/* USER */}
                 <div className="mt-auto px-4 py-4 border-t flex gap-3 items-center">
