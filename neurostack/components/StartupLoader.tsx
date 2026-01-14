@@ -13,7 +13,7 @@ export default function StartupLoader(): JSX.Element {
       transition={{ duration: 1.4, ease: "easeInOut" }}
     >
       {/* Global ambient background */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_75%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.25),transparent_75%)]" />
 
       {/* MAIN STACK */}
       <motion.div
