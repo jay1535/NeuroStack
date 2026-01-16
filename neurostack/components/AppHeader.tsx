@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   Tag,
   SunMoon,
+  LogIn,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggleButton } from "./ThemeToggle";
@@ -22,6 +23,7 @@ import {
   SignedOut,
   SignInButton,
 } from "@clerk/nextjs";
+import { Button } from "./ui/button";
 
 const GITHUB_URL = "https://github.com/jay1535";
 const INSTAGRAM_URL = "https://www.instagram.com/jayant._.762/";
@@ -116,9 +118,9 @@ export default function AppHeader(): JSX.Element {
 
                 <SignedOut>
                   <SignInButton mode="modal">
-                    <button className="h-9 w-9 rounded-full border hover:bg-purple-600 hover:text-white dark:hover:bg-rose-500 transition">
-                      👤
-                    </button>
+                    <Button className=" border rounded-lg p-2 bg-purple-700 hover:bg-purple-00  text-white dark:bg-rose-500 hover:dark:bg-rose-700 transition">
+                     <LogIn/> Try Now
+                    </Button>
                   </SignInButton>
                 </SignedOut>
               </>
