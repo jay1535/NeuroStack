@@ -12,6 +12,7 @@ import {
 
 import { motion } from "framer-motion";
 import AppHeader from "@/components/AppHeader";
+import ClientOnly from "./ClientOnly";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -284,38 +285,41 @@ export default function Home() {
 
           <div className="mt-12 flex justify-center">
             <div className="w-full sm:w-auto">
-              <SignedIn>
-                <button
-                  onClick={() => router.push("/dashboard")}
-                  className="
-                    w-full sm:w-auto
-                    px-8 sm:px-12 py-3 rounded-xl
-                    bg-black text-white
-                    dark:bg-white dark:text-black
-                    font-semibold transition-all duration-300
-                    hover:opacity-90
-                  "
-                >
-                  Try NeuroStack
-                </button>
-              </SignedIn>
+             <ClientOnly>
+  <SignedIn>
+    <button
+      onClick={() => router.push("/dashboard")}
+      className="
+        w-full sm:w-auto
+        px-6 sm:px-10 py-3 rounded-xl
+        bg-black text-white
+        dark:bg-white dark:text-black
+        font-semibold transition-all duration-300
+        hover:opacity-90
+      "
+    >
+      Get Started
+    </button>
+  </SignedIn>
 
-              <SignedOut>
-                <SignUpButton mode="modal">
-                  <button
-                    className="
-                      w-full sm:w-auto
-                      px-8 sm:px-12 py-3 rounded-xl
-                      bg-black text-white
-                      dark:bg-white dark:text-black
-                      font-semibold transition-all duration-300
-                      hover:opacity-90
-                    "
-                  >
-                    Try NeuroStack
-                  </button>
-                </SignUpButton>
-              </SignedOut>
+  <SignedOut>
+    <SignUpButton mode="modal">
+      <button
+        className="
+          w-full sm:w-auto
+          px-6 sm:px-10 py-3 rounded-xl
+          bg-black text-white
+          dark:bg-white dark:text-black
+          font-semibold transition-all duration-300
+          hover:opacity-90
+        "
+      >
+        Get Started
+      </button>
+    </SignUpButton>
+  </SignedOut>
+</ClientOnly>
+
             </div>
           </div>
 

@@ -136,3 +136,51 @@
 .animate-slide-in {
   animation: slide-in 0.25s ease-out forwards;
 }
+
+@keyframes beam {
+  0% {
+    opacity: 0.3;
+    transform: translateX(-50%) translateY(-20%);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateX(-50%) translateY(20%);
+  }
+}
+
+@keyframes beam-slow {
+  0% {
+    opacity: 0.2;
+    transform: translateX(-50%) translateY(-30%);
+  }
+  100% {
+    opacity: 0.4;
+    transform: translateX(-50%) translateY(30%);
+  }
+}
+
+@keyframes beam-fast {
+  0% {
+    opacity: 0.15;
+    transform: translateX(-50%) translateY(-40%);
+  }
+  100% {
+    opacity: 0.35;
+    transform: translateX(-50%) translateY(40%);
+  }
+}
+
+.animate-beam {
+  animation: beam 4s ease-in-out infinite;
+}
+
+.animate-beam-slow {
+  animation: beam-slow 8s linear infinite;
+}
+
+.animate-beam-fast {
+  animation: beam-fast 3s linear infinite;
+}

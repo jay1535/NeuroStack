@@ -1,15 +1,17 @@
-import AppHeader from '@/components/AppHeader'
-import React from 'react'
+import React from "react";
+import AppHeader from "@/components/AppHeader";
+import Hero from "@/components/Hero";
 
-const page = () => {
+export default function Page() {
   return (
-    <>
-    <AppHeader/>
-    <div className='flex items-center justify-center'>
-      Dashboard
-    </div>
-    </>
-  )
-}
+    <main className="min-h-screen bg-white dark:bg-black">
+      {/* Header */}
+      <AppHeader />
 
-export default page
+      {/* Main content */}
+      <section className="pt-17">
+        <Hero />
+      </section>
+    </main>
+  );
+}
