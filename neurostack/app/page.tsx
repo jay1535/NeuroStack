@@ -13,6 +13,7 @@ import {
 import { motion } from "framer-motion";
 import AppHeader from "@/components/AppHeader";
 import ClientOnly from "./ClientOnly";
+import { Button } from "@/components/ui/button";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -80,38 +81,64 @@ export default function Home() {
           {/* ================= CTA BUTTONS ================= */}
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <div className="w-full sm:w-auto">
-              <SignedIn>
-                <button
-                  onClick={() => router.push("/dashboard")}
-                  className="
-                    w-full sm:w-auto
-                    px-6 sm:px-10 py-3 rounded-xl
-                    bg-black text-white
-                    dark:bg-white dark:text-black
-                    font-semibold
-                    transition-all duration-300
-                    hover:opacity-90
-                  "
-                >
-                  Get Started
-                </button>
-              </SignedIn>
+           
+  <SignedIn>
+  <Button
+  onClick={() => router.push("/dashboard")}
+  className="
+    relative
+    mx-auto
+    w-[80%] sm:w-auto
+    px-6 sm:px-12
+    py-3
+    rounded-xl
+
+    bg-black text-white
+    dark:bg-white dark:text-black
+    font-semibold tracking-wide
+    h-12
+
+    transition-all duration-300 ease-out
+    hover:scale-[1.03]
+    active:scale-[0.96]
+
+    shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+    dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
+  "
+>
+  Go to Dashboard
+</Button>
+
+
+  </SignedIn>
+
 
               <SignedOut>
                 <SignUpButton mode="modal">
-                  <button
+                  <Button
                     className="
-                      w-full sm:w-auto
-                      px-6 sm:px-10 py-3 rounded-xl
-                      bg-black text-white
-                      dark:bg-white dark:text-black
-                      font-semibold
-                      transition-all duration-300
-                      hover:opacity-90
+                      relative
+    mx-auto
+    w-[80%] sm:w-auto
+    px-6 sm:px-12
+    h-12
+    py-3
+    rounded-xl
+
+    bg-black text-white
+    dark:bg-white dark:text-black
+    font-semibold tracking-wide
+
+    transition-all duration-300 ease-out
+    hover:scale-[1.03]
+    active:scale-[0.96]
+
+    shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+    dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
                     "
                   >
                     Get Started
-                  </button>
+                  </Button>
                 </SignUpButton>
               </SignedOut>
             </div>
@@ -253,6 +280,7 @@ export default function Home() {
 
       {/* ================= CTA ================= */}
       <section className="py-36 px-6 bg-neutral-100 dark:bg-neutral-950 min-h-screen">
+        <ClientOnly>
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -283,50 +311,77 @@ export default function Home() {
             Turn ideas into beautiful, production-ready UI/UX in minutes.
           </p>
 
-          <div className="mt-12 flex justify-center">
-            <div className="w-full sm:w-auto">
-             <ClientOnly>
-  <SignedIn>
-    <button
-      onClick={() => router.push("/dashboard")}
-      className="
-        w-full sm:w-auto
-        px-6 sm:px-10 py-3 rounded-xl
-        bg-black text-white
-        dark:bg-white dark:text-black
-        font-semibold transition-all duration-300
-        hover:opacity-90
-      "
-    >
-      Get Started
-    </button>
-  </SignedIn>
+          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+  <div className="w-full sm:w-auto">
+   
+      <SignedIn>
+       <Button
+  onClick={() => router.push("/dashboard")}
+  className="
+    relative
+    mx-auto
+    w-[80%] sm:w-auto
+    h-12
+    px-6 sm:px-12
+    py-3
+    rounded-xl
 
-  <SignedOut>
-    <SignUpButton mode="modal">
-      <button
-        className="
-          w-full sm:w-auto
-          px-6 sm:px-10 py-3 rounded-xl
-          bg-black text-white
-          dark:bg-white dark:text-black
-          font-semibold transition-all duration-300
-          hover:opacity-90
-        "
-      >
-        Get Started
-      </button>
-    </SignUpButton>
-  </SignedOut>
-</ClientOnly>
+    bg-black text-white
+    dark:bg-white dark:text-black
+    font-semibold tracking-wide
 
-            </div>
-          </div>
+    transition-all duration-300 ease-out
+    hover:scale-[1.03]
+    active:scale-[0.96]
+
+    shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+    dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
+  "
+>
+Try NeuroStack
+</Button>
+
+
+      </SignedIn>
+
+      <SignedOut>
+        <SignUpButton mode="modal">
+          <Button
+            className="
+              relative
+    mx-auto
+    w-[80%] sm:w-auto
+    px-6 sm:px-12
+    py-3
+    rounded-xl
+    h-12
+
+    bg-black text-white
+    dark:bg-white dark:text-black
+    font-semibold tracking-wide
+
+    transition-all duration-300 ease-out
+    hover:scale-[1.03]
+    active:scale-[0.96]
+
+    shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+    dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
+            "
+          >
+            Get Started
+          </Button>
+        </SignUpButton>
+      </SignedOut>
+    
+  </div>
+</div>
+
 
           <p className="mt-6 text-xs text-gray-500">
             No credit card required • Free to get started
           </p>
         </motion.div>
+        </ClientOnly>
       </section>
 
       {/* ================= FOOTER ================= */}
