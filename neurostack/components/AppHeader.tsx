@@ -13,6 +13,7 @@ import {
   Tag,
   SunMoon,
   LogIn,
+  Phone,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggleButton } from "./ThemeToggle";
@@ -71,13 +72,14 @@ export default function AppHeader(): JSX.Element {
           </div>
 
           {/* NAV (stable element, condition inside) */}
-          <nav className="hidden md:flex justify-center items-center gap-10">
+          <nav className="hidden md:flex justify-between items-center gap-5">
             {mounted && (
               <SignedIn>
                 <>
                   <NavLink href="/" label="Home"  />
                   <NavLink href="/dashboard" label="Dashboard" />
                   <NavLink href="/product/pricing" label="Pricing" />
+                  <NavLink href="/company/contact" label="Contact" />
                 </>
               </SignedIn>
             )}
@@ -173,6 +175,7 @@ export default function AppHeader(): JSX.Element {
                   <SidebarButton href="/" icon={<Home size={18} />} label="Home" onClick={() => setMenuOpen(false)} />
                   <SidebarButton href="/dashboard" icon={<LayoutDashboard size={18} />} label="Dashboard" onClick={() => setMenuOpen(false)} />
                   <SidebarButton href="/product/pricing" icon={<Tag size={18} />} label="Pricing" onClick={() => setMenuOpen(false)} />
+                  <SidebarButton href="/company/contact" icon={<Phone size={18} />} label="Contact" onClick={() => setMenuOpen(false)} />
                 </nav>
 
                 {/* THEME CARD */}
