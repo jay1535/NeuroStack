@@ -114,7 +114,7 @@ export default function Home() {
 
 
               <SignedOut>
-                <SignUpButton mode="modal">
+                
                   <Button
                     className="
                       relative
@@ -136,10 +136,11 @@ export default function Home() {
     shadow-[0_8px_24px_rgba(0,0,0,0.25)]
     dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
                     "
+                    onClick={() => router.push("/sign-up")}
                   >
                     Get Started
                   </Button>
-                </SignUpButton>
+                
               </SignedOut>
             </div>
           </div>

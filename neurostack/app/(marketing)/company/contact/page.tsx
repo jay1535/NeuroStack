@@ -33,7 +33,7 @@ const ContactPage = () => {
 
     toast.promise(request, {
       loading: "Sending message...",
-      success: "Message sent successfully 🚀",
+      success: "Thank You for contacting us💓",
       error: "Failed to send message ❌",
     });
 
