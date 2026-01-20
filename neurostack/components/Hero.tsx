@@ -13,12 +13,13 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-import { Laptop, LoaderCircle, Send, TabletSmartphone, Upload } from "lucide-react";
+import { Laptop, LoaderCircle, Send, TabletSmartphone } from "lucide-react";
 import { suggestions } from "@/data/constant";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { randomUUID } from "crypto";
-import LogoRingLoader from "./LogoRingLoader";
+import toast from "react-hot-toast";
+
 
 const Hero = () => {
   const router = useRouter();
@@ -26,21 +27,37 @@ const Hero = () => {
   const [device, setDevice] = useState<string>("website");
 const [loading, setLoading] = useState(false);
 
-  const onCreateProject=async ()=>{
+const onCreateProject = async () => {
+  if (!userInput) return;
 
-     if(!userInput){
-      return ;
-     }
-setLoading(true);
+  setLoading(true);
+
+  // Show loading toast
+  const toastId = toast.loading("Generating Playground... 🚀");
+
+  try {
     const projectId = crypto.randomUUID();
-    const result = await axios.post('/api/project',{
-      userInput:userInput,
+
+    await axios.post("/api/project", {
+      userInput: userInput,
       device: device,
-      projectId : projectId, 
-    })
-    console.log(result.data);
+      projectId: projectId,
+    });
+    router.push("/project/" + projectId);
+    toast.success("Playground created successfully ✨", {
+      id: toastId,
+    });
+  } catch (error) {
+    console.error(error);
+
+    toast.error("Failed to generate screen ❌", {
+      id: toastId,
+    });
+  } finally {
     setLoading(false);
   }
+};
+
   return (
     <section className="relative w-full min-h-[75vh] flex items-center justify-center overflow-hidden">
       {/* Ambient glow */}
