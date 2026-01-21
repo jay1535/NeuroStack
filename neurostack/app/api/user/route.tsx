@@ -1,41 +1,54 @@
+import { NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { db } from "@/config/db";
 import { usersTable } from "@/config/schema";
-import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
 
 export async function POST() {
-  const user = await currentUser();
+  try {
+    const user = await currentUser();
 
-  // 1️⃣ Auth guard
-  if (!user || !user.primaryEmailAddress?.emailAddress) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
+    // ✅ User not logged in → do nothing
+    if (!user) {
+      return NextResponse.json(null, { status: 200 });
+    }
 
-  const email = user.primaryEmailAddress.emailAddress;
+    const email = user.primaryEmailAddress?.emailAddress;
+    const name = user.fullName ?? "User";
 
-  // 2️⃣ Check if user exists
-  const existingUsers = await db
-    .select()
-    .from(usersTable)
-    .where(eq(usersTable.email, email));
+    if (!email) {
+      return NextResponse.json(
+        { error: "Email not found" },
+        { status: 400 }
+      );
+    }
 
-  // 3️⃣ Insert if not exists
-  if (existingUsers.length === 0) {
-    const result = await db
+    // ✅ Check if user already exists
+    const existing = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+      .limit(1);
+
+    if (existing.length > 0) {
+      return NextResponse.json(existing[0]);
+    }
+
+    // ✅ Create only once
+    const [created] = await db
       .insert(usersTable)
       .values({
-        name: user.fullName ?? "",
-        email: email,
+        name,
+        email,
       })
       .returning();
 
-    return NextResponse.json(result[0]);
+    return NextResponse.json(created);
+  } catch (err) {
+    console.error("USER CREATE ERROR:", err);
+    return NextResponse.json(
+      { error: "Failed to create user" },
+      { status: 500 }
+    );
   }
-
-  // 4️⃣ Return existing user
-  return NextResponse.json(existingUsers[0]);
 }

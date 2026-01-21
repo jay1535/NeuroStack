@@ -1,130 +1,185 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Palette, Sparkle, ChevronDown, Camera, Share2, Edit, PencilLine, Pickaxe } from "lucide-react";
+import {
+  Palette,
+  Sparkle,
+  ChevronDown,
+  Camera,
+  Share2,
+  Edit,
+  PencilLine,
+  MonitorCog,
+} from "lucide-react";
 
 import { ThemeToggleButton } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import {
-  THEMES,
-  THEME_NAME_LIST,
-  ThemeKey,
-} from "@/data/themes";
+import axios from "axios";
+import toast from "react-hot-toast";
 
+import { THEMES, THEME_NAME_LIST, ThemeKey } from "@/data/themes";
+import { ProjectType } from "@/type/types";
 
-export default function Settings() {
+type Props = {
+  project: ProjectType;
+};
+
+export default function Settings({ project }: Props) {
+  /* ================= THEME ================= */
   const [themeOpen, setThemeOpen] = useState(false);
   const [selectedTheme, setSelectedTheme] =
     useState<ThemeKey>("AURORA_INK");
 
   const activeTheme = THEMES[selectedTheme];
 
-  const [projectName, setProjectName] = useState('');
-  const [userNewScreenInput, setUserNewScreenInput] = useState<string>('');
+  /* ================= PROJECT NAME ================= */
+  const [projectName, setProjectName] = useState("");
+const [savedProjectName, setSavedProjectName] = useState("");
+const [saving, setSaving] = useState(false);
+
+
+  /* ================= IDEA ================= */
+  const [userNewScreenInput, setUserNewScreenInput] = useState("");
+
+  /* ================= INIT FROM DB ================= */
+  useEffect(() => {
+    if (project?.projectName) {
+      setProjectName(project.projectName);
+      setSavedProjectName(project.projectName);
+    }
+  }, [project]);
+  
+
+  /* ================= SAVE / OVERWRITE ================= */
+  const saveProjectName = async () => {
+    if (!projectName.trim()) {
+      toast.error("Project name cannot be empty");
+      return;
+    }
+  
+    // ✅ compare with LAST SAVED value, not props
+    if (projectName === savedProjectName) return;
+  
+    try {
+      setSaving(true);
+  
+      await axios.put("/api/project", {
+        projectId: project.projectId,
+        projectName: projectName.trim(),
+      });
+  
+      // ✅ update saved reference
+      setSavedProjectName(projectName.trim());
+  
+      toast.success("Project name saved");
+    } catch {
+      toast.error("Failed to save project name");
+      setProjectName(savedProjectName); // rollback
+    } finally {
+      setSaving(false);
+    }
+  };
+  
 
   return (
-    <div
-      className="
-        h-full w-full flex flex-col
-        border-r border-black/10 dark:border-white/15
-        bg-[#f5f5f4] dark:bg-[#1c1917]
-      "
-    >
+    <div className="h-full w-full flex flex-col border-r border-black/10 dark:border-white/15 bg-[#f5f5f4] dark:bg-[#1c1917]">
+
       {/* ================= HEADER ================= */}
-      <div className="px-3 pt-3 pb-3">
-        <div className="flex items-center justify-between gap-3 select-none">
-          {/* BRAND */}
+      <div className="px-6 pt-6 pb-6">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Image
               src="/black-logo.png"
               alt="NeuroStack"
-              width={28}
-              height={28}
+              width={34}
+              height={34}
               className="block dark:hidden rounded-lg"
-              priority
             />
             <Image
               src="/logo.png"
               alt="NeuroStack"
-              width={28}
-              height={28}
+              width={34}
+              height={34}
               className="hidden dark:block rounded-lg"
-              priority
             />
-
-            <span className="text-lg sm:text-xl font-bold tracking-tight">
-              Neuro
-              <span className="text-purple-600 dark:text-rose-500">
-                Stack
-              </span>
+            <span className="text-xl font-bold">
+              Neuro<span className="text-purple-600">Stack</span>
             </span>
           </div>
 
-          {/* THEME TOGGLE (light / dark) */}
           <ThemeToggleButton />
         </div>
       </div>
 
-      {/* ================= DIVIDER ================= */}
-      <div className="h-px w-full bg-black/10 dark:bg-white/10" />
-
       {/* ================= CONTENT ================= */}
-      <div className="flex-1 px-4 py-4 overflow-y-auto text-sm text-gray-700 dark:text-gray-300">
-        {/* Project Name */}
-        <div className="mb-5">
+      <div className="flex-1 px-4 py-4 overflow-y-auto text-sm">
+
+        {/* ================= PROJECT NAME ================= */}
+        <div className="mb-8">
           <h2 className="text-sm flex gap-2 font-semibold mb-3">
-           Project Name
+            <PencilLine size={16} /> Project Name
           </h2>
-          <Input placeholder="Project Name"
-          onChange={(event)=>{
-            setProjectName(event?.target.value)
-          }} />
+
+          <Input
+            placeholder="Project Name"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            onBlur={saveProjectName}   // ✅ auto-save on finish
+            disabled={saving}
+          />
+
+<Button
+  size="sm"
+  className="mt-2 w-full"
+  onClick={saveProjectName}
+  disabled={saving || projectName === savedProjectName}
+>
+  {saving ? "Saving…" : "Save Project Name"}
+</Button>
+
         </div>
 
-        {/* Edit Idea */}
-        <div className="mb-6">
+        {/* ================= EDIT IDEA ================= */}
+        <div className="mb-8">
           <h2 className="text-sm font-semibold flex gap-2 mb-3">
-            Edit your Idea
+            <Edit size={16} /> Edit your Idea
           </h2>
+
           <Textarea
             placeholder="Enter prompt to edit your idea"
-            className="min-h-20"
-            onChange={(event)=>{
-                setUserNewScreenInput(event.target.value)
-            }}
+            value={userNewScreenInput}
+            onChange={(e) => setUserNewScreenInput(e.target.value)}
           />
-          <Button
-            size="sm"
-            className="mt-2 w-full flex items-center gap-2"
-          >
+
+          <Button size="sm" className="mt-2 w-full flex gap-2">
             <Sparkle size={16} />
             Generate with AI
           </Button>
         </div>
 
         {/* ================= THEME DROPDOWN ================= */}
-        <div className="mb-4 relative">
-          <h2 className="text-sm font-semibold  flex items-center mb-3 gap-2">
+        <div className="mb-6 relative">
+          <h2 className="text-sm font-semibold flex items-center mb-3 gap-2">
             <Palette size={16} />
             Themes
           </h2>
 
-          {/* Dropdown Trigger */}
+          {/* ================= Dropdown Trigger ================= */}
           <button
             onClick={() => setThemeOpen((v) => !v)}
             className="
-              w-full flex items-center justify-between
-              px-3 py-2
-              rounded-md
-              bg-white/60 dark:bg-black/30
-              border border-black/10 dark:border-white/10
-              hover:bg-black/5 dark:hover:bg-white/10
-              transition
-            "
+      w-full flex items-center justify-between
+      px-3 py-2
+      rounded-md
+      bg-white/60 dark:bg-black/30
+      border border-black/10 dark:border-white/10
+      hover:bg-black/5 dark:hover:bg-white/10
+      transition
+    "
           >
             <span className="text-sm font-medium">
               {selectedTheme
@@ -151,27 +206,26 @@ export default function Settings() {
 
               <ChevronDown
                 size={16}
-                className={`transition ${
-                  themeOpen ? "rotate-180" : ""
-                }`}
+                className={`transition ${themeOpen ? "rotate-180" : ""}`}
               />
             </div>
           </button>
 
-          {/* Dropdown Menu */}
+          {/* ================= Dropdown Menu ================= */}
           {themeOpen && (
             <div
               className="
-                absolute z-50 mt-2 w-full
-                rounded-md
-                bg-white dark:bg-[#0d0d12]
-                border border-black/10 dark:border-white/15
-                shadow-lg
-                max-h-56 overflow-auto
-              "
+        absolute z-50 mt-2 w-full
+        rounded-md
+        bg-white dark:bg-[#0d0d12]
+        border border-black/10 dark:border-white/15
+        shadow-lg
+        max-h-56 overflow-auto
+      "
             >
               {THEME_NAME_LIST.map((themeKey) => {
                 const theme = THEMES[themeKey];
+                const isActive = selectedTheme === themeKey;
 
                 return (
                   <button
@@ -181,22 +235,39 @@ export default function Settings() {
                       setThemeOpen(false);
                       console.log("Selected theme:", themeKey);
                     }}
-                    className="
-                      w-full flex items-center justify-between
-                      px-3 py-2
-                      text-sm
-                      hover:bg-black/5 dark:hover:bg-white/10
-                      transition
-                    "
+                    className={`
+              w-full text-left
+              px-3 py-2.5
+              transition
+              ${isActive
+                        ? "bg-purple-50 dark:bg-rose-500/10 border-l-2 border-purple-600 dark:border-rose-500"
+                        : "hover:bg-black/5 dark:hover:bg-white/10"
+                      }
+            `}
                   >
-                    <span>
-                      {themeKey
-                        .replace(/_/g, " ")
-                        .toLowerCase()
-                        .replace(/\b\w/g, (c) => c.toUpperCase())}
-                    </span>
+                    {/* Theme Name */}
+                    <div className="flex items-center justify-between mb-1">
+                      <span
+                        className={`text-sm font-medium ${isActive
+                            ? "text-purple-700 dark:text-rose-400"
+                            : ""
+                          }`}
+                      >
+                        {themeKey
+                          .replace(/_/g, " ")
+                          .toLowerCase()
+                          .replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </span>
 
-                    <div className="flex gap-1">
+                      {isActive && (
+                        <span className="text-xs font-semibold text-purple-600 dark:text-rose-400">
+                          Active
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Theme Colors */}
+                    <div className="flex gap-1.5">
                       {[
                         theme.primary,
                         theme.secondary,
@@ -205,7 +276,11 @@ export default function Settings() {
                       ].map((color, i) => (
                         <span
                           key={i}
-                          className="h-3 w-3 rounded-full border border-black/10 dark:border-white/20"
+                          className="
+                    h-3 w-3
+                    rounded-full
+                    border border-black/10 dark:border-white/20
+                  "
                           style={{ backgroundColor: color }}
                         />
                       ))}
@@ -217,49 +292,21 @@ export default function Settings() {
           )}
         </div>
 
-{/* ================= Extras ================= */}
-<div className="mb-6">
-  <h2 className="text-sm flex gap-2 font-semibold mb-3">
-    Extras
-  </h2>
+        {/* ================= EXTRAS ================= */}
+        <div className="mt-3">
+          <h2 className="text-sm flex gap-2 font-semibold mb-3">
+            <MonitorCog size={16} /> Options
+          </h2>
 
-  <div
-    className="
-      flex flex-col sm:flex-row
-      gap-2 sm:gap-3
-    "
-  >
-    <Button
-      size="sm"
-      variant="outline"
-      className="
-        flex items-center justify-center gap-2
-        w-full sm:w-auto
-      "
-    >
-      <Camera size={16} />
-      Screenshot
-    </Button>
-
-    <Button
-      size="sm"
-      variant="outline"
-      className="
-        flex items-center justify-center gap-2
-        w-full sm:w-auto
-      "
-    >
-      <Share2 size={16} />
-      Share 
-    </Button>
-  </div>
-</div>
-
-
-
-        
-
-
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline">
+              <Camera size={16} /> Screenshot
+            </Button>
+            <Button size="sm" variant="outline">
+              <Share2 size={16} /> Share
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
