@@ -40,9 +40,9 @@ export default function StartupLoader(): JSX.Element {
           }}
           className="relative mb-10 sm:mb-14"
         >
-          {/* Dark rose aura */}
+          {/* Dark orange aura */}
           <motion.div
-            className="absolute inset-0 rounded-full blur-3xl bg-rose-700/14"
+            className="absolute inset-0 rounded-full blur-3xl bg-orange-700/14"
             animate={{ opacity: [0.08, 0.18, 0.12] }}
             transition={{
               duration: 3,
@@ -97,7 +97,7 @@ export default function StartupLoader(): JSX.Element {
 
             {/* Stack — jumping from right */}
             <motion.span
-              className="dark:text-rose-500 text-purple-700"
+              className="dark:text-orange-500 text-purple-700"
               initial={{ opacity: 0, x: 180, y: 0 }}
               animate={{
                 opacity: 1,
