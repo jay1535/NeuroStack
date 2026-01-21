@@ -27,13 +27,13 @@ export default function PricingPage() {
         <div
           className="
             pl-6 pr-5 py-2
-            dark:bg-rose-500 bg-purple-700
+            dark:bg-orange-500 bg-purple-700
             text-white
             font-semibold text-sm
             rounded-r-full
             shadow-lg
             transition-all duration-300
-            hover:dark:dark:bg-rose-600 bg-purple-700 hover:bg-purple-900
+            hover:dark:dark:bg-orange-600 bg-purple-700 hover:bg-purple-900
             hover:pl-8
           "
         >
@@ -50,7 +50,7 @@ export default function PricingPage() {
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold dark:text-rose-500 text-black">
+          <h1 className="text-4xl md:text-5xl font-extrabold dark:text-orange-500 text-black">
             Simple, Transparent Pricing
           </h1>
 
@@ -75,10 +75,10 @@ export default function PricingPage() {
               bg-black/5 border border-black/10
               dark:bg-white/5 dark:border-white/10
               transition-all duration-300
-              hover:border-rose-600/40
+              hover:border-orange-600/40
             "
           >
-            <h3 className="text-lg font-semibold dark:text-rose-500 text-black">Free</h3>
+            <h3 className="text-lg font-semibold dark:text-orange-500 text-black">Free</h3>
 
             <p className="text-3xl font-extrabold mt-4">₹0</p>
 
@@ -118,7 +118,7 @@ export default function PricingPage() {
             transition={{ duration: 0.6 }}
             className="
               relative rounded-2xl p-8
-              bg-black/5 border border-rose-600/40
+              bg-black/5 border border-orange-600/40
               dark:bg-white/5
               scale-[1.03]
             "
@@ -127,13 +127,13 @@ export default function PricingPage() {
               className="
                 absolute -top-3 left-1/2 -translate-x-1/2
                 px-4 py-1 text-xs rounded-full
-                dark:bg-rose-600 bg-purple-700 text-white
+                dark:bg-orange-600 bg-purple-700 text-white
               "
             >
               MOST POPULAR
             </span>
 
-            <h3 className="text-lg font-semibold dark:text-rose-500 text-black">Pro</h3>
+            <h3 className="text-lg font-semibold dark:text-orange-500 text-black">Pro</h3>
 
             <p className="text-3xl font-extrabold mt-4">
               ₹99{" "}
@@ -159,9 +159,9 @@ export default function PricingPage() {
               className="
                 mt-8 w-full
                 px-6 py-3 rounded-xl
-                dark:bg-rose-600 bg-purple-700 text-white font-semibold
+                dark:bg-orange-600 bg-purple-700 text-white font-semibold
                 transition-all duration-300
-                hover:dark:bg-rose-700 hover:bg-purple-700
+                hover:dark:bg-orange-700 hover:bg-purple-700
                 hover:-translate-y-0.5
               "
             >
@@ -181,10 +181,10 @@ export default function PricingPage() {
               bg-black/5 border border-black/10
               dark:bg-white/5 dark:border-white/10
               transition-all duration-300
-              hover:border-rose-600/40
+              hover:border-orange-600/40
             "
           >
-            <h3 className="text-lg font-semibold dark:text-rose-500 text-black">
+            <h3 className="text-lg font-semibold dark:text-orange-500 text-black">
               Team / Enterprise
             </h3>
 
@@ -213,7 +213,7 @@ export default function PricingPage() {
                 transition-all duration-300
                 hover:bg-black/5
                 dark:hover:bg-white/5
-                hover:border-rose-600/60
+                hover:border-orange-600/60
               "
             >
               Contact Sales

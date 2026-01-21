@@ -42,7 +42,7 @@ export default function FooterDialog({
       {/* Trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="transition hover:text-rose-500"
+        className="transition hover:text-orange-500"
       >
         {title}
       </button>
@@ -59,7 +59,7 @@ export default function FooterDialog({
           "
         >
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-rose-500">
+            <DialogTitle className="text-xl font-bold text-orange-500">
               {title}
             </DialogTitle>
           </DialogHeader>
@@ -95,8 +95,8 @@ export default function FooterDialog({
               <Button
                 onClick={handleAccept}
                 className="
-                  bg-rose-600 text-white
-                  hover:bg-rose-700
+                  bg-orange-600 text-white
+                  hover:bg-orange-700
                 "
               >
                 Accept

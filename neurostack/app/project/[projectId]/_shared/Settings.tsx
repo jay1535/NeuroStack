@@ -107,7 +107,7 @@ const [saving, setSaving] = useState(false);
               className="hidden dark:block rounded-lg"
             />
             <span className="text-xl font-bold">
-              Neuro<span className="text-purple-600">Stack</span>
+              Neuro<span className="text-purple-600 dark:text-orange-600">Stack</span>
             </span>
           </div>
 
@@ -240,7 +240,7 @@ const [saving, setSaving] = useState(false);
               px-3 py-2.5
               transition
               ${isActive
-                        ? "bg-purple-50 dark:bg-rose-500/10 border-l-2 border-purple-600 dark:border-rose-500"
+                        ? "bg-purple-50 dark:bg-orange-500/10 border-l-2 border-purple-600 dark:border-orange-500"
                         : "hover:bg-black/5 dark:hover:bg-white/10"
                       }
             `}
@@ -249,7 +249,7 @@ const [saving, setSaving] = useState(false);
                     <div className="flex items-center justify-between mb-1">
                       <span
                         className={`text-sm font-medium ${isActive
-                            ? "text-purple-700 dark:text-rose-400"
+                            ? "text-purple-700 dark:text-orange-400"
                             : ""
                           }`}
                       >
@@ -260,7 +260,7 @@ const [saving, setSaving] = useState(false);
                       </span>
 
                       {isActive && (
-                        <span className="text-xs font-semibold text-purple-600 dark:text-rose-400">
+                        <span className="text-xs font-semibold text-purple-600 dark:text-orange-400">
                           Active
                         </span>
                       )}

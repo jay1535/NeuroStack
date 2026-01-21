@@ -39,7 +39,7 @@ export default function RoadmapPage() {
         <div className="
           pl-6 pr-5 py-2
           rounded-r-full
-          bg-purple-700 dark:bg-rose-500
+          bg-purple-700 dark:bg-orange-500
           text-white text-sm font-semibold
           shadow-lg
           transition-all duration-300
