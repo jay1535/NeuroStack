@@ -82,66 +82,58 @@ export default function Home() {
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <div className="w-full sm:w-auto">
            
+            <ClientOnly>
   <SignedIn>
-  <Button
-  onClick={() => router.push("/dashboard")}
-  className="
-    relative
-    mx-auto
-    w-[80%] sm:w-auto
-    px-6 sm:px-12
-    py-3
-    rounded-xl
-
-    bg-black text-white
-    dark:bg-white dark:text-black
-    font-semibold tracking-wide
-    h-12
-
-    transition-all duration-300 ease-out
-    hover:scale-[1.03]
-    active:scale-[0.96]
-
-    shadow-[0_8px_24px_rgba(0,0,0,0.25)]
-    dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
-  "
->
-  Go to Dashboard
-</Button>
-
-
+    <Button
+      onClick={() => router.push("/dashboard")}
+      className="
+        relative
+        mx-auto
+        w-[80%] sm:w-auto
+        px-6 sm:px-12
+        py-3
+        rounded-xl
+        bg-black text-white
+        dark:bg-white dark:text-black
+        font-semibold tracking-wide
+        h-12
+        transition-all duration-300 ease-out
+        hover:scale-[1.03]
+        active:scale-[0.96]
+        shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+        dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
+      "
+    >
+      Go to Dashboard
+    </Button>
   </SignedIn>
 
+  <SignedOut>
+    <Button
+      onClick={() => router.push("/sign-up")}
+      className="
+        relative
+        mx-auto
+        w-[80%] sm:w-auto
+        px-6 sm:px-12
+        py-3
+        rounded-xl
+        bg-black text-white
+        dark:bg-white dark:text-black
+        font-semibold tracking-wide
+        h-12
+        transition-all duration-300 ease-out
+        hover:scale-[1.03]
+        active:scale-[0.96]
+        shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+        dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
+      "
+    >
+      Get Started
+    </Button>
+  </SignedOut>
+</ClientOnly>
 
-              <SignedOut>
-                
-                  <Button
-                    className="
-                      relative
-    mx-auto
-    w-[80%] sm:w-auto
-    px-6 sm:px-12
-    h-12
-    py-3
-    rounded-xl
-
-    bg-black text-white
-    dark:bg-white dark:text-black
-    font-semibold tracking-wide
-
-    transition-all duration-300 ease-out
-    hover:scale-[1.03]
-    active:scale-[0.96]
-
-    shadow-[0_8px_24px_rgba(0,0,0,0.25)]
-    dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
-                    "
-                    onClick={() => router.push("/sign-up")}
-                  >
-                    Get Started
-                  </Button>
-                
-              </SignedOut>
             </div>
           </div>
 
