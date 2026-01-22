@@ -33,7 +33,7 @@ export default function AppLoaderWrapper({
       const timer = setTimeout(() => {
         setLoading(false);
         setShowStartup(false);
-      }, 3500);
+      }, 3600);
 
       return () => clearTimeout(timer);
     }

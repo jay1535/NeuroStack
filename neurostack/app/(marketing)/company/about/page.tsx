@@ -27,7 +27,7 @@ export default function AboutPage() {
           className="
             relative
             pl-6 pr-5 py-2
-            dark:bg-orange-500 bg-purple-700
+            dark:bg-orange-600 bg-purple-700
             text-white
             font-semibold text-sm
             rounded-r-full
@@ -51,7 +51,7 @@ export default function AboutPage() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl sm:text-5xl font-extrabold dark:text-orange-500 text-black">
+          <h1 className="text-4xl sm:text-5xl font-extrabold dark:text-orange-600 text-black">
             About NeuroStack
           </h1>
 
@@ -150,7 +150,7 @@ export default function AboutPage() {
                   transition
                 "
               >
-                <h3 className="text-xl font-semibold dark:text-orange-500 text-black">
+                <h3 className="text-xl font-semibold dark:text-orange-600 text-black">
                   {item.title}
                 </h3>
 
@@ -186,7 +186,7 @@ export default function AboutPage() {
                   transition
                 "
               >
-                <p className="dark:text-orange-500 text-black font-semibold">
+                <p className="dark:text-orange-600 text-black font-semibold">
                   {role}
                 </p>
 
@@ -219,7 +219,7 @@ export default function AboutPage() {
                   p-8
                 "
               >
-                <h3 className="text-lg font-semibold dark:text-orange-500 text-black">
+                <h3 className="text-lg font-semibold dark:text-orange-600 text-black">
                   {v.title}
                 </h3>
 

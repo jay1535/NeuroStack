@@ -39,7 +39,7 @@ export default function RoadmapPage() {
         <div className="
           pl-6 pr-5 py-2
           rounded-r-full
-          bg-purple-700 dark:bg-orange-500
+          bg-purple-700 dark:bg-orange-600
           text-white text-sm font-semibold
           shadow-lg
           transition-all duration-300
@@ -102,7 +102,7 @@ export default function RoadmapPage() {
                 bg-black/5 dark:bg-white/5
                 border border-black/10 dark:border-white/10
               ">
-                <div className="text-sm text-gray-500 mb-2">
+                <div className="text-sm text-gray-600 mb-2">
                   {item.phase} • {item.time}
                 </div>
                 <h3 className="text-xl font-semibold mb-3">

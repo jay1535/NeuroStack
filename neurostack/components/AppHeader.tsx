@@ -48,7 +48,7 @@ export default function AppHeader(): JSX.Element {
   return (
     <>
       {/* ================= HEADER ================= */}
-      <header className="fixed top-0 z-50 w-full backdrop-blur-xl bg-white/70 dark:bg-black/70 border-b border-black/10 dark:border-orange-500/15 shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
+      <header className="fixed top-0 z-50 w-full backdrop-blur-xl bg-white/70 dark:bg-black/70 border-b border-black/10 dark:border-orange-600/15 shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
         <div className="max-w-7xl mx-auto px-6 py-4 grid grid-cols-3 items-center">
 
           {/* LOGO */}
@@ -65,7 +65,7 @@ export default function AppHeader(): JSX.Element {
             )}
             <span className="text-2xl font-bold tracking-tight">
               Neuro
-              <span className="text-purple-600 dark:text-orange-500">
+              <span className="text-purple-600 dark:text-orange-600">
                 Stack
               </span>
             </span>
@@ -120,7 +120,7 @@ export default function AppHeader(): JSX.Element {
 
                 <SignedOut>
                   <SignInButton mode="modal">
-                    <Button className=" border rounded-lg p-2 bg-purple-700 hover:bg-purple-00  text-white dark:bg-orange-500 hover:dark:bg-orange-700 transition">
+                    <Button className=" border rounded-lg p-2 bg-purple-700 hover:bg-purple-00  text-white dark:bg-orange-600 hover:dark:bg-orange-700 transition">
                      <LogIn/> Try Now
                     </Button>
                   </SignInButton>
@@ -152,13 +152,13 @@ export default function AppHeader(): JSX.Element {
                 onClick={() => setMenuOpen(false)}
               />
 
-              <aside className="absolute right-0 top-0 h-full w-[80%] max-w-sm backdrop-blur-xl bg-white/90 dark:bg-black/90 border-l border-black/10 dark:border-orange-500/20 shadow-2xl flex flex-col">
+              <aside className="absolute right-0 top-0 h-full w-[80%] max-w-sm backdrop-blur-xl bg-white/90 dark:bg-black/90 border-l border-black/10 dark:border-orange-600/20 shadow-2xl flex flex-col">
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b">
                   <span className="text-lg font-semibold">
                     Neuro
-                    <span className="text-purple-600 dark:text-orange-500">
+                    <span className="text-purple-600 dark:text-orange-600">
                       Stack
                     </span>
                   </span>
@@ -199,7 +199,7 @@ export default function AppHeader(): JSX.Element {
     className="
       pointer-events-none absolute inset-0 rounded-2xl
       opacity-0 group-hover:opacity-100
-      transition-opacity duration-500
+      transition-opacity duration-600
       bg-[radial-gradient(circle_at_20%_20%,rgba(168,85,247,0.15),transparent_50%)]
       dark:bg-[radial-gradient(circle_at_20%_20%,rgba(236,72,153,0.15),transparent_50%)]
     "
@@ -212,8 +212,8 @@ export default function AppHeader(): JSX.Element {
       className="
         relative h-10 w-10 rounded-full
         flex items-center justify-center
-        bg-linear-to-br from-purple-500/20 to-orange-500/20
-        ring-1 ring-purple-500/30 dark:ring-orange-500/30
+        bg-linear-to-br from-purple-600/20 to-orange-600/20
+        ring-1 ring-purple-600/30 dark:ring-orange-600/30
       "
     >
       <SunMoon
@@ -238,7 +238,7 @@ export default function AppHeader(): JSX.Element {
     <div
       className="
         rounded-full p-0.5
-        bg-linear-to-r from-purple-500 to-orange-500
+        bg-linear-to-r from-purple-600 to-orange-600
         shadow-lg
       "
     >
@@ -285,8 +285,8 @@ function NavLink({ href, label }: { href: string; label: string }) {
 
       {active && (
         <>
-          <span className="absolute left-1/2 bottom-0 w-[45%] h-0.5 -translate-x-1/2 bg-purple-500 dark:bg-orange-500 rounded-full" />
-          <span className="absolute left-1/2 bottom-1 w-[90%] h-4.5 -translate-x-1/2 bg-purple-500/30 dark:bg-orange-500/30 blur-[14px]" />
+          <span className="absolute left-1/2 bottom-0 w-[45%] h-0.5 -translate-x-1/2 bg-purple-600 dark:bg-orange-600 rounded-full" />
+          <span className="absolute left-1/2 bottom-1 w-[90%] h-4.5 -translate-x-1/2 bg-purple-600/30 dark:bg-orange-600/30 blur-[14px]" />
         </>
       )}
     </Link>
@@ -297,7 +297,7 @@ function IconButton({ children, onClick }: { children: React.ReactNode; onClick:
   return (
     <button
       onClick={onClick}
-      className="h-9 w-9 rounded-full border flex items-center justify-center hover:scale-105 hover:bg-purple-600 hover:text-white dark:hover:bg-orange-500 transition"
+      className="h-9 w-9 rounded-full border flex items-center justify-center hover:scale-105 hover:bg-purple-600 hover:text-white dark:hover:bg-orange-600 transition"
     >
       {children}
     </button>
@@ -314,8 +314,8 @@ function SidebarButton({ href, icon, label, onClick }: any) {
       onClick={onClick}
       className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition ${
         active
-          ? "bg-purple-600/15 text-purple-700 dark:bg-orange-500/20 dark:text-orange-400"
-          : "hover:bg-purple-600/10 dark:hover:bg-orange-500/10"
+          ? "bg-purple-600/15 text-purple-700 dark:bg-orange-600/20 dark:text-orange-400"
+          : "hover:bg-purple-600/10 dark:hover:bg-orange-600/10"
       }`}
     >
       {icon}

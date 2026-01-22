@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -9,41 +9,34 @@ import PlaygroundHero from "./_shared/PlaygroundHero";
 import ZoomControls from "./_shared/ZoomControl";
 import CanvasHeader from "./_shared/CanvasHeader";
 import Settings from "./_shared/Settings";
+import TopLoader from "./_shared/TopLoader";
 
 import { ProjectType, ScreenConfig } from "@/type/types";
 
 export default function PlaygroundPage() {
   const { projectId } = useParams<{ projectId: string }>();
 
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.5); // ✅ 50%
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const [projectDetail, setProjectDetail] =
-    useState<ProjectType | null>(null);
-  const [screenConfig, setScreenConfig] =
-    useState<ScreenConfig[]>([]);
+  const [projectDetail, setProjectDetail] = useState<ProjectType | null>(null);
+  const [screenConfig, setScreenConfig] = useState<ScreenConfig[]>([]);
 
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Loading project…");
 
-  // 🔒 prevents multiple Gemini calls
-  const hasGeneratedRef = useRef(false);
+  const configGenerated = useRef(false);
+  const uiGenerated = useRef(false);
 
-  /* ================= FETCH PROJECT (READ ONLY) ================= */
+  /* ================= FETCH ================= */
   const fetchProject = async () => {
     try {
       setLoading(true);
+      setLoadingMessage("Loading project…");
 
-      const res = await axios.get(
-        `/api/project?projectId=${projectId}`
-      );
-
-      const project: ProjectType = res.data?.projectDetail;
-      const screens: ScreenConfig[] =
-        res.data?.screenConfig ?? [];
-
-      setProjectDetail(project);
-      setScreenConfig(screens);
+      const res = await axios.get(`/api/project?projectId=${projectId}`);
+      setProjectDetail(res.data.projectDetail);
+      setScreenConfig(res.data.screenConfig ?? []);
     } catch {
       toast.error("Failed to load project");
     } finally {
@@ -51,91 +44,99 @@ export default function PlaygroundPage() {
     }
   };
 
-  /* ================= INIT ================= */
   useEffect(() => {
-    if (!projectId) return;
-    fetchProject();
+    if (projectId) fetchProject();
   }, [projectId]);
 
-  /* ================= GEMINI (ONCE ONLY) ================= */
+  /* ================= PIPELINE ================= */
   useEffect(() => {
-    if (
-      !projectDetail ||
-      screenConfig.length > 0 ||
-      generating ||
-      hasGeneratedRef.current
-    ) {
+    if (!projectDetail || loading) return;
+
+    if (screenConfig.length === 0 && !configGenerated.current) {
+      configGenerated.current = true;
+      generateConfig();
       return;
     }
 
-    hasGeneratedRef.current = true;
-    generateScreenConfig();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectDetail, screenConfig]);
+    if (screenConfig.some(s => !s.code) && !uiGenerated.current) {
+      uiGenerated.current = true;
+      generateUI();
+    }
+  }, [projectDetail, screenConfig, loading]);
 
-  /* ================= AI ================= */
-  const generateScreenConfig = async () => {
-    if (!projectDetail) return;
-
+  /* ================= GENERATORS ================= */
+  const generateConfig = async () => {
     try {
-      setGenerating(true);
+      setLoading(true);
+      setLoadingMessage("Generating screen structure…");
 
       await axios.post("/api/generate-config", {
         projectId,
-        deviceType: projectDetail.device,
-        userInput: projectDetail.userInput,
+        deviceType: projectDetail?.device,
+        userInput: projectDetail?.userInput,
       });
 
-      await fetchProject(); // fetch AFTER DB is updated
-      toast.success("Layout generated");
+      await fetchProject();
     } catch {
-      toast.error("Gemini generation failed");
-      hasGeneratedRef.current = false; // allow retry
+      configGenerated.current = false;
     } finally {
-      setGenerating(false);
+      setLoading(false);
     }
   };
 
-  /* ================= LOADING SCREEN ================= */
-  if (loading) {
-    return (
-      <div className="h-screen w-screen flex items-center justify-center bg-white dark:bg-[#0d0d12]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 rounded-full border-4 border-purple-500 border-t-transparent animate-spin" />
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Loading project…
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const generateUI = async () => {
+    try {
+      setLoading(true);
+      setLoadingMessage("Generating screen UI…");
 
-  /* ================= UI ================= */
+      for (const screen of screenConfig) {
+        if (screen.code) continue;
+
+        await axios.post("/api/generate-screen", {
+          projectId,
+          deviceType: projectDetail?.device,
+          screenId: screen.screenId,
+          screenName: screen.screenName,
+          purpose: screen.purpose,
+          screenDescription: screen.screenDescription,
+        });
+      }
+
+      await fetchProject();
+      toast.success("All screens generated");
+    } catch {
+      uiGenerated.current = false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <CanvasHeader
         onSave={() => toast.success("Saved")}
-        onOpenSettings={() => setSettingsOpen((v) => !v)}
+        onOpenSettings={() => setSettingsOpen(v => !v)}
         settingsOpen={settingsOpen}
-        generating={generating}
       />
 
+      <TopLoader visible={loading} message={loadingMessage} />
+
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-64
-        bg-white dark:bg-[#0d0d12]
-        transition-transform duration-300
-        ${settingsOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white dark:bg-[#0d0d12]
+        transition-transform duration-300 ${settingsOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {projectDetail && <Settings project={projectDetail} />}
       </aside>
 
-      <PlaygroundHero zoom={zoom} />
+      <PlaygroundHero
+  zoom={zoom}
+  screens={screenConfig}
+  projectDetail={projectDetail}
+  settingsOpen={settingsOpen}
+   // ✅ now valid
+/>
 
-      <ZoomControls
-        zoom={zoom}
-        setZoom={setZoom}
-        settingsOpen={settingsOpen}
-      />
+      <ZoomControls zoom={zoom} setZoom={setZoom} settingsOpen={settingsOpen} />
     </>
   );
 }
