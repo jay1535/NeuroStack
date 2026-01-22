@@ -24,7 +24,7 @@ export default function StartupLoader(): JSX.Element {
       >
         {/* Subtle depth */}
         <div className="pointer-events-none absolute -inset-24 rounded-full bg-linear-to-b from-gray-700/25 via-gray-600/10 to-transparent blur-3xl" />
-        <div className="pointer-events-none absolute -inset-32 rounded-full bg-gray-500/10 blur-[120px]" />
+        <div className="pointer-events-none absolute -inset-32 rounded-full bg-gray-600/10 blur-[120px]" />
 
         {/* LOGO */}
         <motion.div
@@ -97,7 +97,7 @@ export default function StartupLoader(): JSX.Element {
 
             {/* Stack — jumping from right */}
             <motion.span
-              className="dark:text-orange-500 text-purple-700"
+              className="dark:text-orange-600 text-purple-700"
               initial={{ opacity: 0, x: 180, y: 0 }}
               animate={{
                 opacity: 1,

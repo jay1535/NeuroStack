@@ -60,7 +60,7 @@ export default function Home() {
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
             AI-Powered{" "}
-            <span className="dark:text-orange-500 text-purple-700">
+            <span className="dark:text-orange-600 text-purple-700">
               UI/UX Design
             </span>
             <br /> for Mobile & Web
@@ -82,58 +82,66 @@ export default function Home() {
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <div className="w-full sm:w-auto">
            
-            <ClientOnly>
   <SignedIn>
-    <Button
-      onClick={() => router.push("/dashboard")}
-      className="
-        relative
-        mx-auto
-        w-[80%] sm:w-auto
-        px-6 sm:px-12
-        py-3
-        rounded-xl
-        bg-black text-white
-        dark:bg-white dark:text-black
-        font-semibold tracking-wide
-        h-12
-        transition-all duration-300 ease-out
-        hover:scale-[1.03]
-        active:scale-[0.96]
-        shadow-[0_8px_24px_rgba(0,0,0,0.25)]
-        dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
-      "
-    >
-      Go to Dashboard
-    </Button>
+  <Button
+  onClick={() => router.push("/dashboard")}
+  className="
+    relative
+    mx-auto
+    w-[80%] sm:w-auto
+    px-6 sm:px-12
+    py-3
+    rounded-xl
+
+    bg-black text-white
+    dark:bg-white dark:text-black
+    font-semibold tracking-wide
+    h-12
+
+    transition-all duration-300 ease-out
+    hover:scale-[1.03]
+    active:scale-[0.96]
+
+    shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+    dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
+  "
+>
+  Go to Dashboard
+</Button>
+
+
   </SignedIn>
 
-  <SignedOut>
-    <Button
-      onClick={() => router.push("/sign-up")}
-      className="
-        relative
-        mx-auto
-        w-[80%] sm:w-auto
-        px-6 sm:px-12
-        py-3
-        rounded-xl
-        bg-black text-white
-        dark:bg-white dark:text-black
-        font-semibold tracking-wide
-        h-12
-        transition-all duration-300 ease-out
-        hover:scale-[1.03]
-        active:scale-[0.96]
-        shadow-[0_8px_24px_rgba(0,0,0,0.25)]
-        dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
-      "
-    >
-      Get Started
-    </Button>
-  </SignedOut>
-</ClientOnly>
 
+              <SignedOut>
+                
+                  <Button
+                    className="
+                      relative
+    mx-auto
+    w-[80%] sm:w-auto
+    px-6 sm:px-12
+    h-12
+    py-3
+    rounded-xl
+
+    bg-black text-white
+    dark:bg-white dark:text-black
+    font-semibold tracking-wide
+
+    transition-all duration-300 ease-out
+    hover:scale-[1.03]
+    active:scale-[0.96]
+
+    shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+    dark:shadow-[0_8px_24px_rgba(255,255,255,0.15)]
+                    "
+                    onClick={() => router.push("/sign-up")}
+                  >
+                    Get Started
+                  </Button>
+                
+              </SignedOut>
             </div>
           </div>
 
@@ -192,7 +200,7 @@ export default function Home() {
                   hover:-translate-y-1
                 "
               >
-                <h3 className="text-lg font-semibold dark:text-orange-500 text-purple-700">
+                <h3 className="text-lg font-semibold dark:text-orange-600 text-purple-700">
                   {title}
                 </h3>
                 <p className="mt-3 text-gray-600 dark:text-gray-400">
@@ -225,7 +233,7 @@ export default function Home() {
 
             <h2 className="text-4xl font-extrabold leading-tight">
               From Prompt to{" "}
-              <span className="dark:text-orange-500 text-purple-700">Production UI</span>
+              <span className="dark:text-orange-600 text-purple-700">Production UI</span>
             </h2>
 
             <p className="mt-6 text-gray-600 dark:text-gray-400 max-w-xl">
@@ -295,7 +303,7 @@ export default function Home() {
 
           <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
             Design Faster with{" "}
-            <span className="dark:text-orange-500 text-purple-700">
+            <span className="dark:text-orange-600 text-purple-700">
               NeuroStack
             </span>
           </h2>
@@ -370,7 +378,7 @@ Try NeuroStack
 </div>
 
 
-          <p className="mt-6 text-xs text-gray-500">
+          <p className="mt-6 text-xs text-gray-600">
             No credit card required • Free to get started
           </p>
         </motion.div>
@@ -431,7 +439,7 @@ Try NeuroStack
 
         {/* 🚫 NO dynamic date */}
         <div className="mt-16 pt-8 border-t border-black/10 dark:border-white/10 text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-600">
             © 2026 NeuroStack. All rights reserved.
           </p>
           <p className="mt-2 text-xs text-gray-600">

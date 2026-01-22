@@ -27,7 +27,7 @@ export default function PricingPage() {
         <div
           className="
             pl-6 pr-5 py-2
-            dark:bg-orange-500 bg-purple-700
+            dark:bg-orange-600 bg-purple-700
             text-white
             font-semibold text-sm
             rounded-r-full
@@ -50,7 +50,7 @@ export default function PricingPage() {
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold dark:text-orange-500 text-black">
+          <h1 className="text-4xl md:text-5xl font-extrabold dark:text-orange-600 text-black">
             Simple, Transparent Pricing
           </h1>
 
@@ -78,7 +78,7 @@ export default function PricingPage() {
               hover:border-orange-600/40
             "
           >
-            <h3 className="text-lg font-semibold dark:text-orange-500 text-black">Free</h3>
+            <h3 className="text-lg font-semibold dark:text-orange-600 text-black">Free</h3>
 
             <p className="text-3xl font-extrabold mt-4">₹0</p>
 
@@ -133,11 +133,11 @@ export default function PricingPage() {
               MOST POPULAR
             </span>
 
-            <h3 className="text-lg font-semibold dark:text-orange-500 text-black">Pro</h3>
+            <h3 className="text-lg font-semibold dark:text-orange-600 text-black">Pro</h3>
 
             <p className="text-3xl font-extrabold mt-4">
               ₹99{" "}
-              <span className="text-base font-normal text-gray-500 dark:text-gray-400">
+              <span className="text-base font-normal text-gray-600 dark:text-gray-400">
                 / month
               </span>
             </p>
@@ -184,7 +184,7 @@ export default function PricingPage() {
               hover:border-orange-600/40
             "
           >
-            <h3 className="text-lg font-semibold dark:text-orange-500 text-black">
+            <h3 className="text-lg font-semibold dark:text-orange-600 text-black">
               Team / Enterprise
             </h3>
 

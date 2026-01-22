@@ -55,7 +55,7 @@ const ContactPage = () => {
     <div className="relative min-h-screen flex flex-col md:flex-row bg-white dark:bg-black text-black dark:text-white">
       {/* Back */}
       <Link href="/" className="fixed top-8 left-0 z-50">
-        <div className="pl-6 pr-5 py-2 rounded-r-full bg-purple-700 dark:bg-orange-500 text-white text-sm font-semibold shadow-lg hover:pl-8 transition-all">
+        <div className="pl-6 pr-5 py-2 rounded-r-full bg-purple-700 dark:bg-orange-600 text-white text-sm font-semibold shadow-lg hover:pl-8 transition-all">
           ← Back
         </div>
       </Link>
@@ -106,7 +106,7 @@ const ContactPage = () => {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-purple-700  text-white dark:bg-orange-500 dark:text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
+              className="w-full py-3 rounded-xl bg-purple-700  text-white dark:bg-orange-600 dark:text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
             >
               <Send size={18} />
               {loading ? "Sending..." : "Send Message"}

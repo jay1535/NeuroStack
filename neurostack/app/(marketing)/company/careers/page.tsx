@@ -12,7 +12,7 @@ export default function CareersPage() {
         <div className="
           pl-6 pr-5 py-2
           rounded-r-full
-          bg-purple-700 dark:bg-orange-500
+          bg-purple-700 dark:bg-orange-600
           text-white text-sm font-semibold
           shadow-lg
           transition-all duration-300
@@ -58,7 +58,7 @@ export default function CareersPage() {
           excited to connect with passionate builders and designers.
         </p>
 
-        <p className="mt-6 text-sm text-gray-500">
+        <p className="mt-6 text-sm text-gray-600">
           Feel free to reach out — we’d love to hear from you.
         </p>
 

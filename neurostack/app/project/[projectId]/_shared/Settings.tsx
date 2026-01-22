@@ -138,7 +138,7 @@ const [saving, setSaving] = useState(false);
   onClick={saveProjectName}
   disabled={saving || projectName === savedProjectName}
 >
-  {saving ? "Saving…" : "Save Project Name"}
+  {saving ? "Saving…" : "Edit Project Name"}
 </Button>
 
         </div>
@@ -240,7 +240,7 @@ const [saving, setSaving] = useState(false);
               px-3 py-2.5
               transition
               ${isActive
-                        ? "bg-purple-50 dark:bg-orange-500/10 border-l-2 border-purple-600 dark:border-orange-500"
+                        ? "bg-purple-50 dark:bg-orange-600/10 border-l-2 border-purple-600 dark:border-orange-600"
                         : "hover:bg-black/5 dark:hover:bg-white/10"
                       }
             `}

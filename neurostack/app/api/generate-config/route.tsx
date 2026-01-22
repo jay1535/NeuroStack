@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+
 import { APP_LAYOUT_CONFIG_PROMPT } from "@/data/prompt";
 import { db } from "@/config/db";
 import { ProjectTable, ScreenConfig } from "@/config/schema";
 import { eq } from "drizzle-orm";
+import { ai } from "@/config/gemini";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
-});
+
 
 export async function POST(req: NextRequest) {
   try {

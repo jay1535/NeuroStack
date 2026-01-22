@@ -38,7 +38,7 @@ export default function LogoRingLoader(): JSX.Element | null {
         <motion.div
           className={`
             absolute h-40 w-40 rounded-full border
-            ${isDark ? "border-orange-500/30" : "border-orange-600/40"}
+            ${isDark ? "border-orange-600/30" : "border-orange-600/40"}
           `}
           animate={{ scale: [0.9, 1.2], opacity: [0.6, 0] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
@@ -48,7 +48,7 @@ export default function LogoRingLoader(): JSX.Element | null {
         <motion.div
           className={`
             absolute h-28 w-28 rounded-full border
-            ${isDark ? "border-orange-500/40" : "border-orange-600/50"}
+            ${isDark ? "border-orange-600/40" : "border-orange-600/50"}
           `}
           animate={{ scale: [0.9, 1.25], opacity: [0.6, 0] }}
           transition={{
@@ -99,7 +99,7 @@ export default function LogoRingLoader(): JSX.Element | null {
   "
 >
   <span>Neuro</span>
-  <span className="dark:text-orange-500 text-purple-700">Stack</span>
+  <span className="dark:text-orange-600 text-purple-700">Stack</span>
 </motion.div>
 
     </motion.div>

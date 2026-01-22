@@ -64,7 +64,7 @@ export const TermsContent = (
       international laws.
     </p>
 
-    <p className="text-xs text-gray-500">
+    <p className="text-xs text-gray-600">
       Last updated: {new Date().toLocaleDateString()}
     </p>
   </>
@@ -140,7 +140,7 @@ export const PrivacyPolicyContent = (
       NeuroStack after updates indicates acceptance of the revised policy.
     </p>
 
-    <p className="text-xs text-gray-500">
+    <p className="text-xs text-gray-600">
       Last updated: {new Date().toLocaleDateString()}
     </p>
   </>

@@ -1,53 +1,49 @@
-import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
 import { db } from "@/config/db";
 import { usersTable } from "@/config/schema";
+import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
 
 export async function POST() {
   try {
+    // 1️⃣ Get authenticated user
     const user = await currentUser();
 
-    // ✅ User not logged in → do nothing
-    if (!user) {
-      return NextResponse.json(null, { status: 200 });
-    }
-
-    const email = user.primaryEmailAddress?.emailAddress;
-    const name = user.fullName ?? "User";
-
-    if (!email) {
+    if (!user || !user.primaryEmailAddress?.emailAddress) {
       return NextResponse.json(
-        { error: "Email not found" },
-        { status: 400 }
+        { error: "Unauthorized" },
+        { status: 401 }
       );
     }
 
-    // ✅ Check if user already exists
-    const existing = await db
+    const email = user.primaryEmailAddress.emailAddress;
+
+    // 2️⃣ Check if user exists
+    const existingUsers = await db
       .select()
       .from(usersTable)
       .where(eq(usersTable.email, email))
       .limit(1);
 
-    if (existing.length > 0) {
-      return NextResponse.json(existing[0]);
+    if (existingUsers.length > 0) {
+      return NextResponse.json(existingUsers[0]);
     }
 
-    // ✅ Create only once
-    const [created] = await db
+    // 3️⃣ Create new user
+    const result = await db
       .insert(usersTable)
       .values({
-        name,
+        name: user.fullName ?? "User",
         email,
       })
       .returning();
 
-    return NextResponse.json(created);
-  } catch (err) {
-    console.error("USER CREATE ERROR:", err);
+    return NextResponse.json(result[0]);
+  } catch (error) {
+    console.error("POST /api/user error:", error);
+
     return NextResponse.json(
-      { error: "Failed to create user" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
