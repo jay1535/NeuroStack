@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Palette,
@@ -23,6 +23,7 @@ import toast from "react-hot-toast";
 
 import { THEMES, THEME_NAME_LIST, ThemeKey } from "@/data/themes";
 import { ProjectType } from "@/type/types";
+import { SettingContext } from "@/app/context/SettingContext";
 
 type Props = {
   project: ProjectType;
@@ -31,6 +32,8 @@ type Props = {
 export default function Settings({ project }: Props) {
   /* ================= THEME ================= */
   const [themeOpen, setThemeOpen] = useState(false);
+  const { settingInfo, setSettingInfo } = useContext(SettingContext);
+
   const [selectedTheme, setSelectedTheme] =
     useState<ThemeKey>("AURORA_INK");
 
@@ -38,9 +41,8 @@ export default function Settings({ project }: Props) {
 
   /* ================= PROJECT NAME ================= */
   const [projectName, setProjectName] = useState("");
-const [savedProjectName, setSavedProjectName] = useState("");
-const [saving, setSaving] = useState(false);
-
+  const [savedProjectName, setSavedProjectName] = useState("");
+  const [saving, setSaving] = useState(false);
 
   /* ================= IDEA ================= */
   const [userNewScreenInput, setUserNewScreenInput] = useState("");
@@ -50,9 +52,17 @@ const [saving, setSaving] = useState(false);
     if (project?.projectName) {
       setProjectName(project.projectName);
       setSavedProjectName(project.projectName);
+      setSelectedTheme(project.theme as ThemeKey);
     }
   }, [project]);
-  
+
+  const onSelectTheme = (theme: ThemeKey) => {
+    setSelectedTheme(theme);
+    setSettingInfo((prev: any) => ({
+      ...prev,
+      theme,
+    }));
+  };
 
   /* ================= SAVE / OVERWRITE ================= */
   const saveProjectName = async () => {
@@ -60,34 +70,29 @@ const [saving, setSaving] = useState(false);
       toast.error("Project name cannot be empty");
       return;
     }
-  
-    // ✅ compare with LAST SAVED value, not props
+
     if (projectName === savedProjectName) return;
-  
+
     try {
       setSaving(true);
-  
+
       await axios.put("/api/project", {
         projectId: project.projectId,
         projectName: projectName.trim(),
       });
-  
-      // ✅ update saved reference
+
       setSavedProjectName(projectName.trim());
-  
       toast.success("Project name saved");
     } catch {
       toast.error("Failed to save project name");
-      setProjectName(savedProjectName); // rollback
+      setProjectName(savedProjectName);
     } finally {
       setSaving(false);
     }
   };
-  
 
   return (
     <div className="h-full w-full flex flex-col border-r border-black/10 dark:border-white/15 bg-[#f5f5f4] dark:bg-[#1c1917]">
-
       {/* ================= HEADER ================= */}
       <div className="px-6 pt-6 pb-6">
         <div className="flex items-center justify-between gap-3">
@@ -107,7 +112,10 @@ const [saving, setSaving] = useState(false);
               className="hidden dark:block rounded-lg"
             />
             <span className="text-xl font-bold">
-              Neuro<span className="text-purple-600 dark:text-orange-600">Stack</span>
+              Neuro
+              <span className="text-purple-600 dark:text-orange-600">
+                Stack
+              </span>
             </span>
           </div>
 
@@ -117,7 +125,6 @@ const [saving, setSaving] = useState(false);
 
       {/* ================= CONTENT ================= */}
       <div className="flex-1 px-4 py-4 overflow-y-auto text-sm">
-
         {/* ================= PROJECT NAME ================= */}
         <div className="mb-8">
           <h2 className="text-sm flex gap-2 font-semibold mb-3">
@@ -128,19 +135,18 @@ const [saving, setSaving] = useState(false);
             placeholder="Project Name"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
-            onBlur={saveProjectName}   // ✅ auto-save on finish
+            onBlur={saveProjectName}
             disabled={saving}
           />
 
-<Button
-  size="sm"
-  className="mt-2 w-full"
-  onClick={saveProjectName}
-  disabled={saving || projectName === savedProjectName}
->
-  {saving ? "Saving…" : "Edit Project Name"}
-</Button>
-
+          <Button
+            size="sm"
+            className="mt-2 w-full cursor-pointer"
+            onClick={saveProjectName}
+            disabled={saving || projectName === savedProjectName}
+          >
+            {saving ? "Saving…" : "Edit Project Name"}
+          </Button>
         </div>
 
         {/* ================= EDIT IDEA ================= */}
@@ -155,7 +161,7 @@ const [saving, setSaving] = useState(false);
             onChange={(e) => setUserNewScreenInput(e.target.value)}
           />
 
-          <Button size="sm" className="mt-2 w-full flex gap-2">
+          <Button size="sm" className="mt-2 w-full flex gap-2 cursor-pointer">
             <Sparkle size={16} />
             Generate with AI
           </Button>
@@ -168,18 +174,18 @@ const [saving, setSaving] = useState(false);
             Themes
           </h2>
 
-          {/* ================= Dropdown Trigger ================= */}
           <button
             onClick={() => setThemeOpen((v) => !v)}
             className="
-      w-full flex items-center justify-between
-      px-3 py-2
-      rounded-md
-      bg-white/60 dark:bg-black/30
-      border border-black/10 dark:border-white/10
-      hover:bg-black/5 dark:hover:bg-white/10
-      transition
-    "
+              w-full flex items-center justify-between
+              px-3 py-2
+              rounded-md
+              bg-white/60 dark:bg-black/30
+              border border-black/10 dark:border-white/10
+              hover:bg-black/5 dark:hover:bg-white/10
+              transition
+              
+            "
           >
             <span className="text-sm font-medium">
               {selectedTheme
@@ -189,7 +195,6 @@ const [saving, setSaving] = useState(false);
             </span>
 
             <div className="flex items-center gap-2">
-              {/* Active theme colors */}
               <div className="flex gap-1">
                 {[
                   activeTheme.primary,
@@ -206,23 +211,22 @@ const [saving, setSaving] = useState(false);
 
               <ChevronDown
                 size={16}
-                className={`transition ${themeOpen ? "rotate-180" : ""}`}
+                className={`transition ${
+                  themeOpen ? "rotate-180" : ""
+                }`}
               />
             </div>
           </button>
 
-          {/* ================= Dropdown Menu ================= */}
           {themeOpen && (
-            <div
-              className="
-        absolute z-50 mt-2 w-full
-        rounded-md
-        bg-white dark:bg-[#0d0d12]
-        border border-black/10 dark:border-white/15
-        shadow-lg
-        max-h-56 overflow-auto
-      "
-            >
+            <div className="
+              absolute z-50 mt-2 w-full
+              rounded-md
+              bg-white dark:bg-[#0d0d12]
+              border border-black/10 dark:border-white/15
+              shadow-lg
+              max-h-56 overflow-auto
+            ">
               {THEME_NAME_LIST.map((themeKey) => {
                 const theme = THEMES[themeKey];
                 const isActive = selectedTheme === themeKey;
@@ -231,27 +235,27 @@ const [saving, setSaving] = useState(false);
                   <button
                     key={themeKey}
                     onClick={() => {
-                      setSelectedTheme(themeKey);
+                      onSelectTheme(themeKey);
                       setThemeOpen(false);
-                      console.log("Selected theme:", themeKey);
                     }}
                     className={`
-              w-full text-left
-              px-3 py-2.5
-              transition
-              ${isActive
-                        ? "bg-purple-50 dark:bg-orange-600/10 border-l-2 border-purple-600 dark:border-orange-600"
-                        : "hover:bg-black/5 dark:hover:bg-white/10"
+                      w-full text-left
+                      px-3 py-2.5
+                      transition
+                      ${
+                        isActive
+                          ? "bg-purple-50 dark:bg-orange-600/10 border-l-2 border-purple-600 dark:border-orange-600"
+                          : "hover:bg-black/5 dark:hover:bg-white/10"
                       }
-            `}
+                    `}
                   >
-                    {/* Theme Name */}
                     <div className="flex items-center justify-between mb-1">
                       <span
-                        className={`text-sm font-medium ${isActive
+                        className={`text-sm font-medium ${
+                          isActive
                             ? "text-purple-700 dark:text-orange-400"
                             : ""
-                          }`}
+                        }`}
                       >
                         {themeKey
                           .replace(/_/g, " ")
@@ -266,7 +270,6 @@ const [saving, setSaving] = useState(false);
                       )}
                     </div>
 
-                    {/* Theme Colors */}
                     <div className="flex gap-1.5">
                       {[
                         theme.primary,
@@ -276,11 +279,7 @@ const [saving, setSaving] = useState(false);
                       ].map((color, i) => (
                         <span
                           key={i}
-                          className="
-                    h-3 w-3
-                    rounded-full
-                    border border-black/10 dark:border-white/20
-                  "
+                          className="h-3 w-3 rounded-full border border-black/10 dark:border-white/20"
                           style={{ backgroundColor: color }}
                         />
                       ))}

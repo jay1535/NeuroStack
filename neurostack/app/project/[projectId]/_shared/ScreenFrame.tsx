@@ -1,11 +1,13 @@
 "use client";
 
+import { useContext, useCallback, useEffect, useRef, useState } from "react";
+import { Rnd } from "react-rnd";
+import { Grip } from "lucide-react";
+
 import { themeToCssVars } from "@/data/themes";
 import { resolveTheme } from "@/data/resolveTheme";
 import { ProjectType } from "@/type/types";
-import { Grip } from "lucide-react";
-import React from "react";
-import { Rnd } from "react-rnd";
+import { SettingContext } from "@/app/context/SettingContext";
 
 type Props = {
   x: number;
@@ -17,18 +19,36 @@ type Props = {
   projectDetail: ProjectType | null;
 };
 
-function ScreenFrame({
+export default function ScreenFrame({
   x,
   y,
   setPanningEnabled,
   width,
   height,
   htmlCode,
-  projectDetail,
 }: Props) {
-  // ✅ RESOLVE THEME KEY → THEME OBJECT
-  const resolvedTheme = resolveTheme(projectDetail?.theme);
+  /* ================= LIVE THEME ================= */
+  const { settingInfo } = useContext(SettingContext);
+  const resolvedTheme = resolveTheme(settingInfo?.theme);
 
+  /* ================= REFS ================= */
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  /* ================= FORCE IFRAME RELOAD ================= */
+  const [themeVersion, setThemeVersion] = useState(0);
+
+  useEffect(() => {
+    setThemeVersion((v) => v + 1);
+  }, [settingInfo?.theme]);
+
+  /* ================= SIZE STATE ================= */
+  const [size, setSize] = useState({ width, height });
+
+  useEffect(() => {
+    setSize({ width, height });
+  }, [width, height]);
+
+  /* ================= HTML TEMPLATE ================= */
   const html = `
 <!doctype html>
 <html>
@@ -36,74 +56,183 @@ function ScreenFrame({
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <!-- Tailwind -->
   <link
     href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
     rel="stylesheet"
   />
 
-  <!-- Icons -->
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     rel="stylesheet"
   />
-  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
   <style>
-    /* ✅ THIS IS THE FIX */
     :root {
       ${themeToCssVars(resolvedTheme)}
     }
 
     html, body {
       margin: 0;
+      padding: 0;
       width: 100%;
-      height: 100%;
       background: var(--background);
       color: var(--foreground);
       font-family: Inter, system-ui, sans-serif;
     }
+
+    /* =====================================================
+       🔥 FORCE THEME COMPLIANCE (THIS FIXES YOUR ISSUE)
+       ===================================================== */
+
+    body, body * {
+      color: var(--foreground) !important;
+    }
+
+    /* Card / surface overrides */
+    .bg-white,
+    .bg-gray-50,
+    .bg-slate-50,
+    .bg-neutral-50 {
+      background-color: var(--card) !important;
+    }
+
+    /* Dark text classes */
+    .text-black,
+    .text-gray-900,
+    .text-slate-900 {
+      color: var(--foreground) !important;
+    }
+
+    /* Light text classes (THE PROBLEM ON LIGHT BG) */
+    .text-white,
+    .text-gray-100,
+    .text-gray-200,
+    .text-slate-100,
+    .text-slate-200 {
+      color: var(--foreground) !important;
+    }
+
+    /* Muted text */
+    .text-gray-400,
+    .text-gray-500,
+    .text-slate-400,
+    .text-slate-500 {
+      color: var(--muted-foreground) !important;
+    }
+
+    /* Headings */
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--foreground) !important;
+    }
   </style>
 </head>
 
-<body class="bg-[var(--background)] text-[var(--foreground)] w-full h-full">
+<body class="w-full">
   ${htmlCode ?? ""}
 </body>
 </html>
 `;
 
+  /* ================= AUTO HEIGHT ================= */
+  const measureIframeHeight = useCallback(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc) return;
+
+      const headerH = 40;
+      const htmlEl = doc.documentElement;
+      const body = doc.body;
+
+      const contentH = Math.max(
+        htmlEl?.scrollHeight ?? 0,
+        body?.scrollHeight ?? 0,
+        htmlEl?.offsetHeight ?? 0,
+        body?.offsetHeight ?? 0
+      );
+
+      const next = Math.min(Math.max(contentH + headerH, 160), 2000);
+
+      setSize((s) =>
+        Math.abs(s.height - next) > 2 ? { ...s, height: next } : s
+      );
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const onLoad = () => {
+      measureIframeHeight();
+
+      const doc = iframe.contentDocument;
+      if (!doc) return;
+
+      const observer = new MutationObserver(measureIframeHeight);
+
+      observer.observe(doc.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        characterData: true,
+      });
+
+      const t1 = setTimeout(measureIframeHeight, 50);
+      const t2 = setTimeout(measureIframeHeight, 200);
+      const t3 = setTimeout(measureIframeHeight, 600);
+
+      return () => {
+        observer.disconnect();
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
+    };
+
+    iframe.addEventListener("load", onLoad);
+    window.addEventListener("resize", measureIframeHeight);
+
+    return () => {
+      iframe.removeEventListener("load", onLoad);
+      window.removeEventListener("resize", measureIframeHeight);
+    };
+  }, [measureIframeHeight, htmlCode, themeVersion]);
+
+  /* ================= RENDER ================= */
   return (
     <Rnd
       default={{ x, y, width, height }}
+      size={size}
       dragHandleClassName="drag-handler"
       enableResizing={{ bottomRight: true, bottomLeft: true }}
       onDragStart={() => setPanningEnabled(false)}
       onDragStop={() => setPanningEnabled(true)}
       onResizeStart={() => setPanningEnabled(false)}
-      onResizeStop={() => setPanningEnabled(true)}
+      onResizeStop={(_e, _dir, ref) => {
+        setPanningEnabled(true);
+        setSize({
+          width: ref.offsetWidth,
+          height: ref.offsetHeight,
+        });
+      }}
       className="absolute"
     >
-      
-        {/* DRAG BAR — UNCHANGED */}
-        <div className="drag-handler cursor-grab w-10 h-10 dark:bg-white bg-gray-900 rounded-lg text-white dark:text-black  ">
-          <h2 className="flex gap-2 text-xl p-2">
-            <Grip /> 
-          </h2>
-        </div>
+      {/* DRAG BAR */}
+      <div className="drag-handler cursor-grab w-10 h-10 bg-gray-900 dark:bg-white rounded-lg text-white dark:text-black flex items-center justify-center">
+        <Grip />
+      </div>
 
-        {/* IFRAME — UNCHANGED */}
-        <iframe
-          className="w-full h-[calc(100%-40px)] border-none rounded-2xl mt-5"
-          sandbox="allow-same-origin allow-scripts"
-          srcDoc={html}
-        />
-     
+      {/* IFRAME */}
+      <iframe
+        key={themeVersion}
+        ref={iframeRef}
+        className="w-full h-[calc(100%-40px)] border-none rounded-2xl mt-2"
+        sandbox="allow-same-origin allow-scripts"
+        srcDoc={html}
+      />
     </Rnd>
   );
 }
-
-export default ScreenFrame;

@@ -5,7 +5,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ScreenConfig, ProjectType } from "@/type/types";
 import ScreenFrame from "./ScreenFrame";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { Plus, Minus, RefreshCcw } from "lucide-react";
 
 interface Props {
   zoom: number;
@@ -13,59 +13,6 @@ interface Props {
   projectDetail: ProjectType | null;
   settingsOpen?: boolean;
 }
-
-/* ================= SHADCN SKELETON FRAME ================= */
-function SkeletonFrame({
-  width,
-  height,
-  x,
-  y,
-}: {
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-}) {
-  return (
-    <div
-      className="absolute"
-      style={{
-        width,
-        height,
-        transform: `translate(${x}px, ${y}px)`,
-      }}
-    >
-      <div
-        className="
-          h-full w-full overflow-hidden rounded-xl
-          border border-border
-          bg-card
-          shadow-sm
-        "
-      >
-        {/* Top bar */}
-        <Skeleton
-          className="
-            h-12 w-full rounded-none
-            bg-gray-200
-            dark:bg-muted/40
-          "
-        />
-
-        {/* Content */}
-        <div className="p-6 space-y-4">
-          <Skeleton className="h-4 w-3/4 bg-gray-200 dark:bg-muted/40" />
-          <Skeleton className="h-10 w-1/2 bg-gray-200 dark:bg-muted/40" />
-          <Skeleton className="h-40 w-2/3 bg-gray-200 dark:bg-muted/40" />
-          <Skeleton className="h-20 w-full bg-gray-200 dark:bg-muted/30" />
-          <Skeleton className="h-32 w-1/2 bg-gray-200 dark:bg-muted/30" />
-          <Skeleton className="h-50 w-full bg-gray-200 dark:bg-muted/30" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 
 export default function PlaygroundHero({
   zoom,
@@ -75,15 +22,22 @@ export default function PlaygroundHero({
 }: Props) {
   const isMobile = projectDetail?.device === "mobile";
 
-  const SCREEN_WIDTH = isMobile ? 400 : 1200;
-  const SCREEN_HEIGHT = isMobile ? 800 : 800;
-  const GAP = isMobile ? 10 : 30;
+  /* ================= SCREEN SIZE ================= */
+  const SCREEN_WIDTH = isMobile ? 430 : 1100;
+  const SCREEN_HEIGHT = isMobile ? 820 : 780;
+
+  /* ================= GAP BETWEEN SCREENS ================= */
+  const GAP_X = isMobile ? 40 : 80;
 
   const [panningEnabled, setPanningEnabled] = useState(true);
 
+  const INITIAL_SCALE = isMobile ? 0.6 : 0.55;
+  const INITIAL_X = 120;
+  const INITIAL_Y = 80;
+
   return (
     <section
-      className={`relative h-screen w-full ${
+      className={`relative h-screen w-full overflow-hidden ${
         settingsOpen ? "pl-64" : ""
       }`}
       style={{ background: "var(--background)" }}
@@ -95,54 +49,100 @@ export default function PlaygroundHero({
           backgroundImage: `
             radial-gradient(
               circle,
-              color-mix(in srgb, var(--foreground) 18%, transparent) 1px,
+              color-mix(in srgb, var(--foreground) 16%, transparent) 1px,
               transparent 1px
             )
           `,
-          backgroundSize: "32px 32px",
+          backgroundSize: "28px 28px",
         }}
       />
 
       {/* ================= ZOOM / PAN ================= */}
       <TransformWrapper
-        initialScale={zoom}
-        initialPositionX={50}
-        initialPositionY={100}
-        minScale={0.5}
-        maxScale={3}
-        limitToBounds={false}
-        wheel={{ step: 0.08 }}
-        panning={{ disabled: !panningEnabled }}
-      >
-        <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
-          <div className="relative">
-            {screens.map((screen, index) => {
-              const x = index * (SCREEN_WIDTH + GAP);
-              const y = 0;
+  initialScale={INITIAL_SCALE}
+  initialPositionX={INITIAL_X}
+  initialPositionY={INITIAL_Y}
+  minScale={0.3}
+  maxScale={2.2}
+  limitToBounds={false}
+  wheel={{ step: 0.08 }}
+  panning={{ disabled: !panningEnabled }}
+  alignmentAnimation={{ disabled: true }}
+  velocityAnimation={{ disabled: true }}
+>
 
-              return screen.code ? (
-                <ScreenFrame
-                  key={screen.screenId}
-                  x={x}
-                  y={y}
-                  width={SCREEN_WIDTH}
-                  height={SCREEN_HEIGHT}
-                  setPanningEnabled={setPanningEnabled}
-                  htmlCode={screen.code}
-                  projectDetail={projectDetail}
-                />
-              ) : (
-                <SkeletonFrame
-                  key={screen.screenId}
-                  x={x}
-                  y={y}
-                  width={SCREEN_WIDTH}
-                  height={SCREEN_HEIGHT}
-                />
-              );
-            })}
-          </div>
-        </TransformComponent>
+        {({ zoomIn, zoomOut, setTransform }) => (
+          <>
+            {/* ================= CONTROLS ================= */}
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 rounded-xl border bg-background/80 backdrop-blur p-2 shadow-lg">
+              <button
+                onClick={() => zoomIn(0.2)}
+                className="p-2 rounded-md hover:bg-muted transition"
+              >
+                <Plus size={18} />
+              </button>
+
+              <button
+                onClick={() => zoomOut(0.2)}
+                className="p-2 rounded-md hover:bg-muted transition"
+              >
+                <Minus size={18} />
+              </button>
+
+              {/* ✅ SAFE RESET */}
+              <button
+                onClick={() =>
+                  setTransform(
+                    INITIAL_X,
+                    INITIAL_Y,
+                    INITIAL_SCALE,
+                    0 // no animation → Turbopack safe
+                  )
+                }
+                className="p-2 rounded-md hover:bg-muted transition"
+              >
+                <RefreshCcw size={18} />
+              </button>
+            </div>
+
+            {/* ================= CANVAS ================= */}
+            <TransformComponent
+              wrapperStyle={{ width: "100%", height: "100%" }}
+            >
+              <div className="relative">
+                {screens.map((screen, index) => {
+                  const x = index * (SCREEN_WIDTH + GAP_X);
+                  const y = 0;
+
+                  return screen.code ? (
+                    <ScreenFrame
+                      key={screen.screenId}
+                      x={x}
+                      y={y}
+                      width={SCREEN_WIDTH}
+                      height={SCREEN_HEIGHT}
+                      setPanningEnabled={setPanningEnabled}
+                      htmlCode={screen.code}
+                      projectDetail={projectDetail}
+                    />
+                  ) : (
+                    <div
+                      key={screen.screenId}
+                      className="absolute"
+                      style={{
+                        width: SCREEN_WIDTH,
+                        height: SCREEN_HEIGHT,
+                        transform: `translate(${x}px, ${y}px)`,
+                      }}
+                    >
+                      <Skeleton className="h-full w-full rounded-xl" />
+                    </div>
+                  );
+                })}
+              </div>
+            </TransformComponent>
+          </>
+        )}
       </TransformWrapper>
     </section>
   );

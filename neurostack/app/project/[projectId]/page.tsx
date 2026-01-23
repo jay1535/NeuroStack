@@ -1,22 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 import PlaygroundHero from "./_shared/PlaygroundHero";
-import ZoomControls from "./_shared/ZoomControl";
+
 import CanvasHeader from "./_shared/CanvasHeader";
 import Settings from "./_shared/Settings";
 import TopLoader from "./_shared/TopLoader";
 
 import { ProjectType, ScreenConfig } from "@/type/types";
+import { SettingContext } from "@/app/context/SettingContext";
 
 export default function PlaygroundPage() {
   const { projectId } = useParams<{ projectId: string }>();
 
-  const [zoom, setZoom] = useState(0.5); // ✅ 50%
+  const [zoom, setZoom] = useState(0.7); // ✅ 50%
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const [projectDetail, setProjectDetail] = useState<ProjectType | null>(null);
@@ -24,6 +25,7 @@ export default function PlaygroundPage() {
 
   const [loading, setLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState("Loading project…");
+  const {settingInfo, setSettingInfo} = useContext(SettingContext);
 
   const configGenerated = useRef(false);
   const uiGenerated = useRef(false);
@@ -37,6 +39,7 @@ export default function PlaygroundPage() {
       const res = await axios.get(`/api/project?projectId=${projectId}`);
       setProjectDetail(res.data.projectDetail);
       setScreenConfig(res.data.screenConfig ?? []);
+      setSettingInfo(res.data.projectDetail)
     } catch {
       toast.error("Failed to load project");
     } finally {
@@ -111,13 +114,30 @@ export default function PlaygroundPage() {
     }
   };
 
+  const saveAllChanges = async () => {
+    if (!projectDetail) return;
+  
+    try {
+      await axios.put("/api/project", {
+        projectId: projectDetail.projectId,
+        projectName: projectDetail.projectName,
+        theme: settingInfo?.theme,
+      });
+  
+      toast.success("Project saved");
+    } catch {
+      toast.error("Failed to save project");
+    }
+  };
+  
   return (
     <>
       <CanvasHeader
-        onSave={() => toast.success("Saved")}
-        onOpenSettings={() => setSettingsOpen(v => !v)}
-        settingsOpen={settingsOpen}
-      />
+  onSave={saveAllChanges}
+  onOpenSettings={() => setSettingsOpen(v => !v)}
+  settingsOpen={settingsOpen}
+/>
+
 
       <TopLoader visible={loading} message={loadingMessage} />
 
