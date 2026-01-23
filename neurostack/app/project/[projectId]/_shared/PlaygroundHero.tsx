@@ -1,18 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ScreenConfig, ProjectType } from "@/type/types";
 import ScreenFrame from "./ScreenFrame";
+import { Skeleton } from "@/components/ui/skeleton";
 
-/* ================= FRAME SIZES ================= */
-const FRAME_SIZE = {
-  mobile: { width: 375, height: 812 },
-  tablet: { width: 768, height: 1024 },
-  desktop: { width: 1280, height: 800 },
-  web: { width: 1440, height: 900 },
-};
-
-const GAP = 64;
 
 interface Props {
   zoom: number;
@@ -21,59 +14,72 @@ interface Props {
   settingsOpen?: boolean;
 }
 
+/* ================= SHADCN SKELETON FRAME ================= */
+function SkeletonFrame({
+  width,
+  height,
+  x,
+  y,
+}: {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+}) {
+  return (
+    <div
+      className="absolute"
+      style={{
+        width,
+        height,
+        transform: `translate(${x}px, ${y}px)`,
+      }}
+    >
+      <div
+        className="
+          h-full w-full overflow-hidden rounded-xl
+          border border-border
+          bg-card
+          shadow-sm
+        "
+      >
+        {/* Top bar */}
+        <Skeleton
+          className="
+            h-12 w-full rounded-none
+            bg-gray-200
+            dark:bg-muted/40
+          "
+        />
+
+        {/* Content */}
+        <div className="p-6 space-y-4">
+          <Skeleton className="h-4 w-3/4 bg-gray-200 dark:bg-muted/40" />
+          <Skeleton className="h-10 w-1/2 bg-gray-200 dark:bg-muted/40" />
+          <Skeleton className="h-40 w-2/3 bg-gray-200 dark:bg-muted/40" />
+          <Skeleton className="h-20 w-full bg-gray-200 dark:bg-muted/30" />
+          <Skeleton className="h-32 w-1/2 bg-gray-200 dark:bg-muted/30" />
+          <Skeleton className="h-50 w-full bg-gray-200 dark:bg-muted/30" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 export default function PlaygroundHero({
   zoom,
   screens,
   projectDetail,
   settingsOpen = false,
 }: Props) {
-  const device = projectDetail?.device ?? "mobile";
-  const frame =
-    FRAME_SIZE[device as keyof typeof FRAME_SIZE] ?? FRAME_SIZE.mobile;
+  const isMobile = projectDetail?.device === "mobile";
 
-  const [viewport, setViewport] = useState({ width: 0, height: 0 });
+  const SCREEN_WIDTH = isMobile ? 400 : 1200;
+  const SCREEN_HEIGHT = isMobile ? 800 : 800;
+  const GAP = isMobile ? 10 : 30;
 
-  /* ================= VIEWPORT ================= */
-  useEffect(() => {
-    const update = () =>
-      setViewport({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  /* ================= GRID ================= */
-  const grid = useMemo(() => {
-    const usableWidth =
-      (viewport.width - (settingsOpen ? 256 : 0)) / zoom;
-
-    const columns = Math.max(
-      1,
-      Math.floor(usableWidth / (frame.width + GAP))
-    );
-
-    return { columns };
-  }, [viewport, zoom, frame, settingsOpen]);
-
-  /* ================= CENTERING LOGIC ================= */
-  const totalRowWidth =
-    grid.columns * frame.width + (grid.columns - 1) * GAP;
-
-  const startX =
-    Math.max(
-      (viewport.width / zoom - totalRowWidth) / 2,
-      GAP
-    );
-
-  const startY =
-    Math.max(
-      (viewport.height / zoom - frame.height) / 2,
-      GAP
-    );
+  const [panningEnabled, setPanningEnabled] = useState(true);
 
   return (
     <section
@@ -82,36 +88,62 @@ export default function PlaygroundHero({
       }`}
       style={{ background: "var(--background)" }}
     >
-      {/* ================= SCROLLABLE CANVAS ================= */}
-      <div className="relative h-full w-full overflow-auto">
-        <div
-          className="relative"
-          style={{
-            width: Math.max(viewport.width / zoom, 5000),
-            height: Math.max(viewport.height / zoom, 3000),
-            transform: `scale(${zoom})`,
-            transformOrigin: "top left",
-          }}
-        >
-          {screens.map((screen, i) => {
-            const col = i % grid.columns;
-            const row = Math.floor(i / grid.columns);
+      {/* ================= DOTTED BACKGROUND ================= */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            radial-gradient(
+              circle,
+              color-mix(in srgb, var(--foreground) 18%, transparent) 1px,
+              transparent 1px
+            )
+          `,
+          backgroundSize: "32px 32px",
+        }}
+      />
 
-            const x = startX + col * (frame.width + GAP);
-            const y = startY + row * (frame.height + GAP);
+      {/* ================= ZOOM / PAN ================= */}
+      <TransformWrapper
+        initialScale={zoom}
+        initialPositionX={50}
+        initialPositionY={100}
+        minScale={0.5}
+        maxScale={3}
+        limitToBounds={false}
+        wheel={{ step: 0.08 }}
+        panning={{ disabled: !panningEnabled }}
+      >
+        <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
+          <div className="relative">
+            {screens.map((screen, index) => {
+              const x = index * (SCREEN_WIDTH + GAP);
+              const y = 0;
 
-            return (
-              <ScreenFrame
-                key={screen.screenId}
-                screen={screen}
-                projectDetail={projectDetail}
-                defaultX={x}
-                defaultY={y}
-              />
-            );
-          })}
-        </div>
-      </div>
+              return screen.code ? (
+                <ScreenFrame
+                  key={screen.screenId}
+                  x={x}
+                  y={y}
+                  width={SCREEN_WIDTH}
+                  height={SCREEN_HEIGHT}
+                  setPanningEnabled={setPanningEnabled}
+                  htmlCode={screen.code}
+                  projectDetail={projectDetail}
+                />
+              ) : (
+                <SkeletonFrame
+                  key={screen.screenId}
+                  x={x}
+                  y={y}
+                  width={SCREEN_WIDTH}
+                  height={SCREEN_HEIGHT}
+                />
+              );
+            })}
+          </div>
+        </TransformComponent>
+      </TransformWrapper>
     </section>
   );
 }

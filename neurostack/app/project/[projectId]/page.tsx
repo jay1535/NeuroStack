@@ -133,10 +133,8 @@ export default function PlaygroundPage() {
   screens={screenConfig}
   projectDetail={projectDetail}
   settingsOpen={settingsOpen}
-   // ✅ now valid
+   
 />
-
-      <ZoomControls zoom={zoom} setZoom={setZoom} settingsOpen={settingsOpen} />
     </>
   );
 }
