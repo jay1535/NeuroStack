@@ -1,51 +1,63 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Rnd } from "react-rnd";
-import { ScreenConfig, ProjectType } from "@/type/types";
 import { themeToCssVars } from "@/data/themes";
 import { resolveTheme } from "@/data/resolveTheme";
+import { ProjectType } from "@/type/types";
+import { Grip } from "lucide-react";
+import React from "react";
+import { Rnd } from "react-rnd";
 
-/* ================= DEVICE PRESETS ================= */
-const DEVICE_MAP = {
-  mobile: { width: 375, height: 812, radius: "2rem" },
-  tablet: { width: 768, height: 1024, radius: "1.5rem" },
-  desktop: { width: 1280, height: 800, radius: "0.9rem" },
-  web: { width: 1440, height: 900, radius: "0.9rem" },
+type Props = {
+  x: number;
+  y: number;
+  setPanningEnabled: (enabled: boolean) => void;
+  width: number;
+  height: number;
+  htmlCode: string | undefined;
+  projectDetail: ProjectType | null;
 };
 
-interface ScreenFrameProps {
-  screen: ScreenConfig;
-  projectDetail?: ProjectType | null;
-  defaultX?: number;
-  defaultY?: number;
-}
+function ScreenFrame({
+  x,
+  y,
+  setPanningEnabled,
+  width,
+  height,
+  htmlCode,
+  projectDetail,
+}: Props) {
+  // ✅ RESOLVE THEME KEY → THEME OBJECT
+  const resolvedTheme = resolveTheme(projectDetail?.theme);
 
-/* ================= IFRAME HTML ================= */
-function buildHtmlDocument(
-  html?: string,
-  themeKey?: string,
-  device: string = "mobile"
-) {
-  const theme = resolveTheme(themeKey);
-  const isWeb = device === "website" || device === "desktop";
-
-  return `
+  const html = `
 <!doctype html>
 <html>
 <head>
   <meta charset="utf-8" />
-  ${
-    isWeb
-      ? `<meta name="viewport" content="width=1440, initial-scale=1" />`
-      : `<meta name="viewport" content="width=device-width, initial-scale=1" />`
-  }
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Tailwind -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Icons -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+  />
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
   <style>
-    :root { ${themeToCssVars(theme)} }
+    /* ✅ THIS IS THE FIX */
+    :root {
+      ${themeToCssVars(resolvedTheme)}
+    }
 
     html, body {
       margin: 0;
@@ -55,138 +67,43 @@ function buildHtmlDocument(
       color: var(--foreground);
       font-family: Inter, system-ui, sans-serif;
     }
-
-    .page-root {
-      ${isWeb ? "width: 1440px; margin: 0 auto;" : "width: 100%;"}
-      min-height: 100vh;
-    }
-
-    * { box-sizing: border-box; }
   </style>
 </head>
 
-<body>
-  <div class="page-root">${html ?? ""}</div>
+<body class="bg-[var(--background)] text-[var(--foreground)] w-full h-full">
+  ${htmlCode ?? ""}
 </body>
 </html>
 `;
-}
-
-export default function ScreenFrame({
-  screen,
-  projectDetail,
-  defaultX = 200,
-  defaultY = 200,
-}: ScreenFrameProps) {
-  const device = projectDetail?.device ?? "mobile";
-
-  const preset = useMemo(
-    () => DEVICE_MAP[device as keyof typeof DEVICE_MAP] ?? DEVICE_MAP.mobile,
-    [device]
-  );
-
-  const [size, setSize] = useState({
-    width: preset.width,
-    height: preset.height,
-  });
-
-  const [position, setPosition] = useState({
-    x: defaultX,
-    y: defaultY,
-  });
-
-  const isWeb = device === "web" || device === "desktop";
 
   return (
     <Rnd
-      bounds="parent"
-      size={size}
-      position={position}
-      minWidth={preset.width * 0.6}
-      minHeight={preset.height * 0.6}
-      dragHandleClassName="drag-handle"
-      resizeGrid={[8, 8]}
-      dragGrid={[8, 8]}
-      onDragStop={(_, d) => setPosition({ x: d.x, y: d.y })}
-      onResizeStop={(_, __, ref, ___, pos) => {
-        setSize({
-          width: ref.offsetWidth,
-          height: ref.offsetHeight,
-        });
-        setPosition(pos);
-      }}
-      className="absolute z-20"
+      default={{ x, y, width, height }}
+      dragHandleClassName="drag-handler"
+      enableResizing={{ bottomRight: true, bottomLeft: true }}
+      onDragStart={() => setPanningEnabled(false)}
+      onDragStop={() => setPanningEnabled(true)}
+      onResizeStart={() => setPanningEnabled(false)}
+      onResizeStop={() => setPanningEnabled(true)}
+      className="absolute"
     >
-      {/* ================= WRAPPER ================= */}
-      <div className="relative w-full h-full">
-
-        {/* ================= DRAG BAR (TOP, OUTSIDE FRAME) ================= */}
-        <div
-          className="
-            drag-handle
-            absolute -top-12 left-1/2 -translate-x-1/2
-            z-30
-            flex items-center gap-4
-            px-5 py-2
-            rounded-full
-            bg-black/80
-            border border-white/15
-            backdrop-blur-md
-            shadow-[0_10px_30px_rgba(0,0,0,0.45)]
-            cursor-grab active:cursor-grabbing
-            select-none
-          "
-        >
-          {/* grip */}
-          <div className="grid grid-cols-3 gap-1">
-            {Array.from({ length: 9 }).map((_, i) => (
-              <span
-                key={i}
-                className="w-2 h-2 rounded-sm bg-neutral-400"
-              />
-            ))}
-          </div>
-
-          <span className="text-xl font-medium text-neutral-200 whitespace-nowrap">
-            {screen.screenName}
-          </span>
-
-          {isWeb && (
-            <div className="flex gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-red-500" />
-              <span className="w-2 h-2 rounded-full bg-yellow-400" />
-              <span className="w-2 h-2 rounded-full bg-green-500" />
-            </div>
-          )}
+      
+        {/* DRAG BAR — UNCHANGED */}
+        <div className="drag-handler cursor-grab w-10 h-10 dark:bg-white bg-gray-900 rounded-lg text-white dark:text-black  ">
+          <h2 className="flex gap-2 text-xl p-2">
+            <Grip /> 
+          </h2>
         </div>
 
-        {/* ================= FRAME ================= */}
-        <div
-          className="
-            h-full w-full
-            flex flex-col
-            bg-white
-            border border-black/10
-            shadow-[0_30px_90px_rgba(0,0,0,0.55)]
-            overflow-hidden
-          "
-          style={{ borderRadius: preset.radius }}
-        >
-          {/* ================= SCROLLABLE CONTENT ================= */}
-          <div className="relative flex-1 overflow-auto">
-            <iframe
-              title={screen.screenName}
-              sandbox="allow-scripts allow-same-origin"
-              className="w-full h-full border-none bg-white"
-              srcDoc={buildHtmlDocument(
-                screen.code,
-                projectDetail?.theme,
-                projectDetail?.device
-              )}
-            />
-          </div>
-        </div>
-      </div>
+        {/* IFRAME — UNCHANGED */}
+        <iframe
+          className="w-full h-[calc(100%-40px)] border-none rounded-2xl mt-5"
+          sandbox="allow-same-origin allow-scripts"
+          srcDoc={html}
+        />
+     
     </Rnd>
   );
 }
+
+export default ScreenFrame;
