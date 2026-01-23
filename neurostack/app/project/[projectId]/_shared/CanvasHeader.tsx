@@ -107,7 +107,7 @@ export default function CanvasHeader({
           "
         >
           <Save size={16} />
-          <span className="hidden sm:inline">Save</span>
+          <span className="hidden sm:inline cursor-pointer">Save</span>
         </button>
       </div>
     </header>

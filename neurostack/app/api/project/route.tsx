@@ -4,14 +4,14 @@ import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 
-/* ================= POST ================= */
+/* ================= POST (CREATE PROJECT) ================= */
 export async function POST(req: NextRequest) {
-  const { userInput, device, projectId } = await req.json();
   const user = await currentUser();
-
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const { userInput, device, projectId } = await req.json();
 
   const result = await db
     .insert(ProjectTable)
@@ -28,79 +28,72 @@ export async function POST(req: NextRequest) {
 
 /* ================= GET ================= */
 export async function GET(req: NextRequest) {
-    const user = await currentUser();
-  
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  
-    const { searchParams } = new URL(req.url);
-    const projectId = searchParams.get("projectId");
-  
-    if (!projectId) {
-      return NextResponse.json(
-        { error: "projectId is required" },
-        { status: 400 }
-      );
-    }
-  
-    /* ===== Fetch Project ===== */
-    const project = await db
-      .select()
-      .from(ProjectTable)
-      .where(
-        and(
-          eq(ProjectTable.projectId, projectId),
-          eq(
-            ProjectTable.userId,
-            user.primaryEmailAddress?.emailAddress as string
-          )
-        )
-      )
-      .limit(1);
-  
-    if (!project.length) {
-      return NextResponse.json(null);
-    }
-  
-    /* ===== Fetch Screen Config ===== */
-    const screens = await db
-      .select()
-      .from(ScreenConfig)
-      .where(eq(ScreenConfig.projectId, projectId));
-  
-   
-  
-    /* ===== RESPONSE ===== */
-    return NextResponse.json({
-      projectDetail : project[0],
-      screenConfig : screens,
-    });
-  }
-
-
-  /* ================= PUT ================= */
-export async function PUT(req: NextRequest) {
   const user = await currentUser();
-
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { projectId, projectName } = await req.json();
+  const { searchParams } = new URL(req.url);
+  const projectId = searchParams.get("projectId");
 
-  if (!projectId || !projectName) {
+  if (!projectId) {
     return NextResponse.json(
-      { error: "projectId and projectName are required" },
+      { error: "projectId is required" },
       { status: 400 }
     );
   }
 
-  // 🔥 OVERWRITE projectName
-  const updatedProject = await db
+  const project = await db
+    .select()
+    .from(ProjectTable)
+    .where(
+      and(
+        eq(ProjectTable.projectId, projectId),
+        eq(
+          ProjectTable.userId,
+          user.primaryEmailAddress?.emailAddress as string
+        )
+      )
+    )
+    .limit(1);
+
+  if (!project.length) {
+    return NextResponse.json(null);
+  }
+
+  const screens = await db
+    .select()
+    .from(ScreenConfig)
+    .where(eq(ScreenConfig.projectId, projectId));
+
+  return NextResponse.json({
+    projectDetail: project[0],
+    screenConfig: screens,
+  });
+}
+
+/* ================= PUT (SAVE ALL CHANGES) ================= */
+export async function PUT(req: NextRequest) {
+  const user = await currentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { projectId, projectName, theme } = await req.json();
+
+  if (!projectId) {
+    return NextResponse.json(
+      { error: "projectId is required" },
+      { status: 400 }
+    );
+  }
+
+  const updated = await db
     .update(ProjectTable)
     .set({
       projectName,
+      theme,
+      
     })
     .where(
       and(
@@ -113,14 +106,12 @@ export async function PUT(req: NextRequest) {
     )
     .returning();
 
-  if (!updatedProject.length) {
+  if (!updated.length) {
     return NextResponse.json(
       { error: "Project not found" },
       { status: 404 }
     );
   }
 
-  return NextResponse.json({
-    project: updatedProject[0],
-  });
+  return NextResponse.json({ project: updated[0] });
 }

@@ -9,90 +9,115 @@ interface TopLoaderProps {
 
 export default function TopLoader({
   visible,
-  message = "Loading…",
+  message = "Loading",
 }: TopLoaderProps) {
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+          className="fixed inset-0 z-50 flex items-center justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* ================= CARD ================= */}
+          {/* ===== BACKDROP ===== */}
           <motion.div
-            initial={{ scale: 0.92, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.92, opacity: 0 }}
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
+
+          {/* ===== CARD ===== */}
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 10 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 10 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="
-              relative w-[280px]
+              relative z-10 w-[300px]
               rounded-2xl
-              border
-              bg-white text-black
-              dark:bg-black dark:text-white
-              border-black/10 dark:border-white/10
-              shadow-[0_30px_80px_rgba(0,0,0,0.35)]
+              border border-white/10
+              bg-white/80 text-black
+              dark:bg-black/70 dark:text-white
+              backdrop-blur-xl
+              shadow-[0_40px_120px_rgba(0,0,0,0.35)]
               overflow-hidden
             "
           >
-            {/* ================= SHIMMER ================= */}
+            {/* ===== SOFT SHIMMER ===== */}
             <motion.div
               className="
                 absolute inset-0
                 bg-gradient-to-r
                 from-transparent
-                via-black/5 dark:via-white/10
+                via-purple-500/10 dark:via-orange-500/10
                 to-transparent
               "
-              initial={{ x: "-100%" }}
-              animate={{ x: "100%" }}
+              initial={{ x: "-120%" }}
+              animate={{ x: "120%" }}
               transition={{
                 repeat: Infinity,
-                duration: 1.6,
+                duration: 2,
                 ease: "easeInOut",
               }}
             />
 
-            {/* ================= CONTENT ================= */}
-            <div className="relative z-10 flex flex-col items-center gap-3 px-6 py-5">
-              {/* spinner */}
+            {/* ===== CONTENT ===== */}
+            <div className="relative z-10 flex flex-col items-center gap-4 px-6 py-6">
+              {/* Spinner */}
               <motion.div
                 className="
-                  h-6 w-6 rounded-full
+                  h-8 w-8 rounded-full
                   border-2
-                  border-black dark:border-white
-                  border-t-transparent
+                  border-purple-600/30 dark:border-orange-500/30
+                  border-t-purple-600 dark:border-t-orange-500
                 "
                 animate={{ rotate: 360 }}
                 transition={{
                   repeat: Infinity,
-                  duration: 0.8,
+                  duration: 0.9,
                   ease: "linear",
                 }}
               />
 
-              {/* text */}
-              <span className="text-sm font-medium tracking-wide opacity-80">
-                {message}
-              </span>
+              {/* Text + dots */}
+              <div className="flex items-center gap-1 text-sm font-medium tracking-wide opacity-80">
+                <span>{message}</span>
+                <motion.span
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.2 }}
+                >
+                  .
+                </motion.span>
+                <motion.span
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.2, delay: 0.2 }}
+                >
+                  .
+                </motion.span>
+                <motion.span
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.2, delay: 0.4 }}
+                >
+                  .
+                </motion.span>
+              </div>
             </div>
 
-            {/* ================= PROGRESS BAR ================= */}
+            {/* ===== PROGRESS LINE ===== */}
             <motion.div
               className="
                 absolute bottom-0 left-0 h-[3px]
                 bg-gradient-to-r
-                from-black dark:from-white
-                via-neutral-500
-                to-black dark:to-white
+                from-purple-600 via-purple-400 to-purple-600
+                dark:from-orange-500 dark:via-orange-400 dark:to-orange-500
               "
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
               transition={{
                 repeat: Infinity,
-                duration: 1.2,
+                duration: 1.4,
                 ease: "easeInOut",
               }}
             />
