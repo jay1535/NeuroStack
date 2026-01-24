@@ -52,7 +52,7 @@ export function ThemeToggleButton() {
         {theme === "light" ? (
           <Sun className="w-4 h-4  text-purple-900" />
         ) : (
-          <Moon className="w-4 h-4 text-orange-600 " />
+          <Moon className="w-4 h-4 text-purple-600 " />
         )}
       </div>
     </button>

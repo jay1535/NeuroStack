@@ -67,7 +67,7 @@ export default function CanvasHeader({
 
         <span className="text-2xl font-bold tracking-tight">
           Neuro
-          <span className="text-purple-600 dark:text-orange-600">
+          <span className="text-purple-600 dark:text-purple-600">
             Stack
           </span>
         </span>
@@ -101,7 +101,7 @@ export default function CanvasHeader({
             rounded-md px-3 py-1.5
             text-sm font-medium text-white
             bg-purple-700 hover:bg-purple-800
-            dark:bg-orange-600 dark:hover:bg-orange-600
+            dark:bg-purple-600 dark:hover:bg-purple-600
             active:scale-95
             transition
           "

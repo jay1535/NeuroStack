@@ -134,7 +134,7 @@ export default function ScreenFrame({
       className="absolute"
     >
       <div className="drag-handler">
-        <ScreenHandler screen={screen} />
+        <ScreenHandler screen={screen} iframeRef={iframeRef}/>
       </div>
 
       <iframe
