@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
-import { UserDetailContext } from "./context/UserDetailContext";
 import { Toaster } from "react-hot-toast";
+
+import { UserDetailContext } from "./context/UserDetailContext";
 import { SettingContext } from "./context/SettingContext";
+import { createUserIfNotExists } from "@/app/actions/create-user";
 
 interface ProviderProps
   extends React.ComponentProps<typeof NextThemesProvider> {
@@ -18,22 +19,26 @@ export default function Provider({
   ...props
 }: ProviderProps): JSX.Element {
   const { isLoaded, userId } = useAuth();
-  const [userDetail, setUserDetail] = React.useState();
-const [settingInfo, setSettingInfo] = React.useState();
-  const CreateNewUser = async () => {
+
+  const [userDetail, setUserDetail] = React.useState<any>(null);
+  const [settingInfo, setSettingInfo] = React.useState<any>(null);
+
+  const calledRef = React.useRef(false);
+
+  const createUser = async () => {
     try {
-      const result = await axios.post("/api/user");
-      setUserDetail(result.data);
+      const user = await createUserIfNotExists();
+      setUserDetail(user);
     } catch (error) {
       console.error("CreateNewUser failed:", error);
     }
   };
 
   React.useEffect(() => {
-    // 🔒 WAIT for Clerk
-    if (!isLoaded || !userId) return;
+    if (!isLoaded || !userId || calledRef.current) return;
 
-    CreateNewUser();
+    calledRef.current = true;
+    createUser();
   }, [isLoaded, userId]);
 
   return (
@@ -46,9 +51,9 @@ const [settingInfo, setSettingInfo] = React.useState();
     >
       <Toaster position="top-right" />
 
-      <UserDetailContext.Provider value={{userDetail, setUserDetail}}>
-        <SettingContext.Provider value={{settingInfo, setSettingInfo}}>
-        <div className="w-full">{children}</div>
+      <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+        <SettingContext.Provider value={{ settingInfo, setSettingInfo }}>
+          <div className="w-full">{children}</div>
         </SettingContext.Provider>
       </UserDetailContext.Provider>
     </NextThemesProvider>

@@ -1,0 +1,47 @@
+"use server";
+
+import { db } from "@/config/db";
+import { usersTable } from "@/config/schema";
+import { currentUser } from "@clerk/nextjs/server";
+import { eq } from "drizzle-orm";
+
+export async function createUserIfNotExists() {
+  const user = await currentUser();
+
+  if (!user || !user.primaryEmailAddress?.emailAddress) {
+    throw new Error("Unauthorized");
+  }
+
+  const email = user.primaryEmailAddress.emailAddress;
+
+  const existingUser = await db
+    .select({
+      id: usersTable.id,
+      name: usersTable.name,
+      email: usersTable.email,
+      credits: usersTable.credits,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.email, email))
+    .limit(1);
+
+  if (existingUser.length > 0) {
+    return existingUser[0];
+  }
+
+  const result = await db
+    .insert(usersTable)
+    .values({
+      name: user.fullName ?? "User",
+      email,
+      credits: 10,
+    })
+    .returning({
+      id: usersTable.id,
+      name: usersTable.name,
+      email: usersTable.email,
+      credits: usersTable.credits,
+    });
+
+  return result[0];
+}

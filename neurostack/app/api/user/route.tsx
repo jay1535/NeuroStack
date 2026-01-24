@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function POST() {
   try {
-    // 1️⃣ Get authenticated user
+    
     const user = await currentUser();
 
     if (!user || !user.primaryEmailAddress?.emailAddress) {
@@ -18,7 +18,7 @@ export async function POST() {
 
     const email = user.primaryEmailAddress.emailAddress;
 
-    // 2️⃣ Check if user exists
+    
     const existingUsers = await db
       .select()
       .from(usersTable)

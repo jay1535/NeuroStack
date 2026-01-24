@@ -59,18 +59,17 @@ export default function PlaygroundHero({
 
       {/* ================= ZOOM / PAN ================= */}
       <TransformWrapper
-  initialScale={INITIAL_SCALE}
-  initialPositionX={INITIAL_X}
-  initialPositionY={INITIAL_Y}
-  minScale={0.3}
-  maxScale={2.2}
-  limitToBounds={false}
-  wheel={{ step: 0.08 }}
-  panning={{ disabled: !panningEnabled }}
-  alignmentAnimation={{ disabled: true }}
-  velocityAnimation={{ disabled: true }}
->
-
+        initialScale={INITIAL_SCALE}
+        initialPositionX={INITIAL_X}
+        initialPositionY={INITIAL_Y}
+        minScale={0.3}
+        maxScale={2.2}
+        limitToBounds={false}
+        wheel={{ step: 0.08 }}
+        panning={{ disabled: !panningEnabled }}
+        alignmentAnimation={{ disabled: true }}
+        velocityAnimation={{ disabled: true }}
+      >
         {({ zoomIn, zoomOut, setTransform }) => (
           <>
             {/* ================= CONTROLS ================= */}
@@ -89,15 +88,9 @@ export default function PlaygroundHero({
                 <Minus size={18} />
               </button>
 
-              {/* ✅ SAFE RESET */}
               <button
                 onClick={() =>
-                  setTransform(
-                    INITIAL_X,
-                    INITIAL_Y,
-                    INITIAL_SCALE,
-                    0 // no animation → Turbopack safe
-                  )
+                  setTransform(INITIAL_X, INITIAL_Y, INITIAL_SCALE, 0)
                 }
                 className="p-2 rounded-md hover:bg-muted transition"
               >
@@ -123,6 +116,7 @@ export default function PlaygroundHero({
                       height={SCREEN_HEIGHT}
                       setPanningEnabled={setPanningEnabled}
                       htmlCode={screen.code}
+                      screen={screen}
                       projectDetail={projectDetail}
                     />
                   ) : (
