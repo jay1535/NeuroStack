@@ -51,7 +51,7 @@ export default function TopLoader({
                 absolute inset-0
                 bg-gradient-to-r
                 from-transparent
-                via-purple-500/10 dark:via-orange-500/10
+                via-purple-500/10 dark:via-purple-500/10
                 to-transparent
               "
               initial={{ x: "-120%" }}
@@ -70,8 +70,8 @@ export default function TopLoader({
                 className="
                   h-8 w-8 rounded-full
                   border-2
-                  border-purple-600/30 dark:border-orange-500/30
-                  border-t-purple-600 dark:border-t-orange-500
+                  border-purple-600/30 dark:border-purple-500/30
+                  border-t-purple-600 dark:border-t-purple-500
                 "
                 animate={{ rotate: 360 }}
                 transition={{
@@ -111,7 +111,7 @@ export default function TopLoader({
                 absolute bottom-0 left-0 h-[3px]
                 bg-gradient-to-r
                 from-purple-600 via-purple-400 to-purple-600
-                dark:from-orange-500 dark:via-orange-400 dark:to-orange-500
+                dark:from-purple-500 dark:via-purple-400 dark:to-purple-500
               "
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}

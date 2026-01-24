@@ -84,7 +84,7 @@ const onCreateProject = async () => {
           <span className="text-black/80 dark:text-white/80">
             but explaining it{" "}
           </span>
-          <span className="bg-linear-to-r from-purple-600 to-purple-600 dark:from-orange-600 dark:to-orange-600 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-purple-600 to-purple-600 dark:from-purple-600 dark:to-purple-600 bg-clip-text text-transparent">
             isn’t
           </span>
         </h1>
@@ -240,22 +240,22 @@ const onCreateProject = async () => {
     
         sm:hover:-translate-y-1
         sm:hover:shadow-lg sm:hover:shadow-purple-600/25
-        dark:sm:hover:shadow-orange-600/25
+        dark:sm:hover:shadow-purple-600/25
     
         sm:hover:border-purple-600/40
-        dark:sm:hover:border-orange-600/40
+        dark:sm:hover:border-purple-600/40
       "
 
                 onClick={() => setUserInput(suggestion?.description)}
               >
-                {/* Bloom glow (purple → orange) */}
+                {/* Bloom glow (purple → purple) */}
                 <span
                   className="
           pointer-events-none absolute inset-0
           opacity-0 sm:group-hover:opacity-100
           transition-opacity duration-300
           bg-linear-to-br
-          from-purple-600/20 via-transparent to-orange-600/20
+          from-purple-600/20 via-transparent to-purple-600/20
         "
                 />
 
@@ -265,7 +265,7 @@ const onCreateProject = async () => {
           pointer-events-none absolute -inset-y-full -left-full w-1/2
           bg-linear-to-r
           from-transparent via-purple-300/40 to-transparent
-          dark:via-orange-300/30
+          dark:via-purple-300/30
           rotate-12
           opacity-0 sm:group-hover:opacity-100
           sm:group-hover:translate-x-[260%]
@@ -281,7 +281,7 @@ const onCreateProject = async () => {
             transition-transform duration-300
             sm:group-hover:scale-110
             sm:group-hover:text-purple-600
-            dark:sm:group-hover:text-orange-400
+            dark:sm:group-hover:text-purple-400
             
           "
                   >

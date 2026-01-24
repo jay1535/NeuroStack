@@ -12,7 +12,7 @@ export default function CareersPage() {
         <div className="
           pl-6 pr-5 py-2
           rounded-r-full
-          bg-purple-700 dark:bg-orange-600
+          bg-purple-700 dark:bg-purple-600
           text-white text-sm font-semibold
           shadow-lg
           transition-all duration-300

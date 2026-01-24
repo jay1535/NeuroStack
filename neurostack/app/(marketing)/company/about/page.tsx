@@ -27,13 +27,13 @@ export default function AboutPage() {
           className="
             relative
             pl-6 pr-5 py-2
-            dark:bg-orange-600 bg-purple-700
+            dark:bg-purple-600 bg-purple-700
             text-white
             font-semibold text-sm
             rounded-r-full
             shadow-lg
             transition-all duration-300
-            hover:dark:bg-orange-600 hover:bg-purple-900
+            hover:dark:bg-purple-600 hover:bg-purple-900
             hover:pl-8
           "
         >
@@ -51,7 +51,7 @@ export default function AboutPage() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl sm:text-5xl font-extrabold dark:text-orange-600 text-black">
+          <h1 className="text-4xl sm:text-5xl font-extrabold dark:text-purple-600 text-black">
             About NeuroStack
           </h1>
 
@@ -94,7 +94,7 @@ export default function AboutPage() {
                 "Production-ready outputs by default",
               ].map((item, i) => (
                 <li key={i} className="flex gap-3">
-                  <span className="w-2 h-2 mt-2 rounded-full bg-orange-600" />
+                  <span className="w-2 h-2 mt-2 rounded-full bg-purple-600" />
                   {item}
                 </li>
               ))}
@@ -146,11 +146,11 @@ export default function AboutPage() {
                   bg-black/5 border border-black/10
                   dark:bg-white/5 dark:border-white/10
                   p-8
-                  hover:border-orange-600/40
+                  hover:border-purple-600/40
                   transition
                 "
               >
-                <h3 className="text-xl font-semibold dark:text-orange-600 text-black">
+                <h3 className="text-xl font-semibold dark:text-purple-600 text-black">
                   {item.title}
                 </h3>
 
@@ -182,11 +182,11 @@ export default function AboutPage() {
                   bg-black/5 border border-black/10
                   dark:bg-white/5 dark:border-white/10
                   p-6 text-center
-                  hover:border-orange-600/40
+                  hover:border-purple-600/40
                   transition
                 "
               >
-                <p className="dark:text-orange-600 text-black font-semibold">
+                <p className="dark:text-purple-600 text-black font-semibold">
                   {role}
                 </p>
 
@@ -219,7 +219,7 @@ export default function AboutPage() {
                   p-8
                 "
               >
-                <h3 className="text-lg font-semibold dark:text-orange-600 text-black">
+                <h3 className="text-lg font-semibold dark:text-purple-600 text-black">
                   {v.title}
                 </h3>
 

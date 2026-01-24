@@ -60,7 +60,7 @@ export default function Home() {
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
             AI-Powered{" "}
-            <span className="dark:text-orange-600 text-purple-700">
+            <span className="dark:text-purple-600 text-purple-700">
               UI/UX Design
             </span>
             <br /> for Mobile & Web
@@ -160,7 +160,7 @@ export default function Home() {
               "UX best practices built-in",
             ].map((item, i) => (
               <div key={i} className="flex items-center justify-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-orange-600" />
+                <span className="w-2 h-2 rounded-full bg-purple-600" />
                 {item}
               </div>
             ))}
@@ -197,11 +197,11 @@ export default function Home() {
                   bg-black/5 border border-black/10
                   dark:bg-white/5 dark:border-white/10
                   transition-all duration-300
-                  hover:border-orange-600/40
+                  hover:border-purple-600/40
                   hover:-translate-y-1
                 "
               >
-                <h3 className="text-lg font-semibold dark:text-orange-600 text-purple-700">
+                <h3 className="text-lg font-semibold dark:text-purple-600 text-purple-700">
                   {title}
                 </h3>
                 <p className="mt-3 text-gray-600 dark:text-gray-400">
@@ -234,7 +234,7 @@ export default function Home() {
 
             <h2 className="text-4xl font-extrabold leading-tight">
               From Prompt to{" "}
-              <span className="dark:text-orange-600 text-purple-700">Production UI</span>
+              <span className="dark:text-purple-600 text-purple-700">Production UI</span>
             </h2>
 
             <p className="mt-6 text-gray-600 dark:text-gray-400 max-w-xl">
@@ -249,7 +249,7 @@ export default function Home() {
                 "UX best practices built-in",
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-orange-600" />
+                  <span className="w-2 h-2 rounded-full bg-purple-600" />
                   {item}
                 </li>
               ))}
@@ -304,7 +304,7 @@ export default function Home() {
 
           <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
             Design Faster with{" "}
-            <span className="dark:text-orange-600 text-purple-700">
+            <span className="dark:text-purple-600 text-purple-700">
               NeuroStack
             </span>
           </h2>

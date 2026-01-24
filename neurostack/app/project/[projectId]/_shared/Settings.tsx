@@ -113,7 +113,7 @@ export default function Settings({ project }: Props) {
             />
             <span className="text-xl font-bold">
               Neuro
-              <span className="text-purple-600 dark:text-orange-600">
+              <span className="text-purple-600 dark:text-purple-600">
                 Stack
               </span>
             </span>
@@ -244,7 +244,7 @@ export default function Settings({ project }: Props) {
                       transition
                       ${
                         isActive
-                          ? "bg-purple-50 dark:bg-orange-600/10 border-l-2 border-purple-600 dark:border-orange-600"
+                          ? "bg-purple-50 dark:bg-purple-600/10 border-l-2 border-purple-600 dark:border-purple-600"
                           : "hover:bg-black/5 dark:hover:bg-white/10"
                       }
                     `}
@@ -253,7 +253,7 @@ export default function Settings({ project }: Props) {
                       <span
                         className={`text-sm font-medium ${
                           isActive
-                            ? "text-purple-700 dark:text-orange-400"
+                            ? "text-purple-700 dark:text-purple-400"
                             : ""
                         }`}
                       >
@@ -264,7 +264,7 @@ export default function Settings({ project }: Props) {
                       </span>
 
                       {isActive && (
-                        <span className="text-xs font-semibold text-purple-600 dark:text-orange-400">
+                        <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">
                           Active
                         </span>
                       )}
