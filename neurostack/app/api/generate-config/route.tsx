@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { APP_LAYOUT_CONFIG_PROMPT } from "@/data/prompt";
 import { db } from "@/config/db";
 import { ProjectTable, ScreenConfig } from "@/config/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { ai } from "@/config/gemini";
+import { currentUser } from "@clerk/nextjs/server";
 
 
 
@@ -70,6 +71,42 @@ RULES:
   } catch (err: any) {
     return NextResponse.json(
       { error: "Gemini failed", message: err?.message },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { projectId, screenId } = await req.json();
+
+    if (!projectId || !screenId) {
+      return NextResponse.json(
+        { error: "projectId and screenId are required" },
+        { status: 400 }
+      );
+    }
+
+    await db
+      .delete(ScreenConfig)
+      .where(
+        and(
+          eq(ScreenConfig.projectId, projectId),
+          eq(ScreenConfig.screenId, screenId)
+        )
+      );
+
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    console.error("DELETE SCREEN ERROR:", err);
+    return NextResponse.json(
+      { error: "Failed to delete screen", message: err?.message },
       { status: 500 }
     );
   }

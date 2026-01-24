@@ -6,40 +6,54 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 import PlaygroundHero from "./_shared/PlaygroundHero";
-
 import CanvasHeader from "./_shared/CanvasHeader";
 import Settings from "./_shared/Settings";
 import TopLoader from "./_shared/TopLoader";
 
 import { ProjectType, ScreenConfig } from "@/type/types";
 import { SettingContext } from "@/app/context/SettingContext";
+import { RefreshDataContext } from "@/app/context/RefreshDataContext";
 
 export default function PlaygroundPage() {
   const { projectId } = useParams<{ projectId: string }>();
 
-  const [zoom, setZoom] = useState(0.7); // ✅ 50%
+  /* ================= UI STATE ================= */
+  const [zoom, setZoom] = useState(0.7);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const [projectDetail, setProjectDetail] = useState<ProjectType | null>(null);
+  /* ================= DATA STATE ================= */
+  const [projectDetail, setProjectDetail] =
+    useState<ProjectType | null>(null);
   const [screenConfig, setScreenConfig] = useState<ScreenConfig[]>([]);
 
+  /* ================= LOADING ================= */
   const [loading, setLoading] = useState(true);
-  const [loadingMessage, setLoadingMessage] = useState("Loading project…");
-  const {settingInfo, setSettingInfo} = useContext(SettingContext);
+  const [loadingMessage, setLoadingMessage] =
+    useState("Loading project…");
 
+  const { settingInfo, setSettingInfo } =
+    useContext(SettingContext);
+
+  /* ================= REFRESH CONTEXT ================= */
+  const [refreshData, setRefreshData] = useState(false);
+
+  /* ================= PIPELINE GUARDS ================= */
   const configGenerated = useRef(false);
   const uiGenerated = useRef(false);
 
-  /* ================= FETCH ================= */
+  /* ================= FETCH PROJECT ================= */
   const fetchProject = async () => {
     try {
       setLoading(true);
       setLoadingMessage("Loading project…");
 
-      const res = await axios.get(`/api/project?projectId=${projectId}`);
+      const res = await axios.get(
+        `/api/project?projectId=${projectId}`
+      );
+
       setProjectDetail(res.data.projectDetail);
       setScreenConfig(res.data.screenConfig ?? []);
-      setSettingInfo(res.data.projectDetail)
+      setSettingInfo(res.data.projectDetail);
     } catch {
       toast.error("Failed to load project");
     } finally {
@@ -47,27 +61,34 @@ export default function PlaygroundPage() {
     }
   };
 
+  /* ================= INITIAL + REFRESH FETCH ================= */
   useEffect(() => {
     if (projectId) fetchProject();
-  }, [projectId]);
+  }, [projectId, refreshData]);
 
-  /* ================= PIPELINE ================= */
+  /* ================= GENERATION PIPELINE ================= */
   useEffect(() => {
     if (!projectDetail || loading) return;
 
-    if (screenConfig.length === 0 && !configGenerated.current) {
+    if (
+      screenConfig.length === 0 &&
+      !configGenerated.current
+    ) {
       configGenerated.current = true;
       generateConfig();
       return;
     }
 
-    if (screenConfig.some(s => !s.code) && !uiGenerated.current) {
+    if (
+      screenConfig.some((s) => !s.code) &&
+      !uiGenerated.current
+    ) {
       uiGenerated.current = true;
       generateUI();
     }
   }, [projectDetail, screenConfig, loading]);
 
-  /* ================= GENERATORS ================= */
+  /* ================= GENERATE CONFIG ================= */
   const generateConfig = async () => {
     try {
       setLoading(true);
@@ -87,6 +108,7 @@ export default function PlaygroundPage() {
     }
   };
 
+  /* ================= GENERATE UI ================= */
   const generateUI = async () => {
     try {
       setLoading(true);
@@ -114,47 +136,60 @@ export default function PlaygroundPage() {
     }
   };
 
+  /* ================= SAVE ================= */
   const saveAllChanges = async () => {
     if (!projectDetail) return;
-  
+
     try {
       await axios.put("/api/project", {
         projectId: projectDetail.projectId,
         projectName: projectDetail.projectName,
         theme: settingInfo?.theme,
       });
-  
+
       toast.success("Project saved");
     } catch {
       toast.error("Failed to save project");
     }
   };
-  
+
+  /* ================= RENDER ================= */
   return (
-    <>
+    <RefreshDataContext.Provider
+      value={{ refreshData, setRefreshData }}
+    >
       <CanvasHeader
-  onSave={saveAllChanges}
-  onOpenSettings={() => setSettingsOpen(v => !v)}
-  settingsOpen={settingsOpen}
-/>
+        onSave={saveAllChanges}
+        onOpenSettings={() =>
+          setSettingsOpen((v) => !v)
+        }
+        settingsOpen={settingsOpen}
+      />
 
-
-      <TopLoader visible={loading} message={loadingMessage} />
+      <TopLoader
+        visible={loading}
+        message={loadingMessage}
+      />
 
       <aside
         className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white dark:bg-[#0d0d12]
-        transition-transform duration-300 ${settingsOpen ? "translate-x-0" : "-translate-x-full"}`}
+        transition-transform duration-300 ${
+          settingsOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
+        }`}
       >
-        {projectDetail && <Settings project={projectDetail} />}
+        {projectDetail && (
+          <Settings project={projectDetail} />
+        )}
       </aside>
 
       <PlaygroundHero
-  zoom={zoom}
-  screens={screenConfig}
-  projectDetail={projectDetail}
-  settingsOpen={settingsOpen}
-   
-/>
-    </>
+        zoom={zoom}
+        screens={screenConfig}
+        projectDetail={projectDetail}
+        settingsOpen={settingsOpen}
+      />
+    </RefreshDataContext.Provider>
   );
 }

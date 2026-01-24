@@ -6,9 +6,9 @@ import { Rnd } from "react-rnd";
 import { resolveTheme } from "@/data/resolveTheme";
 import { ProjectType, ScreenConfig } from "@/type/types";
 import { SettingContext } from "@/app/context/SettingContext";
+import { RefreshDataContext } from "@/app/context/RefreshDataContext"; // ✅ ADDED
 import ScreenHandler from "./ScreenHandler";
 import { htmlWrapper } from "@/data/constant";
-
 
 type Props = {
   x: number;
@@ -29,10 +29,15 @@ export default function ScreenFrame({
   height,
   htmlCode,
   screen,
+  projectDetail,
 }: Props) {
   /* ================= LIVE THEME ================= */
   const { settingInfo } = useContext(SettingContext);
   const resolvedTheme = resolveTheme(settingInfo?.theme);
+
+  /* ================= REFRESH CONTEXT ================= */
+  const refreshCtx = useContext(RefreshDataContext); // ✅ ADDED
+  const refreshKey = refreshCtx?.refreshData ?? false; // ✅ ADDED
 
   /* ================= REFS ================= */
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -82,9 +87,12 @@ export default function ScreenFrame({
       setSize((s) =>
         Math.abs(s.height - next) > 2 ? { ...s, height: next } : s
       );
-    } catch {}
+    } catch {
+      // silent by design
+    }
   }, []);
 
+  /* ================= IFRAME OBSERVERS ================= */
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -114,9 +122,16 @@ export default function ScreenFrame({
     };
   }, [measureIframeHeight, htmlCode, themeVersion]);
 
+  /* ================= AUTO-REALIGN ON DELETE ================= */
+  useEffect(() => {
+    // 🔥 Forces Rnd to recompute layout after screen deletion
+    setSize((s) => ({ ...s }));
+  }, [refreshKey]); // ✅ THIS is what makes screens rearrange
+
   /* ================= RENDER ================= */
   return (
     <Rnd
+      key={`${screen.screenId}-${refreshKey}`} // ✅ CRITICAL: forces remount after delete
       default={{ x, y, width, height }}
       size={size}
       dragHandleClassName="drag-handler"
@@ -133,10 +148,18 @@ export default function ScreenFrame({
       }}
       className="absolute"
     >
+      {/* ================= HEADER ================= */}
       <div className="drag-handler">
-        <ScreenHandler screen={screen} iframeRef={iframeRef}/>
+        {projectDetail && (
+          <ScreenHandler
+            screen={screen}
+            iframeRef={iframeRef}
+            projectId={projectDetail.projectId}
+          />
+        )}
       </div>
 
+      {/* ================= IFRAME ================= */}
       <iframe
         key={themeVersion}
         ref={iframeRef}
