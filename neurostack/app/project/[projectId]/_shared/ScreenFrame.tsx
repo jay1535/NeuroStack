@@ -6,8 +6,9 @@ import { Grip } from "lucide-react";
 
 import { themeToCssVars } from "@/data/themes";
 import { resolveTheme } from "@/data/resolveTheme";
-import { ProjectType } from "@/type/types";
+import { ProjectType, ScreenConfig } from "@/type/types";
 import { SettingContext } from "@/app/context/SettingContext";
+import ScreenHandler from "./ScreenHandler";
 
 type Props = {
   x: number;
@@ -16,6 +17,7 @@ type Props = {
   width: number;
   height: number;
   htmlCode: string | undefined;
+  screen: ScreenConfig;
   projectDetail: ProjectType | null;
 };
 
@@ -26,6 +28,7 @@ export default function ScreenFrame({
   width,
   height,
   htmlCode,
+  screen,
 }: Props) {
   /* ================= LIVE THEME ================= */
   const { settingInfo } = useContext(SettingContext);
@@ -80,48 +83,7 @@ export default function ScreenFrame({
       font-family: Inter, system-ui, sans-serif;
     }
 
-    /* =====================================================
-       🔥 FORCE THEME COMPLIANCE (THIS FIXES YOUR ISSUE)
-       ===================================================== */
-
     body, body * {
-      color: var(--foreground) !important;
-    }
-
-    /* Card / surface overrides */
-    .bg-white,
-    .bg-gray-50,
-    .bg-slate-50,
-    .bg-neutral-50 {
-      background-color: var(--card) !important;
-    }
-
-    /* Dark text classes */
-    .text-black,
-    .text-gray-900,
-    .text-slate-900 {
-      color: var(--foreground) !important;
-    }
-
-    /* Light text classes (THE PROBLEM ON LIGHT BG) */
-    .text-white,
-    .text-gray-100,
-    .text-gray-200,
-    .text-slate-100,
-    .text-slate-200 {
-      color: var(--foreground) !important;
-    }
-
-    /* Muted text */
-    .text-gray-400,
-    .text-gray-500,
-    .text-slate-400,
-    .text-slate-500 {
-      color: var(--muted-foreground) !important;
-    }
-
-    /* Headings */
-    h1, h2, h3, h4, h5, h6 {
       color: var(--foreground) !important;
     }
   </style>
@@ -179,17 +141,6 @@ export default function ScreenFrame({
         attributes: true,
         characterData: true,
       });
-
-      const t1 = setTimeout(measureIframeHeight, 50);
-      const t2 = setTimeout(measureIframeHeight, 200);
-      const t3 = setTimeout(measureIframeHeight, 600);
-
-      return () => {
-        observer.disconnect();
-        clearTimeout(t1);
-        clearTimeout(t2);
-        clearTimeout(t3);
-      };
     };
 
     iframe.addEventListener("load", onLoad);
@@ -220,12 +171,10 @@ export default function ScreenFrame({
       }}
       className="absolute"
     >
-      {/* DRAG BAR */}
-      <div className="drag-handler cursor-grab w-10 h-10 bg-gray-900 dark:bg-white rounded-lg text-white dark:text-black flex items-center justify-center">
-        <Grip />
-      </div>
+      <div className="drag-handler">
+  <ScreenHandler screen={screen} />
+</div>
 
-      {/* IFRAME */}
       <iframe
         key={themeVersion}
         ref={iframeRef}

@@ -81,7 +81,7 @@ export default function Home() {
           {/* ================= CTA BUTTONS ================= */}
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <div className="w-full sm:w-auto">
-           
+            <ClientOnly>
   <SignedIn>
   <Button
   onClick={() => router.push("/dashboard")}
@@ -142,6 +142,7 @@ export default function Home() {
                   </Button>
                 
               </SignedOut>
+              </ClientOnly> 
             </div>
           </div>
 
@@ -281,7 +282,7 @@ export default function Home() {
 
       {/* ================= CTA ================= */}
       <section className="py-36 px-6 bg-neutral-100 dark:bg-neutral-950 min-h-screen">
-        <ClientOnly>
+       
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -314,7 +315,7 @@ export default function Home() {
 
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
   <div className="w-full sm:w-auto">
-   
+  <ClientOnly>
       <SignedIn>
        <Button
   onClick={() => router.push("/dashboard")}
@@ -373,6 +374,7 @@ Try NeuroStack
           </Button>
         </SignUpButton>
       </SignedOut>
+      </ClientOnly>
     
   </div>
 </div>
@@ -382,7 +384,7 @@ Try NeuroStack
             No credit card required • Free to get started
           </p>
         </motion.div>
-        </ClientOnly>
+        
       </section>
 
       {/* ================= FOOTER ================= */}
