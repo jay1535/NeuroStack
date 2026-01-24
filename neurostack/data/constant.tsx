@@ -1,3 +1,4 @@
+import { themeToCssVars } from "@/data/themes";
 export const suggestions = [
   {
     icon: "🧳",
@@ -60,3 +61,58 @@ export const suggestions = [
       "Design a job portal website that connects recruiters and job seekers with job listings, smart filters, resume uploads, application tracking, and notifications. Include job listing, job details, applicant dashboard, recruiter dashboard, and profile screens."
   }
 ];
+
+
+
+
+
+export function htmlWrapper({
+  htmlCode,
+  resolvedTheme,
+}: {
+  htmlCode?: string;
+  resolvedTheme: any;
+}) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Tailwind -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Font Awesome -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      ${themeToCssVars(resolvedTheme)}
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    body, body * {
+      color: var(--foreground) !important;
+    }
+  </style>
+</head>
+
+<body class="w-full">
+  ${htmlCode ?? ""}
+</body>
+</html>`;
+}

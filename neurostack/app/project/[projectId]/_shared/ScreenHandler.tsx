@@ -11,9 +11,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vs } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { vs, vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
+
+
+import { resolveTheme } from "@/data/resolveTheme";
+import { htmlWrapper } from "@/data/constant";
+import { SettingContext } from "@/app/context/SettingContext";
+import { useContext } from "react";
 
 type Props = {
   screen: ScreenConfig;
@@ -22,14 +28,21 @@ type Props = {
 export default function ScreenHandler({ screen }: Props) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const { settingInfo } = useContext(SettingContext);
+  const resolvedTheme = resolveTheme(settingInfo?.theme);
+
+  const wrappedHtml = htmlWrapper({
+    htmlCode: screen.code,
+    resolvedTheme,
+  });
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(screen.code || "");
-    toast.success("Code copied");
+    await navigator.clipboard.writeText(wrappedHtml);
+    toast.success("Full HTML copied");
   };
 
   const handleDownload = () => {
-    const blob = new Blob([screen.code || ""], { type: "text/html" });
+    const blob = new Blob([wrappedHtml], { type: "text/html" });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
@@ -38,7 +51,7 @@ export default function ScreenHandler({ screen }: Props) {
     a.click();
 
     URL.revokeObjectURL(url);
-    toast.success("Code downloaded");
+    toast.success("HTML downloaded");
   };
 
   return (
@@ -53,19 +66,11 @@ export default function ScreenHandler({ screen }: Props) {
 
       {/* Right */}
       <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleCopy}
-        >
+        <Button variant="ghost" size="icon" onClick={handleCopy}>
           <Copy size={16} />
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleDownload}
-        >
+        <Button variant="ghost" size="icon" onClick={handleDownload}>
           <Download size={16} />
         </Button>
 
@@ -76,48 +81,35 @@ export default function ScreenHandler({ screen }: Props) {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="w-[94vw] h-[92vh] max-w-none p-0 overflow-hidden rounded-2xl border bg-background shadow-2xl">
-            {/* THEME RESPONSIVE HEADER */}
-            <DialogHeader
-              className="
-                px-6 py-4 border-b
-                bg-white text-black
-                dark:bg-black dark:text-white
-              "
-            >
+          <DialogContent className="w-[80vw] h-[92vh] max-w-none p-0 overflow-hidden rounded-2xl border bg-background shadow-2xl">
+            <DialogHeader className="px-6 py-4 border-b bg-white dark:bg-black text-black dark:text-white">
               <DialogTitle className="flex flex-col gap-1">
                 <span className="text-xl font-semibold">
                   {screen.screenName || "Screen Code"}
                 </span>
                 <span className="text-sm opacity-70">
-                  HTML Source Code Preview
+                  Full HTML (Theme + Tailwind)
                 </span>
               </DialogTitle>
             </DialogHeader>
 
-            {/* CODE AREA */}
-            <div className="flex-1 overflow-x-auto overflow-y-auto bg-white ">
+            <div className="flex-1 overflow-x-auto overflow-y-auto bg-white dark:bg-black">
               <div className="min-w-max">
                 <SyntaxHighlighter
                   language="html"
-                  style={vs}
+                  style={isDark ? vscDarkPlus : vs}
                   showLineNumbers
                   wrapLongLines={false}
                   customStyle={{
                     margin: 0,
                     background: "transparent",
                     padding: "2rem",
-                    fontSize: "1rem",
+                    fontSize: "0.95rem",
                     lineHeight: "1.8",
                     whiteSpace: "pre",
                   }}
-                  lineNumberStyle={{
-                    color: isDark ? "#888" : "#444",
-                    paddingRight: "1.25rem",
-                    minWidth: "3.5rem",
-                  }}
                 >
-                  {screen.code || "<!-- No code available -->"}
+                  {wrappedHtml}
                 </SyntaxHighlighter>
               </div>
             </div>

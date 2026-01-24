@@ -2,13 +2,13 @@
 
 import { useContext, useCallback, useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
-import { Grip } from "lucide-react";
 
-import { themeToCssVars } from "@/data/themes";
 import { resolveTheme } from "@/data/resolveTheme";
 import { ProjectType, ScreenConfig } from "@/type/types";
 import { SettingContext } from "@/app/context/SettingContext";
 import ScreenHandler from "./ScreenHandler";
+import { htmlWrapper } from "@/data/constant";
+
 
 type Props = {
   x: number;
@@ -51,49 +51,11 @@ export default function ScreenFrame({
     setSize({ width, height });
   }, [width, height]);
 
-  /* ================= HTML TEMPLATE ================= */
-  const html = `
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <link
-    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-    rel="stylesheet"
-  />
-
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    rel="stylesheet"
-  />
-
-  <style>
-    :root {
-      ${themeToCssVars(resolvedTheme)}
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      background: var(--background);
-      color: var(--foreground);
-      font-family: Inter, system-ui, sans-serif;
-    }
-
-    body, body * {
-      color: var(--foreground) !important;
-    }
-  </style>
-</head>
-
-<body class="w-full">
-  ${htmlCode ?? ""}
-</body>
-</html>
-`;
+  /* ================= HTML (USING WRAPPER) ================= */
+  const html = htmlWrapper({
+    htmlCode,
+    resolvedTheme,
+  });
 
   /* ================= AUTO HEIGHT ================= */
   const measureIframeHeight = useCallback(() => {
@@ -172,8 +134,8 @@ export default function ScreenFrame({
       className="absolute"
     >
       <div className="drag-handler">
-  <ScreenHandler screen={screen} />
-</div>
+        <ScreenHandler screen={screen} />
+      </div>
 
       <iframe
         key={themeVersion}
