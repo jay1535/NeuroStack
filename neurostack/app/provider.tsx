@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import { UserDetailContext } from "./context/UserDetailContext";
 import { SettingContext } from "./context/SettingContext";
 import { createUserIfNotExists } from "@/app/actions/create-user";
+import { RefreshDataContext } from "./context/RefreshDataContext";
 
 interface ProviderProps
   extends React.ComponentProps<typeof NextThemesProvider> {
@@ -22,6 +23,7 @@ export default function Provider({
 
   const [userDetail, setUserDetail] = React.useState<any>(null);
   const [settingInfo, setSettingInfo] = React.useState<any>(null);
+  const [refreshData, setRefreshData] = React.useState<any>(null);
 
   const calledRef = React.useRef(false);
 
@@ -53,7 +55,9 @@ export default function Provider({
 
       <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
         <SettingContext.Provider value={{ settingInfo, setSettingInfo }}>
+          <RefreshDataContext.Provider value={{refreshData, setRefreshData }}>
           <div className="w-full">{children}</div>
+          </RefreshDataContext.Provider>
         </SettingContext.Provider>
       </UserDetailContext.Provider>
     </NextThemesProvider>

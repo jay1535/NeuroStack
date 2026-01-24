@@ -1,7 +1,15 @@
 "use client";
 
-import { useContext } from "react";
-import { Code, Grip, Copy, Download } from "lucide-react";
+import { useContext, useState } from "react";
+import {
+  Code,
+  Grip,
+  Copy,
+  Download,
+  MoreVertical,
+  Trash,
+  WandSparkles,
+} from "lucide-react";
 import { ScreenConfig } from "@/type/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,40 +19,86 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vs, vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
 import html2canvas from "html2canvas";
+import axios from "axios";
 
 import { resolveTheme } from "@/data/resolveTheme";
 import { htmlWrapper } from "@/data/constant";
 import { SettingContext } from "@/app/context/SettingContext";
+import { RefreshDataContext } from "@/app/context/RefreshDataContext";
 
 type Props = {
   screen: ScreenConfig;
   iframeRef: React.RefObject<HTMLIFrameElement>;
+  projectId: string;
 };
 
-export default function ScreenHandler({ screen, iframeRef }: Props) {
+export default function ScreenHandler({
+  screen,
+  iframeRef,
+  projectId,
+}: Props) {
+  /* ================= THEME ================= */
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
   const { settingInfo } = useContext(SettingContext);
   const resolvedTheme = resolveTheme(settingInfo?.theme);
 
+  /* ================= REFRESH CONTEXT ================= */
+  const refreshCtx = useContext(RefreshDataContext);
+  if (!refreshCtx) {
+    throw new Error(
+      "ScreenHandler must be used inside RefreshDataContext.Provider"
+    );
+  }
+  const { setRefreshData } = refreshCtx;
+
+  /* ================= STATE ================= */
+  const [editPrompt, setEditPrompt] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  /* ================= HTML ================= */
   const wrappedHtml = htmlWrapper({
     htmlCode: screen.code,
     resolvedTheme,
   });
 
-  /* ================= COPY HTML ================= */
+  /* ================= COPY ================= */
   const handleCopy = async () => {
     await navigator.clipboard.writeText(wrappedHtml);
     toast.success("Full HTML copied");
   };
 
-  /* ================= SCREENSHOT DOWNLOAD ================= */
+  /* ================= SCREENSHOT (FIXED) ================= */
   const handleDownload = async () => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -53,24 +107,39 @@ export default function ScreenHandler({ screen, iframeRef }: Props) {
       const doc = iframe.contentDocument;
       if (!doc) return;
 
-      const body = doc.body;
+      await new Promise((r) => requestAnimationFrame(r));
 
-      // wait one frame to stabilize layout
-      await new Promise((res) => requestAnimationFrame(res));
-
-      const canvas = await html2canvas(body, {
-        backgroundColor: null,
+      const canvas = await html2canvas(doc.body, {
+        scale: window.devicePixelRatio || 1,
+        backgroundColor: isDark ? "#000000" : "#ffffff",
         useCORS: true,
         allowTaint: false,
-        scale: window.devicePixelRatio || 1,
-        ignoreElements: (el) =>
-          el.tagName === "IMG" &&
-          (el as HTMLImageElement).src.includes("pravatar.cc"),
+
+        // 🔥 CRITICAL FIX (NO MORE Unsplash / Pravatar ERRORS)
+        ignoreElements: (el) => {
+          if (el.tagName !== "IMG") return false;
+          const src = (el as HTMLImageElement).src;
+          return src.startsWith("http");
+        },
+
+        // 🔥 KILL GRADIENTS & BLUR (html2canvas bug source)
+        onclone: (clonedDoc) => {
+          clonedDoc.querySelectorAll<HTMLElement>("*").forEach((el) => {
+            const style = getComputedStyle(el);
+
+            if (style.backgroundImage.includes("gradient")) {
+              el.style.backgroundImage = "none";
+            }
+
+            if (style.backdropFilter !== "none") {
+              el.style.backdropFilter = "none";
+              el.style.webkitBackdropFilter = "none";
+            }
+          });
+        },
       });
-      
 
       const image = canvas.toDataURL("image/png");
-
       const link = document.createElement("a");
       link.href = image;
       link.download = `${screen.screenName || "screen"}.png`;
@@ -78,84 +147,168 @@ export default function ScreenHandler({ screen, iframeRef }: Props) {
 
       toast.success("Screenshot downloaded");
     } catch (err) {
-      console.error("Screenshot failed:", err);
+      console.error(err);
       toast.error("Screenshot failed");
     }
   };
 
+  /* ================= AI EDIT ================= */
+  const handleEditScreen = async () => {
+    if (!editPrompt.trim()) {
+      toast.error("Please describe what you want to change");
+      return;
+    }
+
+    const toastId = toast.loading("Regenerating screen…");
+
+    try {
+      setEditing(true);
+
+      await axios.post("/api/edit-screen", {
+        projectId,
+        screenId: screen.screenId,
+        userInput: editPrompt,
+        oldCode: screen.code,
+      });
+
+      toast.success("Screen regenerated", { id: toastId });
+      setEditPrompt("");
+      setPopoverOpen(false);
+      setRefreshData((v) => !v);
+    } catch {
+      toast.error("Failed to regenerate", { id: toastId });
+    } finally {
+      setEditing(false);
+    }
+  };
+
+  /* ================= DELETE ================= */
+  const handleDelete = async () => {
+    await axios.delete("/api/generate-config", {
+      data: { projectId, screenId: screen.screenId },
+    });
+
+    toast.success("Screen deleted");
+    setRefreshData((v) => !v);
+  };
+
+  /* ================= RENDER ================= */
   return (
-    <div className="flex items-center justify-between px-4 py-2">
+    <div className="flex items-center justify-between px-6 py-4 min-h-[72px]">
       {/* LEFT */}
-      <div className="flex items-center gap-3">
-        <Grip size={22} className="opacity-70 cursor-grab" />
-        <h2 className="text-sm font-semibold tracking-wide">
+      <div className="flex items-center gap-4">
+        <Grip size={42} className="opacity-70 cursor-grab" />
+        <h2 className="text-base font-semibold">
           {screen.screenName || "Drag Here"}
         </h2>
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" onClick={handleCopy}>
-          <Copy size={16} />
-        </Button>
-
-        {/* DOWNLOAD = SCREENSHOT */}
-        <Button variant="ghost" size="icon" onClick={handleDownload}>
-          <Download size={16} />
-        </Button>
-
+      <div className="flex items-center gap-2">
+        {/* CODE */}
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Code size={16} />
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Code size={18} />
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="w-[80vw] h-[92vh] max-w-none p-0 overflow-hidden rounded-2xl border bg-background shadow-2xl">
-            <DialogHeader className="px-6 py-4 border-b bg-white dark:bg-black text-black dark:text-white">
-              <DialogTitle className="flex flex-col gap-1">
-                <span className="text-xl font-semibold">
-                  {screen.screenName || "Screen Code"}
-                </span>
-                <span className="text-sm opacity-70">
-                  HTML + Tailwind CSS Source Code
-                </span>
+          <DialogContent className="w-[92vw] h-[96vh] max-w-none p-0">
+            <DialogHeader className="px-6 py-4 border-b">
+              <DialogTitle className="text-xl font-semibold">
+                {screen.screenName || "Screen Code"}
               </DialogTitle>
             </DialogHeader>
 
-            <div className="flex-1 overflow-x-auto overflow-y-auto bg-white dark:bg-black relative">
-              <div className="min-w-max">
-                <SyntaxHighlighter
-                  language="html"
-                  style={isDark ? vscDarkPlus : vs}
-                  showLineNumbers
-                  customStyle={{
-                    margin: 0,
-                    background: "transparent",
-                    padding: "2rem",
-                    fontSize: "0.95rem",
-                    lineHeight: "1.8",
-                  }}
-                >
-                  {wrappedHtml}
-                </SyntaxHighlighter>
-              </div>
-
-             
+            <div className="flex-1 overflow-auto">
+              <SyntaxHighlighter
+                language="html"
+                style={isDark ? vscDarkPlus : vs}
+                showLineNumbers
+                customStyle={{
+                  padding: "2rem",
+                  background: "transparent",
+                  fontSize: "1rem",
+                  lineHeight: "1.8",
+                }}
+              >
+                {wrappedHtml}
+              </SyntaxHighlighter>
             </div>
-             {/* FLOATING COPY */}
-             <div className="absolute bottom-6 right-6 z-20">
-                <Button
-variant={'ghost'}
-                  onClick={handleCopy}
-                  className="bg-white  text-black dark:bg-black dark:text-white shadow-lg"
-                >
-                  <Copy size={16} />
-                  Copy
-                </Button>
-              </div>
+
+            <div className="absolute bottom-6 right-6">
+              <Button variant="ghost" onClick={handleCopy}>
+                <Copy size={18} /> Copy
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
+
+        {/* DOWNLOAD */}
+        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleDownload}>
+          <Download size={18} />
+        </Button>
+
+        {/* AI EDIT */}
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <WandSparkles size={18} />
+            </Button>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-96 space-y-4">
+            <Textarea
+              placeholder="Describe what you want to change…"
+              value={editPrompt}
+              onChange={(e) => setEditPrompt(e.target.value)}
+              className="min-h-[120px]"
+            />
+            <Button onClick={handleEditScreen} disabled={editing} className="w-full">
+              {editing ? "Regenerating…" : "Regenerate Screen"}
+            </Button>
+          </PopoverContent>
+        </Popover>
+
+        {/* DELETE */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <MoreVertical size={18} />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <DropdownMenuItem
+                  className="text-red-600"
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  <Trash size={16} className="mr-2" /> Delete
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this screen?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    className="bg-red-600 text-white"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
