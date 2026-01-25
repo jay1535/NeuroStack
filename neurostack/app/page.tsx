@@ -2,7 +2,7 @@
 
 import { SignedIn, SignedOut, SignUpButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 import Link from "next/link";
 import FooterDialog from "@/components/footer-dialog";
 import {
@@ -15,10 +15,11 @@ import AppHeader from "@/components/AppHeader";
 import ClientOnly from "./ClientOnly";
 import { Button } from "@/components/ui/button";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+const fadeUp = () => ({
+  hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0 },
-};
+});
+
 
 export default function Home() {
   const router = useRouter();
@@ -214,77 +215,120 @@ export default function Home() {
       </section>
 
          {/* ================= PRODUCT PREVIEW ================= */}
-      <section className="py-32 px-6 bg-neutral-100 dark:bg-neutral-950 min-h-screen">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-center">
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-          >
-            <span className="
-              inline-block mb-4 px-4 py-1 rounded-full
-              bg-black/5 text-gray-600
-              dark:bg-white/5 dark:text-gray-300
-              text-xs tracking-widest
-            ">
-              AI WORKFLOW
-            </span>
+         <section className="py-32 px-6 bg-neutral-100 dark:bg-neutral-950 min-h-screen">
+  <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+    <motion.div
+      variants={fadeUp()}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      transition={{ duration: 0.7 }}
+    >
+      <span
+        className="
+          inline-block mb-4 px-4 py-1 rounded-full
+          bg-black/5 text-gray-600
+          dark:bg-white/5 dark:text-gray-300
+          text-xs tracking-widest
+        "
+      >
+        AI WORKFLOW
+      </span>
 
-            <h2 className="text-4xl font-extrabold leading-tight">
-              From Prompt to{" "}
-              <span className="dark:text-purple-600 text-purple-700">Production UI</span>
-            </h2>
+      <h2 className="text-4xl font-extrabold leading-tight">
+        From Prompt to{" "}
+        <span className="dark:text-purple-600 text-purple-700">
+          Production UI
+        </span>
+      </h2>
 
-            <p className="mt-6 text-gray-600 dark:text-gray-400 max-w-xl">
-              Describe your product idea in plain language.
-              NeuroStack transforms it into structured UI screens and UX flows.
-            </p>
+      <p className="mt-6 text-gray-600 dark:text-gray-400 max-w-xl">
+        Describe your product idea in plain language.
+        NeuroStack transforms it into structured UI screens and UX flows.
+      </p>
 
-            <ul className="mt-8 space-y-4 text-gray-600 dark:text-gray-400">
-              {[
-                "Natural language → UI screens",
-                "Mobile & web layouts generated",
-                "UX best practices built-in",
-              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-purple-600" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+      <ul className="mt-8 space-y-4 text-gray-600 dark:text-gray-400">
+        {[
+          "Natural language → UI screens",
+          "Mobile & web layouts generated",
+          "UX best practices built-in",
+        ].map((item, i) => (
+          <li key={i} className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-purple-600" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="relative"
-          >
-            <div className="
-              relative h-80 rounded-3xl
-              border border-black/10
-              bg-black/5
-              dark:border-white/10 dark:bg-white/5
-              backdrop-blur-xl p-6
-            ">
-              <div className="h-full rounded-2xl bg-linear-to-br from-white/10 to-transparent flex items-center justify-center">
-                <p className="text-gray-600 dark:text-gray-400 text-sm tracking-wide">
-                  AI-GENERATED UI PREVIEW
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
+      className="relative"
+    >
+    
+
+<div
+  className="
+    relative h-80 rounded-3xl
+    border border-black/10
+    bg-black/5
+    dark:border-white/10 dark:bg-white/5
+    backdrop-blur-xl p-6
+    overflow-hidden
+  "
+>
+  {/* LIGHT MODE DASHBOARD */}
+  <Image
+    src="/Dashboard-light.png"
+    alt="Dashboard light preview"
+    fill
+    className="
+      object-cover rounded-2xl
+      dark:hidden
+    "
+    priority
+  />
+
+  {/* DARK MODE DASHBOARD */}
+  <Image
+    src="/Dashboard.png"
+    alt="Dashboard dark preview"
+    fill
+    className="
+      object-cover rounded-2xl
+      hidden dark:block
+    "
+    priority
+  />
+
+  {/* LABEL */}
+  <div
+    className="
+      absolute bottom-4 left-4
+      px-3 py-1 rounded-full
+      text-xs tracking-wide
+      bg-black/60 text-white
+      dark:bg-white/10 dark:text-gray-200
+      backdrop-blur
+    "
+  >
+    DASHBOARD PREVIEW
+  </div>
+</div>
+
+    </motion.div>
+  </div>
+</section>
+
 
       {/* ================= CTA ================= */}
       <section className="py-36 px-6 bg-neutral-100 dark:bg-neutral-950 min-h-screen">
        
         <motion.div
-          variants={fadeUp}
+          variants={fadeUp()}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}

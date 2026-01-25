@@ -24,20 +24,21 @@ import toast from "react-hot-toast";
 import { THEMES, THEME_NAME_LIST, ThemeKey } from "@/data/themes";
 import { ProjectType } from "@/type/types";
 import { SettingContext } from "@/app/context/SettingContext";
-import { RefreshDataContext } from "@/app/context/RefreshDataContext"; // ✅ ADDED
+import { RefreshDataContext } from "@/app/context/RefreshDataContext";
 import { useRouter } from "next/navigation";
 
 type Props = {
   project: ProjectType;
+  takeScreenshot: any;
 };
 
-export default function Settings({ project }: Props) {
+export default function Settings({ project, takeScreenshot }: Props) {
   /* ================= ROUTER ================= */
   const router = useRouter();
 
   /* ================= CONTEXT ================= */
   const { setSettingInfo } = useContext(SettingContext);
-  const { setRefreshData } = useContext(RefreshDataContext); // ✅ ADDED
+  const { setRefreshData } = useContext(RefreshDataContext);
 
   /* ================= THEME ================= */
   const [themeOpen, setThemeOpen] = useState(false);
@@ -121,7 +122,6 @@ export default function Settings({ project }: Props) {
       toast.success("New screen added successfully ✨");
       setUserNewScreenInput("");
 
-      // ✅ ONLY REAL FIX — immediate canvas update
       setRefreshData((v) => !v);
     } catch {
       toast.dismiss();
@@ -196,18 +196,12 @@ export default function Settings({ project }: Props) {
           </h2>
 
           <Textarea
-  rows={3}
-  className="
-    h-28
-    overflow-y-auto
-    resize-none
-  "
-  placeholder="Describe the new screen you want to add"
-  value={userNewScreenInput}
-  onChange={(e) => setUserNewScreenInput(e.target.value)}
-/>
-
-
+            rows={3}
+            className="h-28 overflow-y-auto resize-none"
+            placeholder="Describe the new screen you want to add"
+            value={userNewScreenInput}
+            onChange={(e) => setUserNewScreenInput(e.target.value)}
+          />
 
           <Button
             size="sm"
@@ -352,9 +346,14 @@ export default function Settings({ project }: Props) {
           </h2>
 
           <div className="flex gap-2">
-            <Button size="sm" variant="outline">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => takeScreenshot()} // ✅ SCREENSHOT TRIGGER
+            >
               <Camera size={16} /> Screenshot
             </Button>
+
             <Button size="sm" variant="outline">
               <Share2 size={16} /> Share
             </Button>

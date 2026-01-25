@@ -19,6 +19,7 @@ type Props = {
   htmlCode: string | undefined;
   screen: ScreenConfig;
   projectDetail: ProjectType | null;
+  iframeRef: any; // ✅ KEEP AS-IS (parent passes ref collector)
 };
 
 export default function ScreenFrame({
@@ -30,6 +31,7 @@ export default function ScreenFrame({
   htmlCode,
   screen,
   projectDetail,
+  iframeRef, // ✅ PROP
 }: Props) {
   const { settingInfo } = useContext(SettingContext);
   const resolvedTheme = resolveTheme(settingInfo?.theme);
@@ -37,7 +39,8 @@ export default function ScreenFrame({
   const refreshCtx = useContext(RefreshDataContext);
   const refreshKey = refreshCtx?.refreshData ?? false;
 
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  // 🔹 ONLY CHANGE: rename local ref to avoid collision
+  const localIframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const [themeVersion, setThemeVersion] = useState(0);
   const [size, setSize] = useState({ width, height });
@@ -56,14 +59,14 @@ export default function ScreenFrame({
   });
 
   const measureIframeHeight = useCallback(() => {
-    const iframe = iframeRef.current;
+    const iframe = localIframeRef.current;
     if (!iframe) return;
 
     try {
       const doc = iframe.contentDocument;
       if (!doc) return;
 
-      const headerH = 56; // ⬆️ slightly larger header
+      const headerH = 56;
       const htmlEl = doc.documentElement;
       const body = doc.body;
 
@@ -83,7 +86,7 @@ export default function ScreenFrame({
   }, []);
 
   useEffect(() => {
-    const iframe = iframeRef.current;
+    const iframe = localIframeRef.current;
     if (!iframe) return;
 
     const onLoad = () => {
@@ -133,7 +136,7 @@ export default function ScreenFrame({
         {projectDetail && (
           <ScreenHandler
             screen={screen}
-            iframeRef={iframeRef}
+            iframeRef={localIframeRef} // ✅ SAME BEHAVIOR
             projectId={projectDetail.projectId}
           />
         )}
@@ -141,7 +144,11 @@ export default function ScreenFrame({
 
       <iframe
         key={themeVersion}
-        ref={iframeRef}
+        ref={(el) => {
+          if (!el) return;
+          localIframeRef.current = el;
+          iframeRef(el); // 🔹 ONLY ADDITION: expose iframe for screenshot
+        }}
         className="w-full h-[calc(100%-56px)] rounded-2xl mt-2 border-none"
         sandbox="allow-same-origin allow-scripts"
         srcDoc={html}
