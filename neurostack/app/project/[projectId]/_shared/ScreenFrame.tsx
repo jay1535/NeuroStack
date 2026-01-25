@@ -6,7 +6,7 @@ import { Rnd } from "react-rnd";
 import { resolveTheme } from "@/data/resolveTheme";
 import { ProjectType, ScreenConfig } from "@/type/types";
 import { SettingContext } from "@/app/context/SettingContext";
-import { RefreshDataContext } from "@/app/context/RefreshDataContext"; // ✅ ADDED
+import { RefreshDataContext } from "@/app/context/RefreshDataContext";
 import ScreenHandler from "./ScreenHandler";
 import { htmlWrapper } from "@/data/constant";
 
@@ -31,38 +31,30 @@ export default function ScreenFrame({
   screen,
   projectDetail,
 }: Props) {
-  /* ================= LIVE THEME ================= */
   const { settingInfo } = useContext(SettingContext);
   const resolvedTheme = resolveTheme(settingInfo?.theme);
 
-  /* ================= REFRESH CONTEXT ================= */
-  const refreshCtx = useContext(RefreshDataContext); // ✅ ADDED
-  const refreshKey = refreshCtx?.refreshData ?? false; // ✅ ADDED
+  const refreshCtx = useContext(RefreshDataContext);
+  const refreshKey = refreshCtx?.refreshData ?? false;
 
-  /* ================= REFS ================= */
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
-  /* ================= FORCE IFRAME RELOAD ================= */
   const [themeVersion, setThemeVersion] = useState(0);
+  const [size, setSize] = useState({ width, height });
 
   useEffect(() => {
     setThemeVersion((v) => v + 1);
   }, [settingInfo?.theme]);
 
-  /* ================= SIZE STATE ================= */
-  const [size, setSize] = useState({ width, height });
-
   useEffect(() => {
     setSize({ width, height });
   }, [width, height]);
 
-  /* ================= HTML (USING WRAPPER) ================= */
   const html = htmlWrapper({
     htmlCode,
     resolvedTheme,
   });
 
-  /* ================= AUTO HEIGHT ================= */
   const measureIframeHeight = useCallback(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -71,28 +63,25 @@ export default function ScreenFrame({
       const doc = iframe.contentDocument;
       if (!doc) return;
 
-      const headerH = 40;
+      const headerH = 56; // ⬆️ slightly larger header
       const htmlEl = doc.documentElement;
       const body = doc.body;
 
       const contentH = Math.max(
-        htmlEl?.scrollHeight ?? 0,
-        body?.scrollHeight ?? 0,
-        htmlEl?.offsetHeight ?? 0,
-        body?.offsetHeight ?? 0
+        htmlEl.scrollHeight,
+        body.scrollHeight,
+        htmlEl.offsetHeight,
+        body.offsetHeight
       );
 
-      const next = Math.min(Math.max(contentH + headerH, 160), 2000);
+      const next = Math.min(Math.max(contentH + headerH, 200), 2200);
 
       setSize((s) =>
         Math.abs(s.height - next) > 2 ? { ...s, height: next } : s
       );
-    } catch {
-      // silent by design
-    }
+    } catch {}
   }, []);
 
-  /* ================= IFRAME OBSERVERS ================= */
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -104,12 +93,10 @@ export default function ScreenFrame({
       if (!doc) return;
 
       const observer = new MutationObserver(measureIframeHeight);
-
       observer.observe(doc.documentElement, {
         childList: true,
         subtree: true,
         attributes: true,
-        characterData: true,
       });
     };
 
@@ -122,16 +109,13 @@ export default function ScreenFrame({
     };
   }, [measureIframeHeight, htmlCode, themeVersion]);
 
-  /* ================= AUTO-REALIGN ON DELETE ================= */
   useEffect(() => {
-    // 🔥 Forces Rnd to recompute layout after screen deletion
     setSize((s) => ({ ...s }));
-  }, [refreshKey]); // ✅ THIS is what makes screens rearrange
+  }, [refreshKey]);
 
-  /* ================= RENDER ================= */
   return (
     <Rnd
-      key={`${screen.screenId}-${refreshKey}`} // ✅ CRITICAL: forces remount after delete
+      key={`${screen.screenId}-${refreshKey}`}
       default={{ x, y, width, height }}
       size={size}
       dragHandleClassName="drag-handler"
@@ -139,16 +123,12 @@ export default function ScreenFrame({
       onDragStart={() => setPanningEnabled(false)}
       onDragStop={() => setPanningEnabled(true)}
       onResizeStart={() => setPanningEnabled(false)}
-      onResizeStop={(_e, _dir, ref) => {
+      onResizeStop={(_, __, ref) => {
         setPanningEnabled(true);
-        setSize({
-          width: ref.offsetWidth,
-          height: ref.offsetHeight,
-        });
+        setSize({ width: ref.offsetWidth, height: ref.offsetHeight });
       }}
       className="absolute"
     >
-      {/* ================= HEADER ================= */}
       <div className="drag-handler">
         {projectDetail && (
           <ScreenHandler
@@ -159,11 +139,10 @@ export default function ScreenFrame({
         )}
       </div>
 
-      {/* ================= IFRAME ================= */}
       <iframe
         key={themeVersion}
         ref={iframeRef}
-        className="w-full h-[calc(100%-40px)] border-none rounded-2xl mt-2"
+        className="w-full h-[calc(100%-56px)] rounded-2xl mt-2 border-none"
         sandbox="allow-same-origin allow-scripts"
         srcDoc={html}
       />

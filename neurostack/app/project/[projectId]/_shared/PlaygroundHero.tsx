@@ -109,20 +109,21 @@ export default function PlaygroundHero({
 
                   return screen.code ? (
                     <ScreenFrame
-                      key={screen.screenId}
-                      x={x}
-                      y={y}
-                      width={SCREEN_WIDTH}
-                      height={SCREEN_HEIGHT}
-                      setPanningEnabled={setPanningEnabled}
-                      htmlCode={screen.code}
-                      screen={screen}
-                      projectDetail={projectDetail}
-                    />
+                    key={`${screen.screenId}-${index}`}   // ✅ FIX
+                    x={x}
+                    y={y}
+                    width={SCREEN_WIDTH}
+                    height={SCREEN_HEIGHT}
+                    setPanningEnabled={setPanningEnabled}
+                    htmlCode={screen.code}
+                    screen={screen}
+                    projectDetail={projectDetail}
+                  />
+                  
                   ) : (
                     <div
-                      key={screen.screenId}
-                      className="absolute"
+                    key={`${screen.screenId}+${index}`}
+                      
                       style={{
                         width: SCREEN_WIDTH,
                         height: SCREEN_HEIGHT,

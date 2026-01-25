@@ -9,6 +9,7 @@ import {
   MoreVertical,
   Trash,
   WandSparkles,
+  Edit,
 } from "lucide-react";
 import { ScreenConfig } from "@/type/types";
 import { Button } from "@/components/ui/button";
@@ -72,13 +73,8 @@ export default function ScreenHandler({
   const { settingInfo } = useContext(SettingContext);
   const resolvedTheme = resolveTheme(settingInfo?.theme);
 
-  /* ================= REFRESH CONTEXT ================= */
-  const refreshCtx = useContext(RefreshDataContext);
-  if (!refreshCtx) {
-    throw new Error(
-      "ScreenHandler must be used inside RefreshDataContext.Provider"
-    );
-  }
+  /* ================= REFRESH ================= */
+  const refreshCtx = useContext(RefreshDataContext)!;
   const { setRefreshData } = refreshCtx;
 
   /* ================= STATE ================= */
@@ -98,7 +94,7 @@ export default function ScreenHandler({
     toast.success("Full HTML copied");
   };
 
-  /* ================= SCREENSHOT (FIXED) ================= */
+  /* ================= SCREENSHOT ================= */
   const handleDownload = async () => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -115,14 +111,10 @@ export default function ScreenHandler({
         useCORS: true,
         allowTaint: false,
 
-        // 🔥 CRITICAL FIX (NO MORE Unsplash / Pravatar ERRORS)
-        ignoreElements: (el) => {
-          if (el.tagName !== "IMG") return false;
-          const src = (el as HTMLImageElement).src;
-          return src.startsWith("http");
-        },
+        ignoreElements: (el) =>
+          el.tagName === "IMG" &&
+          (el as HTMLImageElement).src.startsWith("http"),
 
-        // 🔥 KILL GRADIENTS & BLUR (html2canvas bug source)
         onclone: (clonedDoc) => {
           clonedDoc.querySelectorAll<HTMLElement>("*").forEach((el) => {
             const style = getComputedStyle(el);
@@ -155,7 +147,7 @@ export default function ScreenHandler({
   /* ================= AI EDIT ================= */
   const handleEditScreen = async () => {
     if (!editPrompt.trim()) {
-      toast.error("Please describe what you want to change");
+      toast.error("Describe what you want to change");
       return;
     }
 
@@ -194,28 +186,28 @@ export default function ScreenHandler({
 
   /* ================= RENDER ================= */
   return (
-    <div className="flex items-center justify-between px-6 py-4 min-h-[72px]">
+    <div className="flex items-center justify-between px-8 py-5 min-h-[96px] bg-white text-black dark:bg-black dark:text-white rounded-xl">
       {/* LEFT */}
-      <div className="flex items-center gap-4">
-        <Grip size={42} className="opacity-70 cursor-grab" />
-        <h2 className="text-base font-semibold">
+      <div className="flex items-center gap-5">
+        <Grip className="size-10 opacity-70 cursor-grab" />
+        <h2 className="text-2xl font-bold">
           {screen.screenName || "Drag Here"}
         </h2>
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         {/* CODE */}
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <Code size={18} />
+            <Button variant="ghost" size="icon-lg">
+              <Code className="size-8" />
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="w-[92vw] h-[96vh] max-w-none p-0">
+          <DialogContent className="w-[92vw] h-[96vh] p-0">
             <DialogHeader className="px-6 py-4 border-b">
-              <DialogTitle className="text-xl font-semibold">
+              <DialogTitle className="text-2xl font-bold">
                 {screen.screenName || "Screen Code"}
               </DialogTitle>
             </DialogHeader>
@@ -227,7 +219,6 @@ export default function ScreenHandler({
                 showLineNumbers
                 customStyle={{
                   padding: "2rem",
-                  background: "transparent",
                   fontSize: "1rem",
                   lineHeight: "1.8",
                 }}
@@ -238,43 +229,48 @@ export default function ScreenHandler({
 
             <div className="absolute bottom-6 right-6">
               <Button variant="ghost" onClick={handleCopy}>
-                <Copy size={18} /> Copy
+                <Copy className="size-5" /> Copy
               </Button>
             </div>
           </DialogContent>
         </Dialog>
 
         {/* DOWNLOAD */}
-        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleDownload}>
-          <Download size={18} />
+        <Button variant="ghost" size="icon-lg" onClick={handleDownload}>
+          <Download className="size-8" />
         </Button>
 
         {/* AI EDIT */}
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <WandSparkles size={18} />
+            <Button variant="ghost" size="icon-lg">
+              <WandSparkles className="size-8" />
             </Button>
           </PopoverTrigger>
 
           <PopoverContent className="w-96 space-y-4">
             <Textarea
-              placeholder="Describe what you want to change…"
+            placeholder="Regeneration Prompt...."
               value={editPrompt}
               onChange={(e) => setEditPrompt(e.target.value)}
-              className="min-h-[120px]"
+              className="min-h-35"
             />
-            <Button onClick={handleEditScreen} disabled={editing} className="w-full">
+            <Button
+              onClick={handleEditScreen}
+              disabled={editing}
+              className="w-full"
+            >
+              <Edit/>
               {editing ? "Regenerating…" : "Regenerate Screen"}
             </Button>
           </PopoverContent>
         </Popover>
 
-        {/* DELETE */}
+        {/* MORE */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <MoreVertical size={18} />
+            <Button variant="ghost" size="icon-lg">
+              <MoreVertical className="size-8" />
             </Button>
           </DropdownMenuTrigger>
 
@@ -285,7 +281,7 @@ export default function ScreenHandler({
                   className="text-red-600"
                   onSelect={(e) => e.preventDefault()}
                 >
-                  <Trash size={16} className="mr-2" /> Delete
+                  <Trash className="size-5 mr-2" /> Delete
                 </DropdownMenuItem>
               </AlertDialogTrigger>
 
@@ -296,6 +292,7 @@ export default function ScreenHandler({
                     This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
