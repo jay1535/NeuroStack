@@ -20,6 +20,7 @@ export default function PlaygroundPage() {
   /* ================= UI STATE ================= */
   const [zoom, setZoom] = useState(0.7);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [takeScreenshot, setTakeScreenshot] = useState<any>(); // 🔹 already existed
 
   /* ================= DATA STATE ================= */
   const [projectDetail, setProjectDetail] =
@@ -180,7 +181,12 @@ export default function PlaygroundPage() {
         }`}
       >
         {projectDetail && (
-          <Settings project={projectDetail} />
+          <Settings
+            project={projectDetail}
+            takeScreenshot={() =>
+              setTakeScreenshot(Date.now()) // 🔹 SCREENSHOT TRIGGER
+            }
+          />
         )}
       </aside>
 
@@ -189,6 +195,7 @@ export default function PlaygroundPage() {
         screens={screenConfig}
         projectDetail={projectDetail}
         settingsOpen={settingsOpen}
+        takeScreenshot={takeScreenshot} // 🔹 passed through
       />
     </RefreshDataContext.Provider>
   );
