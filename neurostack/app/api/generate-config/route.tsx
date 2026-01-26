@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { APP_LAYOUT_CONFIG_PROMPT } from "@/data/prompt";
 import { db } from "@/config/db";
 import { ProjectTable, ScreenConfig } from "@/config/schema";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { ai } from "@/config/gemini";
-import { currentUser } from "@clerk/nextjs/server";
-
-
 
 export async function POST(req: NextRequest) {
   try {
     const { deviceType, userInput, projectId } = await req.json();
+
+    if (!projectId || !deviceType || !userInput) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
 
     const prompt = `
 DEVICE TYPE: ${deviceType}
@@ -27,20 +30,20 @@ RULES:
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: prompt,
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
 
-    const text =
-      response.candidates?.[0]?.content?.parts?.[0]?.text;
+    let text =
+      response?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
-    if (!text) {
-      return NextResponse.json(
-        { error: "Empty Gemini output" },
-        { status: 500 }
-      );
-    }
+    if (!text) throw new Error("Empty Gemini output");
 
+    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
     const json = JSON.parse(text);
+
+    if (!Array.isArray(json.screens)) {
+      throw new Error("Invalid screens array");
+    }
 
     await db
       .update(ProjectTable)
@@ -67,46 +70,11 @@ RULES:
       }))
     );
 
-    return NextResponse.json(json);
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: "Gemini failed", message: err?.message },
-      { status: 500 }
-    );
-  }
-}
-
-
-export async function DELETE(req: NextRequest) {
-  try {
-    const user = await currentUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { projectId, screenId } = await req.json();
-
-    if (!projectId || !screenId) {
-      return NextResponse.json(
-        { error: "projectId and screenId are required" },
-        { status: 400 }
-      );
-    }
-
-    await db
-      .delete(ScreenConfig)
-      .where(
-        and(
-          eq(ScreenConfig.projectId, projectId),
-          eq(ScreenConfig.screenId, screenId)
-        )
-      );
-
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error("DELETE SCREEN ERROR:", err);
+    console.error("GENERATE CONFIG ERROR:", err.message);
     return NextResponse.json(
-      { error: "Failed to delete screen", message: err?.message },
+      { error: err.message },
       { status: 500 }
     );
   }

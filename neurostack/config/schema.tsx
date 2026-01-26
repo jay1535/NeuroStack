@@ -5,17 +5,22 @@ import {
   pgTable,
   text,
   timestamp,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 
 /* ================= USERS ================= */
 
+// config/schema.ts
+
+
 export const usersTable = pgTable("users", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
-  credits: integer().default(10),
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  credits: integer("credits").notNull().default(10),
 });
+
 
 /* ================= PROJECT ================= */
 

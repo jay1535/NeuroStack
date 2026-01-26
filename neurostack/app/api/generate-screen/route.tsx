@@ -14,30 +14,23 @@ export async function POST(req: NextRequest) {
       screenName,
       purpose,
       screenDescription,
-      projectVisualDescription,
     } = await req.json();
 
-    if (!projectId || !screenId) {
+    if (!projectId || !screenId || !deviceType) {
       return NextResponse.json(
-        { error: "Missing projectId or screenId" },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
-
-    const userInput = `
-Screen Name: ${screenName}
-Purpose: ${purpose}
-Description: ${screenDescription}
-Project Visual Description: ${projectVisualDescription}
-`;
 
     const prompt = `
 DEVICE TYPE: ${deviceType}
 
 ${GENERATION_SYSTEM_PROMPT.replace("{deviceType}", deviceType)}
 
-USER INPUT:
-${userInput}
+Screen Name: ${screenName}
+Purpose: ${purpose}
+Description: ${screenDescription}
 `;
 
     const response = await ai.models.generateContent({
@@ -45,58 +38,31 @@ ${userInput}
       contents: prompt,
     });
 
-    const raw =
+    let raw =
       response?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
-    if (!raw) {
-      return NextResponse.json(
-        { error: "No output generated" },
-        { status: 500 }
-      );
-    }
+    if (!raw) throw new Error("Empty Gemini output");
 
     const code = raw
       .replace(/```html/g, "")
       .replace(/```/g, "")
       .trim();
 
-    const existing = await db
-      .select()
-      .from(ScreenConfig)
+    await db
+      .update(ScreenConfig)
+      .set({ code })
       .where(
         and(
           eq(ScreenConfig.projectId, projectId),
           eq(ScreenConfig.screenId, screenId)
         )
-      )
-      .limit(1);
-
-    if (existing.length) {
-      await db
-        .update(ScreenConfig)
-        .set({ code })
-        .where(
-          and(
-            eq(ScreenConfig.projectId, projectId),
-            eq(ScreenConfig.screenId, screenId)
-          )
-        );
-    } else {
-      await db.insert(ScreenConfig).values({
-        projectId,
-        screenId,
-        screenName,
-        purpose,
-        screenDescription,
-        code,
-      });
-    }
+      );
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error("generate-screen error:", err);
+  } catch (err: any) {
+    console.error("GENERATE SCREEN ERROR:", err.message);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: err.message },
       { status: 500 }
     );
   }
