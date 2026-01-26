@@ -131,8 +131,36 @@ export default function Settings({ project, takeScreenshot }: Props) {
     }
   };
 
+  const handleShare = async () => {
+    const url = project?.screenshotUrl;
+  
+    if (!url) {
+      toast.error("Please take a screenshot first");
+      return;
+    }
+  
+    // ✅ Native share (mobile / supported browsers)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: project.projectName || "Project Preview",
+          text: "Check out this project preview",
+          url,
+        });
+        return;
+      } catch {
+        // fallback to clipboard
+      }
+    }
+  
+    // ✅ Clipboard fallback (desktop)
+    await navigator.clipboard.writeText(url);
+    toast.success("Share link copied to clipboard");
+  };
+  
+
   return (
-    <div className="h-full w-full flex flex-col border-r border-black/10 dark:border-white/15 bg-[#f5f5f4] dark:bg-[#1c1917]">
+    <div className="h-full w-full flex flex-col border-r border-black/10 dark:border-white/15 bg-[#f5f5f4] dark:bg-[#030303]">
       {/* ================= HEADER ================= */}
       <div className="px-6 pt-6 pb-6">
         <div className="flex items-center justify-between gap-3">
@@ -354,9 +382,10 @@ export default function Settings({ project, takeScreenshot }: Props) {
               <Camera size={16} /> Screenshot
             </Button>
 
-            <Button size="sm" variant="outline">
-              <Share2 size={16} /> Share
-            </Button>
+            <Button size="sm" variant="outline" onClick={handleShare}>
+  <Share2 size={16} /> Share
+</Button>
+
           </div>
         </div>
       </div>

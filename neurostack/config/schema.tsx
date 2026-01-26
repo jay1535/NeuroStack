@@ -21,10 +21,7 @@ export const usersTable = pgTable("users", {
 export const ProjectTable = pgTable("project", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
 
-  // Public project identifier (used in URLs)
-  projectId: varchar({ length: 255 })
-    .notNull()
-    .unique(), // ✅ REQUIRED for FK
+  projectId: varchar({ length: 255 }).notNull().unique(),
 
   projectName: varchar({ length: 255 }),
 
@@ -37,9 +34,12 @@ export const ProjectTable = pgTable("project", {
   config: json(),
 
   theme: varchar(),
-  projectVisualDescription:text(),
 
-  // FK → users.email (email is UNIQUE)
+  projectVisualDescription: text(),
+
+  // 🔹 ADDED: full canvas screenshot
+  screenshotUrl: varchar({ length: 1024 }),
+
   userId: varchar({ length: 255 })
     .notNull()
     .references(() => usersTable.email, {
