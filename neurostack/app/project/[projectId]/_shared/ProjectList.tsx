@@ -13,7 +13,7 @@ interface Project {
   projectName: string | null;
   userInput: string | null;
   device: string | null;
-  createdAt: string | null;
+  createdOn: string | null; // ✅ DB column
 }
 
 /* ================= COMPONENT ================= */
@@ -91,17 +91,22 @@ export default function ProjectList() {
                 hover:border-purple-500/40 hover:ring-purple-500/30
               "
             >
-              {/* Ambient glow */}
+              {/* ================= AMBIENT GLOW ================= */}
               <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-purple-600/[0.06] via-transparent to-transparent group-hover:from-purple-600/[0.12] transition" />
 
-              {/* Logo watermark */}
+              {/* ================= LOGO WATERMARK ================= */}
               <div className="pointer-events-none absolute inset-0">
-                <div className="absolute inset-0 bg-[url('/black-logo.png')] bg-center bg-no-repeat bg-[length:200px] opacity-[0.12] transition-all duration-500 group-hover:scale-110 dark:hidden" />
-                <div className="absolute inset-0 bg-[url('/logo.png')] bg-center bg-no-repeat bg-[length:200px] opacity-[0.18] transition-all duration-500 group-hover:scale-110 hidden dark:block" />
+                {/* Light mode logo */}
+                <div className="absolute inset-0 bg-[url('/black-logo.png')] bg-center bg-no-repeat bg-[length:200px] opacity-[0.12] transition-transform duration-500 group-hover:scale-110 dark:hidden" />
+
+                {/* Dark mode logo */}
+                <div className="absolute inset-0 bg-[url('/logo.png')] bg-center bg-no-repeat bg-[length:200px] opacity-[0.18] transition-transform duration-500 group-hover:scale-110 hidden dark:block" />
+
+                {/* Soft overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/50 to-white/80 dark:via-black/40 dark:to-black/80" />
               </div>
 
-              {/* Content */}
+              {/* ================= CONTENT ================= */}
               <div className="relative">
                 {/* Meta */}
                 <div className="flex items-center justify-between mb-5">
@@ -114,9 +119,9 @@ export default function ProjectList() {
                     {project.device ?? "desktop"}
                   </span>
 
-                  {project.createdAt && (
+                  {project.createdOn && (
                     <span className="text-xs text-black/40 dark:text-white/40">
-                      {new Date(project.createdAt).toLocaleDateString()}
+                      {new Date(project.createdOn).toLocaleDateString()}
                     </span>
                   )}
                 </div>
