@@ -44,7 +44,10 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vs, vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import {
+  vs,
+  vscDarkPlus,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
 import html2canvas from "html2canvas";
@@ -57,7 +60,7 @@ import { RefreshDataContext } from "@/app/context/RefreshDataContext";
 
 type Props = {
   screen: ScreenConfig;
-  iframeRef: React.RefObject<HTMLIFrameElement>;
+  iframeRef: React.RefObject<HTMLIFrameElement | null>;
   projectId: string;
 };
 
@@ -125,7 +128,13 @@ export default function ScreenHandler({
 
             if (style.backdropFilter !== "none") {
               el.style.backdropFilter = "none";
-              el.style.webkitBackdropFilter = "none";
+
+              // Safari / WebKit (TS-safe)
+              (
+                el.style as CSSStyleDeclaration & {
+                  webkitBackdropFilter?: string;
+                }
+              ).webkitBackdropFilter = "none";
             }
           });
         },
@@ -166,7 +175,7 @@ export default function ScreenHandler({
       toast.success("Screen regenerated", { id: toastId });
       setEditPrompt("");
       setPopoverOpen(false);
-      setRefreshData((v) => !v);
+      setRefreshData((v: boolean) => !v);
     } catch {
       toast.error("Failed to regenerate", { id: toastId });
     } finally {
@@ -181,7 +190,7 @@ export default function ScreenHandler({
     });
 
     toast.success("Screen deleted");
-    setRefreshData((v) => !v);
+    setRefreshData((v: boolean) => !v);
   };
 
   /* ================= RENDER ================= */
@@ -242,39 +251,31 @@ export default function ScreenHandler({
 
         {/* AI EDIT */}
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-  <PopoverTrigger asChild>
-    <Button variant="ghost" size="icon-lg">
-      <WandSparkles className="size-8" />
-    </Button>
-  </PopoverTrigger>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon-lg">
+              <WandSparkles className="size-8" />
+            </Button>
+          </PopoverTrigger>
 
-  <PopoverContent className="w-96 space-y-4">
-  <Textarea
-  placeholder="Regeneration Prompt…"
-  value={editPrompt}
-  onChange={(e) => setEditPrompt(e.target.value)}
-  rows={4}
-  className="
-    resize-none
-    overflow-y-auto
-    leading-relaxed
-    max-h-[6.5rem]
-    min-h-[6.5rem]
-  "
-/>
+          <PopoverContent className="w-96 space-y-4">
+            <Textarea
+              placeholder="Regeneration Prompt…"
+              value={editPrompt}
+              onChange={(e) => setEditPrompt(e.target.value)}
+              rows={4}
+              className="resize-none max-h-[6.5rem]"
+            />
 
-
-    <Button
-      onClick={handleEditScreen}
-      disabled={editing}
-      className="w-full"
-    >
-      <Edit />
-      {editing ? "Regenerating…" : "Regenerate Screen"}
-    </Button>
-  </PopoverContent>
-</Popover>
-
+            <Button
+              onClick={handleEditScreen}
+              disabled={editing}
+              className="w-full"
+            >
+              <Edit />
+              {editing ? "Regenerating…" : "Regenerate Screen"}
+            </Button>
+          </PopoverContent>
+        </Popover>
 
         {/* MORE */}
         <DropdownMenu>

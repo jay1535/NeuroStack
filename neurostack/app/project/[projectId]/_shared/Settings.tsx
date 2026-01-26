@@ -122,7 +122,8 @@ export default function Settings({ project, takeScreenshot }: Props) {
       toast.success("New screen added successfully ✨");
       setUserNewScreenInput("");
 
-      setRefreshData((v) => !v);
+      setRefreshData((v: boolean) => !v);
+
     } catch {
       toast.dismiss();
       toast.error("Failed to generate new screen");

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
-export default function LogoRingLoader(): JSX.Element | null {
+export default function LogoRingLoader() {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -33,7 +33,6 @@ export default function LogoRingLoader(): JSX.Element | null {
     >
       {/* ================= RING STACK ================= */}
       <div className="relative flex items-center justify-center">
-
         {/* Ring 1 */}
         <motion.div
           className={`
@@ -74,7 +73,7 @@ export default function LogoRingLoader(): JSX.Element | null {
           }}
         />
 
-        {/* LOGO (theme-safe) */}
+        {/* LOGO */}
         <Image
           src={isDark ? "/logo.png" : "/black-logo.png"}
           alt="NeuroStack Logo"
@@ -87,21 +86,20 @@ export default function LogoRingLoader(): JSX.Element | null {
 
       {/* ================= PROJECT NAME ================= */}
       <motion.div
-  initial={{ opacity: 0, y: 10, scale: 0.96 }}
-  animate={{ opacity: 1, y: 0, scale: 1 }}
-  transition={{ delay: 0.35, duration: 0.6, ease: "easeOut" }}
-  className="
-    mt-10
-    text-4xl sm:text-5xl md:text-6xl
-    font-extrabold
-    tracking-wide
-    flex items-center gap-1
-  "
->
-  <span>Neuro</span>
-  <span className="dark:text-purple-600 text-purple-700">Stack</span>
-</motion.div>
-
+        initial={{ opacity: 0, y: 10, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 0.35, duration: 0.6, ease: "easeOut" }}
+        className="
+          mt-10
+          text-4xl sm:text-5xl md:text-6xl
+          font-extrabold
+          tracking-wide
+          flex items-center gap-1
+        "
+      >
+        <span>Neuro</span>
+        <span className="text-purple-700 dark:text-purple-600">Stack</span>
+      </motion.div>
     </motion.div>
   );
 }

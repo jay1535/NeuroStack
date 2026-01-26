@@ -13,7 +13,7 @@ interface AppLoaderWrapperProps {
 
 export default function AppLoaderWrapper({
   children,
-}: AppLoaderWrapperProps): JSX.Element {
+}: AppLoaderWrapperProps) {
   const pathname = usePathname();
   const isHome = pathname === "/";
 
@@ -23,7 +23,7 @@ export default function AppLoaderWrapper({
   useEffect(() => {
     const hasSeenStartup = sessionStorage.getItem("ns-startup-seen");
 
-    // ✅ First visit to home → show cinematic loader
+    // First visit to home → cinematic loader
     if (isHome && !hasSeenStartup) {
       setShowStartup(true);
       setLoading(true);
@@ -38,7 +38,7 @@ export default function AppLoaderWrapper({
       return () => clearTimeout(timer);
     }
 
-    // ✅ Other routes → quick ring loader
+    // Other routes → quick ring loader
     if (!isHome) {
       setLoading(true);
 
@@ -53,13 +53,12 @@ export default function AppLoaderWrapper({
   return (
     <>
       <AnimatePresence mode="wait">
-        {loading && (
-          showStartup ? (
+        {loading &&
+          (showStartup ? (
             <StartupLoader key="startup-loader" />
           ) : (
             <LogoRingLoader key="ring-loader" />
-          )
-        )}
+          ))}
       </AnimatePresence>
 
       {!loading && children}

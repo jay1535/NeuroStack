@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-export default function StartupLoader(): JSX.Element {
+export default function StartupLoader() {
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black overflow-hidden px-4"
@@ -95,10 +95,10 @@ export default function StartupLoader(): JSX.Element {
               Neuro
             </motion.span>
 
-            {/* Stack — jumping from right */}
+            {/* Stack */}
             <motion.span
-              className="dark:text-purple-600 text-purple-700"
-              initial={{ opacity: 0, x: 180, y: 0 }}
+              className="text-purple-700 dark:text-purple-600"
+              initial={{ opacity: 0, x: 180 }}
               animate={{
                 opacity: 1,
                 x: [180, 120, 60, 0],
