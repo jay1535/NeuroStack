@@ -38,18 +38,25 @@ export default function PlaygroundHero({
   const INITIAL_SCALE = isMobile ? 0.6 : 0.55;
   const INITIAL_X = 120;
   const INITIAL_Y = 80;
+  const projectId = projectDetail?.projectId ?? null;
 
-  // 🔹 SCREENSHOT trigger
   useEffect(() => {
-    if (!takeScreenshot) return;
-
+    if (!takeScreenshot || !projectId) return;
+  
     onTakeScreenshot(
       iframeRefs,
       SCREEN_WIDTH,
       SCREEN_HEIGHT,
-      GAP_X
-    );
-  }, [takeScreenshot]);
+      GAP_X,
+      projectId
+    ).then(() => {
+      // 🔹 FORCE PROJECT REFRESH
+      window.dispatchEvent(new Event("project-screenshot-updated"));
+    });
+    
+  }, [takeScreenshot, projectId]);
+  
+  
 
   return (
     <section

@@ -62,6 +62,13 @@ export default function PlaygroundPage() {
     }
   };
 
+  useEffect(() => {
+    const handler = () => setRefreshData((v) => !v);
+    window.addEventListener("project-screenshot-updated", handler);
+    return () =>
+      window.removeEventListener("project-screenshot-updated", handler);
+  }, []);
+  
   /* ================= INITIAL + REFRESH FETCH ================= */
   useEffect(() => {
     if (projectId) fetchProject();

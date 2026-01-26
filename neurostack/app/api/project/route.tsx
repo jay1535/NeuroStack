@@ -2,7 +2,7 @@ import { db } from "@/config/db";
 import { ProjectTable, ScreenConfig } from "@/config/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 /* ================= POST (CREATE PROJECT) ================= */
 export async function POST(req: NextRequest) {
@@ -26,33 +26,36 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(result[0]);
 }
 
-/* ================= GET ================= */
+/* ================= GET (ONE PROJECT / ALL PROJECTS) ================= */
 export async function GET(req: NextRequest) {
   const user = await currentUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const userId = user.primaryEmailAddress?.emailAddress as string;
   const { searchParams } = new URL(req.url);
   const projectId = searchParams.get("projectId");
 
+  /* ===== GET ALL PROJECTS ===== */
   if (!projectId) {
-    return NextResponse.json(
-      { error: "projectId is required" },
-      { status: 400 }
-    );
+    const projects = await db
+      .select()
+      .from(ProjectTable)
+      .where(eq(ProjectTable.userId, userId))
+      
+
+    return NextResponse.json(projects);
   }
 
+  /* ===== GET SINGLE PROJECT ===== */
   const project = await db
     .select()
     .from(ProjectTable)
     .where(
       and(
         eq(ProjectTable.projectId, projectId),
-        eq(
-          ProjectTable.userId,
-          user.primaryEmailAddress?.emailAddress as string
-        )
+        eq(ProjectTable.userId, userId)
       )
     )
     .limit(1);
@@ -93,7 +96,6 @@ export async function PUT(req: NextRequest) {
     .set({
       projectName,
       theme,
-      
     })
     .where(
       and(
