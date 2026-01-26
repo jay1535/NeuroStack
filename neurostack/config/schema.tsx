@@ -66,7 +66,5 @@ export const ScreenConfig = pgTable("screenConfig", {
   purpose: varchar(),
   screenDescription: varchar(),
   code: text(),
-
-
 });
 

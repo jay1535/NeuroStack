@@ -242,29 +242,39 @@ export default function ScreenHandler({
 
         {/* AI EDIT */}
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon-lg">
-              <WandSparkles className="size-8" />
-            </Button>
-          </PopoverTrigger>
+  <PopoverTrigger asChild>
+    <Button variant="ghost" size="icon-lg">
+      <WandSparkles className="size-8" />
+    </Button>
+  </PopoverTrigger>
 
-          <PopoverContent className="w-96 space-y-4">
-            <Textarea
-            placeholder="Regeneration Prompt...."
-              value={editPrompt}
-              onChange={(e) => setEditPrompt(e.target.value)}
-              className="min-h-35"
-            />
-            <Button
-              onClick={handleEditScreen}
-              disabled={editing}
-              className="w-full"
-            >
-              <Edit/>
-              {editing ? "Regenerating…" : "Regenerate Screen"}
-            </Button>
-          </PopoverContent>
-        </Popover>
+  <PopoverContent className="w-96 space-y-4">
+  <Textarea
+  placeholder="Regeneration Prompt…"
+  value={editPrompt}
+  onChange={(e) => setEditPrompt(e.target.value)}
+  rows={4}
+  className="
+    resize-none
+    overflow-y-auto
+    leading-relaxed
+    max-h-[6.5rem]
+    min-h-[6.5rem]
+  "
+/>
+
+
+    <Button
+      onClick={handleEditScreen}
+      disabled={editing}
+      className="w-full"
+    >
+      <Edit />
+      {editing ? "Regenerating…" : "Regenerate Screen"}
+    </Button>
+  </PopoverContent>
+</Popover>
+
 
         {/* MORE */}
         <DropdownMenu>
