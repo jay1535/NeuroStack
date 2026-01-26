@@ -67,7 +67,6 @@ export const ScreenConfig = pgTable("screenConfig", {
   screenDescription: varchar(),
   code: text(),
 
-  createdAt: timestamp().defaultNow(),
-  updatedAt: timestamp().defaultNow(),
+
 });
 

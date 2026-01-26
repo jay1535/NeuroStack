@@ -71,7 +71,7 @@ ${userInput}
         .update(ScreenConfig)
         .set({
           code,
-          updatedAt: new Date(),
+          
         })
         .where(
           and(
@@ -87,8 +87,7 @@ ${userInput}
         purpose,
         screenDescription, // ✅ FIXED
         code,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+       
       });
     }
 
