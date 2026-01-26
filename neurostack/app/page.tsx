@@ -40,7 +40,7 @@ export default function Home() {
         />
 
         <motion.div
-          variants={fadeUp}
+          variants={fadeUp()}
           initial="hidden"
           animate="visible"
           transition={{ duration: 0.9 }}
@@ -188,7 +188,7 @@ export default function Home() {
             ].map(([title, desc], i) => (
               <motion.div
                 key={i}
-                variants={fadeUp}
+                variants={fadeUp()}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
