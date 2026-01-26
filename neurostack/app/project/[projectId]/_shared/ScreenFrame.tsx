@@ -19,7 +19,8 @@ type Props = {
   htmlCode: string | undefined;
   screen: ScreenConfig;
   projectDetail: ProjectType | null;
-  iframeRef: any; // ✅ KEEP AS-IS (parent passes ref collector)
+  iframeRef: React.RefObject<HTMLIFrameElement | null>;
+
 };
 
 export default function ScreenFrame({
