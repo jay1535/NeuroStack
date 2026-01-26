@@ -125,10 +125,13 @@ export default function PlaygroundHero({
                       htmlCode={screen.code}
                       screen={screen}
                       projectDetail={projectDetail}
-                      iframeRef={(iframe) => {
+                      iframeRef={(iframe: HTMLIFrameElement | null) => {
                         if (!iframe) return;
+                      
                         iframeRefs.current[index] = iframe;
+                        iframeRefs.current.length = screens.length;
                       }}
+                      
                     />
                   ) : (
                     <div
