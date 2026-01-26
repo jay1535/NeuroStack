@@ -6,32 +6,37 @@ import { Laptop, TabletSmartphone } from "lucide-react";
 import ProjectCardSkeleton from "./ProjectCardSkeleton";
 import { getProjects } from "@/app/actions/project.actions";
 
+/* ================= TYPES ================= */
+
 interface Project {
   projectId: string;
-  projectName?: string;
-  userInput: string;
-  device: string;
-  createdAt?: string;
+  projectName: string | null;
+  userInput: string | null;
+  device: string | null;
+  createdAt: string | null;
 }
+
+/* ================= COMPONENT ================= */
 
 export default function ProjectList() {
   const router = useRouter();
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
+    async function loadProjects() {
       try {
         const data = await getProjects();
         setProjects(data);
-      } catch (err) {
-        console.error("Failed to fetch projects", err);
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
       } finally {
         setLoading(false);
       }
     }
 
-    load();
+    loadProjects();
   }, []);
 
   return (
@@ -75,21 +80,18 @@ export default function ProjectList() {
               className="
                 group relative cursor-pointer
                 rounded-3xl p-7 overflow-hidden
-
                 bg-white/85 dark:bg-black/60
                 backdrop-blur-xl
-
                 border border-black/10 dark:border-white/10
                 ring-1 ring-black/5 dark:ring-white/5
                 shadow-sm shadow-black/5 dark:shadow-black/40
-
                 transition-all duration-300 ease-out
                 hover:-translate-y-2 hover:scale-[1.015]
                 hover:shadow-2xl hover:shadow-purple-600/30
                 hover:border-purple-500/40 hover:ring-purple-500/30
               "
             >
-              {/* Soft ambient glow */}
+              {/* Ambient glow */}
               <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-purple-600/[0.06] via-transparent to-transparent group-hover:from-purple-600/[0.12] transition" />
 
               {/* Logo watermark */}
@@ -109,7 +111,7 @@ export default function ProjectList() {
                     ) : (
                       <Laptop size={14} />
                     )}
-                    {project.device}
+                    {project.device ?? "desktop"}
                   </span>
 
                   {project.createdAt && (
@@ -126,7 +128,7 @@ export default function ProjectList() {
 
                 {/* Description */}
                 <p className="text-sm leading-relaxed text-black/60 dark:text-white/60 line-clamp-3">
-                  {project.userInput}
+                  {project.userInput || "No description provided."}
                 </p>
 
                 {/* CTA */}
@@ -144,7 +146,7 @@ export default function ProjectList() {
           ))}
       </div>
 
-      {/* Empty state */}
+      {/* ================= EMPTY STATE ================= */}
       {!loading && projects.length === 0 && (
         <div className="relative z-10 py-28 text-center text-black/50 dark:text-white/50">
           No projects yet. Create your first playground to get started.
