@@ -19,9 +19,9 @@ type Props = {
   htmlCode: string | undefined;
   screen: ScreenConfig;
   projectDetail: ProjectType | null;
-  iframeRef: React.RefObject<HTMLIFrameElement | null>;
-
+  iframeRef: (iframe: HTMLIFrameElement | null) => void;
 };
+
 
 export default function ScreenFrame({
   x,
@@ -144,16 +144,16 @@ export default function ScreenFrame({
       </div>
 
       <iframe
-        key={themeVersion}
-        ref={(el) => {
-          if (!el) return;
-          localIframeRef.current = el;
-          iframeRef(el); // 🔹 ONLY ADDITION: expose iframe for screenshot
-        }}
-        className="w-full h-[calc(100%-56px)] rounded-2xl mt-2 border-none"
-        sandbox="allow-same-origin allow-scripts"
-        srcDoc={html}
-      />
+  key={themeVersion}
+  ref={(el) => {
+    localIframeRef.current = el;
+    iframeRef(el); // ✅ pass up to parent
+  }}
+  className="w-full h-[calc(100%-56px)] rounded-2xl mt-2 border-none"
+  sandbox="allow-same-origin allow-scripts"
+  srcDoc={html}
+/>
+
     </Rnd>
   );
 }

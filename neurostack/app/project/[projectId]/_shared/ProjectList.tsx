@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Laptop, TabletSmartphone } from "lucide-react";
 import ProjectCardSkeleton from "./ProjectCardSkeleton";
+import { getProjects } from "@/app/actions/project.actions";
 
 interface Project {
   projectId: string;
@@ -20,18 +20,18 @@ export default function ProjectList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    async function load() {
       try {
-        const res = await axios.get("/api/project");
-        setProjects(res.data);
-      } catch (error) {
-        console.error("Failed to fetch projects", error);
+        const data = await getProjects();
+        setProjects(data);
+      } catch (err) {
+        console.error("Failed to fetch projects", err);
       } finally {
         setLoading(false);
       }
-    };
+    }
 
-    fetchProjects();
+    load();
   }, []);
 
   return (

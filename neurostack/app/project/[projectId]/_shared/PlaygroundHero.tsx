@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { Plus, Minus, RefreshCcw } from "lucide-react";
+
 import { ScreenConfig, ProjectType } from "@/type/types";
 import ScreenFrame from "./ScreenFrame";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Minus, RefreshCcw } from "lucide-react";
-
 import { onTakeScreenshot } from "@/lib/screenshot";
 
 interface Props {
@@ -24,25 +24,40 @@ export default function PlaygroundHero({
   settingsOpen = false,
   takeScreenshot,
 }: Props) {
+  /* ------------------------------------------------------------------ */
+  /* Layout config – MUST be stable across renders                       */
+  /* ------------------------------------------------------------------ */
+
   const isMobile = projectDetail?.device === "mobile";
 
+  // ✅ Always defined → dependency array size NEVER changes
   const SCREEN_WIDTH = isMobile ? 430 : 1100;
   const SCREEN_HEIGHT = isMobile ? 820 : 780;
   const GAP_X = isMobile ? 40 : 80;
 
-  const [panningEnabled, setPanningEnabled] = useState(true);
-
-  // 🔹 SCREENSHOT – iframe storage
-  const iframeRefs = useRef<HTMLIFrameElement[]>([]);
-
   const INITIAL_SCALE = isMobile ? 0.6 : 0.55;
   const INITIAL_X = 120;
   const INITIAL_Y = 80;
+
   const projectId = projectDetail?.projectId ?? null;
+
+  /* ------------------------------------------------------------------ */
+  /* State                                                              */
+  /* ------------------------------------------------------------------ */
+
+  const [panningEnabled, setPanningEnabled] = useState(true);
+
+  // 🔹 iframe registry (callback ref target)
+  const iframeRefs = useRef<(HTMLIFrameElement | null)[]>([]);
+
+  /* ------------------------------------------------------------------ */
+  /* Screenshot effect (stable deps)                                     */
+  /* ------------------------------------------------------------------ */
 
   useEffect(() => {
     if (!takeScreenshot || !projectId) return;
-  
+    if (!iframeRefs.current.length) return;
+
     onTakeScreenshot(
       iframeRefs,
       SCREEN_WIDTH,
@@ -50,13 +65,19 @@ export default function PlaygroundHero({
       GAP_X,
       projectId
     ).then(() => {
-      // 🔹 FORCE PROJECT REFRESH
       window.dispatchEvent(new Event("project-screenshot-updated"));
     });
-    
-  }, [takeScreenshot, projectId]);
-  
-  
+  }, [
+    takeScreenshot,
+    projectId,
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    GAP_X,
+  ]);
+
+  /* ------------------------------------------------------------------ */
+  /* Render                                                             */
+  /* ------------------------------------------------------------------ */
 
   return (
     <section
@@ -64,7 +85,8 @@ export default function PlaygroundHero({
         settingsOpen ? "pl-64" : ""
       }`}
     >
- <div
+      {/* Background grid */}
+      <div
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage: `
@@ -77,7 +99,6 @@ export default function PlaygroundHero({
           backgroundSize: "28px 28px",
         }}
       />
-
 
       <TransformWrapper
         initialScale={INITIAL_SCALE}
@@ -95,9 +116,11 @@ export default function PlaygroundHero({
               <button onClick={() => zoomIn(0.2)}>
                 <Plus size={18} />
               </button>
+
               <button onClick={() => zoomOut(0.2)}>
                 <Minus size={18} />
               </button>
+
               <button
                 onClick={() =>
                   setTransform(INITIAL_X, INITIAL_Y, INITIAL_SCALE)
@@ -107,14 +130,28 @@ export default function PlaygroundHero({
               </button>
             </div>
 
-            <TransformComponent
-              wrapperStyle={{ width: "100%", height: "100%" }}
-            >
+            <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
               <div className="relative">
                 {screens.map((screen, index) => {
                   const x = index * (SCREEN_WIDTH + GAP_X);
 
-                  return screen.code ? (
+                  if (!screen.code) {
+                    return (
+                      <div
+                        key={screen.screenId}
+                        className="absolute"
+                        style={{
+                          width: SCREEN_WIDTH,
+                          height: SCREEN_HEIGHT,
+                          transform: `translate(${x}px, 0)`,
+                        }}
+                      >
+                        <Skeleton className="h-full w-full rounded-xl" />
+                      </div>
+                    );
+                  }
+
+                  return (
                     <ScreenFrame
                       key={`${screen.screenId}-${index}`}
                       x={x}
@@ -126,25 +163,10 @@ export default function PlaygroundHero({
                       screen={screen}
                       projectDetail={projectDetail}
                       iframeRef={(iframe: HTMLIFrameElement | null) => {
-                        if (!iframe) return;
-                      
                         iframeRefs.current[index] = iframe;
                         iframeRefs.current.length = screens.length;
                       }}
-                      
                     />
-                  ) : (
-                    <div
-                      key={screen.screenId}
-                      className="absolute"
-                      style={{
-                        width: SCREEN_WIDTH,
-                        height: SCREEN_HEIGHT,
-                        transform: `translate(${x}px, 0)`,
-                      }}
-                    >
-                      <Skeleton className="h-full w-full rounded-xl" />
-                    </div>
                   );
                 })}
               </div>
