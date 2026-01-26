@@ -20,7 +20,7 @@ export default function PlaygroundPage() {
   /* ================= UI STATE ================= */
   const [zoom, setZoom] = useState(0.7);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [takeScreenshot, setTakeScreenshot] = useState<any>(); // 🔹 already existed
+  const [takeScreenshot, setTakeScreenshot] = useState<any>();
 
   /* ================= DATA STATE ================= */
   const [projectDetail, setProjectDetail] =
@@ -41,9 +41,13 @@ export default function PlaygroundPage() {
   /* ================= PIPELINE GUARDS ================= */
   const configGenerated = useRef(false);
   const uiGenerated = useRef(false);
+  const fetchingRef = useRef(false);
 
   /* ================= FETCH PROJECT ================= */
   const fetchProject = async () => {
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+
     try {
       setLoading(true);
       setLoadingMessage("Loading project…");
@@ -58,20 +62,32 @@ export default function PlaygroundPage() {
     } catch {
       toast.error("Failed to load project");
     } finally {
+      fetchingRef.current = false;
       setLoading(false);
     }
   };
 
+  /* ================= REFRESH LISTENER ================= */
   useEffect(() => {
-    const handler = () => setRefreshData((v) => !v);
-    window.addEventListener("project-screenshot-updated", handler);
+    const handler = () =>
+      setRefreshData((v: boolean) => !v);
+
+    window.addEventListener(
+      "project-screenshot-updated",
+      handler
+    );
+
     return () =>
-      window.removeEventListener("project-screenshot-updated", handler);
+      window.removeEventListener(
+        "project-screenshot-updated",
+        handler
+      );
   }, []);
-  
+
   /* ================= INITIAL + REFRESH FETCH ================= */
   useEffect(() => {
-    if (projectId) fetchProject();
+    if (!projectId) return;
+    fetchProject();
   }, [projectId, refreshData]);
 
   /* ================= GENERATION PIPELINE ================= */
@@ -88,13 +104,14 @@ export default function PlaygroundPage() {
     }
 
     if (
+      screenConfig.length > 0 &&
       screenConfig.some((s) => !s.code) &&
       !uiGenerated.current
     ) {
       uiGenerated.current = true;
       generateUI();
     }
-  }, [projectDetail, screenConfig, loading]);
+  }, [projectDetail?.projectId, screenConfig.length]);
 
   /* ================= GENERATE CONFIG ================= */
   const generateConfig = async () => {
@@ -191,7 +208,7 @@ export default function PlaygroundPage() {
           <Settings
             project={projectDetail}
             takeScreenshot={() =>
-              setTakeScreenshot(Date.now()) // 🔹 SCREENSHOT TRIGGER
+              setTakeScreenshot(Date.now())
             }
           />
         )}
@@ -202,7 +219,7 @@ export default function PlaygroundPage() {
         screens={screenConfig}
         projectDetail={projectDetail}
         settingsOpen={settingsOpen}
-        takeScreenshot={takeScreenshot} // 🔹 passed through
+        takeScreenshot={takeScreenshot}
       />
     </RefreshDataContext.Provider>
   );

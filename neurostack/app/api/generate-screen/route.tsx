@@ -25,9 +25,9 @@ export async function POST(req: NextRequest) {
     }
 
     const userInput = `
-Screen Name is: ${screenName}
-Screen Purpose is: ${purpose}
-Screen Description is: ${screenDescription}
+Screen Name: ${screenName}
+Purpose: ${purpose}
+Description: ${screenDescription}
 Project Visual Description: ${projectVisualDescription}
 `;
 
@@ -45,15 +45,20 @@ ${userInput}
       contents: prompt,
     });
 
-    const code =
+    const raw =
       response?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
-    if (!code) {
+    if (!raw) {
       return NextResponse.json(
         { error: "No output generated" },
         { status: 500 }
       );
     }
+
+    const code = raw
+      .replace(/```html/g, "")
+      .replace(/```/g, "")
+      .trim();
 
     const existing = await db
       .select()
@@ -69,10 +74,7 @@ ${userInput}
     if (existing.length) {
       await db
         .update(ScreenConfig)
-        .set({
-          code,
-          
-        })
+        .set({ code })
         .where(
           and(
             eq(ScreenConfig.projectId, projectId),
@@ -85,20 +87,14 @@ ${userInput}
         screenId,
         screenName,
         purpose,
-        screenDescription, // ✅ FIXED
+        screenDescription,
         code,
-       
       });
     }
 
-    return NextResponse.json({
-      success: true,
-      screenId,
-      code,
-    });
-  } catch (error) {
-    console.error("❌ generate-screen error:", error);
-
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("generate-screen error:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
