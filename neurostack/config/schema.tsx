@@ -4,6 +4,7 @@ import {
   json,
   pgTable,
   text,
+  timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -49,10 +50,11 @@ export const ProjectTable = pgTable("project", {
 
 /* ================= SCREEN CONFIG ================= */
 
+
+
 export const ScreenConfig = pgTable("screenConfig", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
 
-  // FK → project.projectId (VALID because projectId is UNIQUE)
   projectId: varchar({ length: 255 })
     .notNull()
     .references(() => ProjectTable.projectId, {
@@ -60,12 +62,12 @@ export const ScreenConfig = pgTable("screenConfig", {
     }),
 
   screenId: varchar({ length: 255 }),
-
   screenName: varchar({ length: 255 }),
-
   purpose: varchar(),
-
   screenDescription: varchar(),
-
   code: text(),
+
+  createdAt: timestamp().defaultNow(),
+  updatedAt: timestamp().defaultNow(),
 });
+
