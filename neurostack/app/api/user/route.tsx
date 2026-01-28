@@ -17,21 +17,17 @@ export async function POST() {
 
     const email = user.primaryEmailAddress.emailAddress;
 
-    // ✅ NO .limit(1)
-    const existingUsers = await db
-      .select({
-        id: usersTable.id,
-        name: usersTable.name,
-        email: usersTable.email,
-        credits: usersTable.credits,
-      })
+    /* ================= CHECK USER ================= */
+    const existing = await db
+      .select()
       .from(usersTable)
       .where(eq(usersTable.email, email));
 
-    if (existingUsers.length > 0) {
-      return NextResponse.json(existingUsers[0]);
+    if (existing.length > 0) {
+      return NextResponse.json(existing[0]);
     }
 
+    /* ================= INSERT USER ================= */
     const inserted = await db
       .insert(usersTable)
       .values({
@@ -39,17 +35,11 @@ export async function POST() {
         email,
         credits: 10,
       })
-      .returning({
-        id: usersTable.id,
-        name: usersTable.name,
-        email: usersTable.email,
-        credits: usersTable.credits,
-      });
+      .returning();
 
     return NextResponse.json(inserted[0]);
-  } catch (error) {
-    console.error("POST /api/user error:", error);
-
+  } catch (err) {
+    console.error("POST /api/user failed:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

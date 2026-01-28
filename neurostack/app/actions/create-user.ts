@@ -14,22 +14,17 @@ export async function createUserIfNotExists() {
 
   const email = user.primaryEmailAddress.emailAddress;
 
-  /* ================= FETCH USER ================= */
-  const existingUsers = await db
-    .select({
-      id: usersTable.id,
-      name: usersTable.name,
-      email: usersTable.email,
-      credits: usersTable.credits,
-    })
+  /* ================= FETCH ================= */
+  const existing = await db
+    .select()
     .from(usersTable)
     .where(eq(usersTable.email, email));
 
-  if (existingUsers.length > 0) {
-    return existingUsers[0];
+  if (existing.length > 0) {
+    return existing[0];
   }
 
-  /* ================= INSERT USER ================= */
+  /* ================= INSERT ================= */
   try {
     const inserted = await db
       .insert(usersTable)
@@ -38,30 +33,18 @@ export async function createUserIfNotExists() {
         email,
         credits: 10,
       })
-      .returning({
-        id: usersTable.id,
-        name: usersTable.name,
-        email: usersTable.email,
-        credits: usersTable.credits,
-      });
+      .returning();
 
     return inserted[0];
   } catch (err: any) {
-    // race-condition fallback
-    if (err?.message?.includes("duplicate")) {
-      const fallback = await db
-        .select({
-          id: usersTable.id,
-          name: usersTable.name,
-          email: usersTable.email,
-          credits: usersTable.credits,
-        })
-        .from(usersTable)
-        .where(eq(usersTable.email, email));
+    // 🔒 Neon race-condition safe fallback
+    const fallback = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, email));
 
-      if (fallback.length > 0) {
-        return fallback[0];
-      }
+    if (fallback.length > 0) {
+      return fallback[0];
     }
 
     throw err;
