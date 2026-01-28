@@ -38,7 +38,7 @@ export default function Settings({ project, takeScreenshot }: Props) {
 
   /* ================= CONTEXT ================= */
   const { setSettingInfo } = useContext(SettingContext);
-  const { setRefreshData } = useContext(RefreshDataContext);
+  const {  refreshData,setRefreshData } = useContext(RefreshDataContext);
 
   /* ================= THEME ================= */
   const [themeOpen, setThemeOpen] = useState(false);
@@ -73,6 +73,7 @@ export default function Settings({ project, takeScreenshot }: Props) {
       theme,
     }));
   };
+  
 
   /* ================= SAVE PROJECT NAME ================= */
   const saveProjectName = async () => {

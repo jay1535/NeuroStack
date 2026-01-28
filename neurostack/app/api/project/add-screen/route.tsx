@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { eq, and } from "drizzle-orm";
 
 import {
   APP_LAYOUT_CONFIG_PROMPT,
   GENERATE_NEW_SCREEN_IN_EXISTING_PROJECT_PROJECT,
+  GENERATION_SYSTEM_PROMPT,
 } from "@/data/prompt";
 
 import { db } from "@/config/db";
 import { ProjectTable, ScreenConfig } from "@/config/schema";
-import { and, eq } from "drizzle-orm";
 import { ai } from "@/config/gemini";
-import { currentUser } from "@clerk/nextjs/server";
 
 /* ================= ADD NEW SCREEN ================= */
 export async function POST(req: NextRequest) {
@@ -38,7 +39,6 @@ export async function POST(req: NextRequest) {
       .limit(1);
 
     const project = projectRows[0];
-
     if (!project) {
       return NextResponse.json(
         { error: "Project not found" },
@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
       layoutDescription: s.screenDescription,
     }));
 
-    /* ================= PROMPT (BOTH PROMPTS USED) ================= */
-    const prompt = `
+    /* ================= STEP 1: GENERATE NEW SCREEN CONFIG ================= */
+    const configPrompt = `
 DEVICE TYPE: ${deviceType}
 
 ${APP_LAYOUT_CONFIG_PROMPT.replace("{deviceType}", deviceType)}
@@ -78,82 +78,103 @@ ${JSON.stringify(oldScreens, null, 2)}
 
 USER REQUEST:
 ${userInput}
+
+RULES:
+- Return ONLY valid JSON
+- Generate EXACTLY ONE screen
 `;
 
-    /* ================= GEMINI ================= */
-    const response = await ai.models.generateContent({
+    const configRes = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: prompt,
+      contents: [{ role: "user", parts: [{ text: configPrompt }] }],
     });
 
-    const rawText =
-      response.candidates?.[0]?.content?.parts?.[0]?.text;
+    let configText =
+      configRes.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    if (!rawText) {
-      return NextResponse.json(
-        { error: "Empty Gemini output" },
-        { status: 500 }
-      );
+    if (!configText) throw new Error("Empty screen config output");
+
+    configText = configText.replace(/```json|```/g, "").trim();
+    const configJson = JSON.parse(configText);
+
+    if (!configJson.screens || configJson.screens.length !== 1) {
+      throw new Error("AI must return exactly one screen");
     }
 
-    /* ================= SAFE JSON PARSE ================= */
-    let json: any;
-    try {
-      const start = rawText.indexOf("{");
-      const end = rawText.lastIndexOf("}");
-      json = JSON.parse(rawText.slice(start, end + 1));
-    } catch {
-      console.error("RAW GEMINI OUTPUT:", rawText);
-      return NextResponse.json(
-        { error: "Invalid AI JSON output" },
-        { status: 500 }
-      );
-    }
-
-    if (!json.screens || json.screens.length !== 1) {
-      return NextResponse.json(
-        { error: "AI must return exactly ONE screen" },
-        { status: 500 }
-      );
-    }
-
-    const newScreen = json.screens[0];
+    const newScreen = configJson.screens[0];
 
     /* ================= DUPLICATE SCREEN GUARD ================= */
-    const existingIds = new Set(
-      existingScreens.map((s) => s.screenId)
-    );
-
-    if (existingIds.has(newScreen.id)) {
-      return NextResponse.json(
-        { error: "Duplicate screen id generated" },
-        { status: 500 }
-      );
+    if (existingScreens.some((s) => s.screenId === newScreen.id)) {
+      throw new Error("Duplicate screen id generated");
     }
 
-    /* ================= INSERT NEW SCREEN ================= */
+    /* ================= STEP 2: GENERATE SCREEN HTML (USING YOUR PROMPT) ================= */
+    const htmlPrompt = `
+${GENERATION_SYSTEM_PROMPT}
+
+DEVICE TYPE:
+${deviceType}
+
+PROJECT THEME:
+${project.theme}
+
+GLOBAL VISUAL SYSTEM:
+${project.projectVisualDescription}
+
+SCREEN NAME:
+${newScreen.name}
+
+SCREEN PURPOSE:
+${newScreen.purpose}
+
+SCREEN LAYOUT DESCRIPTION:
+${newScreen.layoutDescription}
+
+Generate the full HTML UI for this screen.
+`;
+
+    const htmlRes = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: [{ role: "user", parts: [{ text: htmlPrompt }] }],
+    });
+
+    let htmlCode =
+      htmlRes.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!htmlCode) throw new Error("Empty HTML output");
+
+    htmlCode = htmlCode.replace(/```html|```/g, "").trim();
+
+    /* ================= INSERT SCREEN WITH HTML ================= */
     await db.insert(ScreenConfig).values({
       projectId,
       screenId: newScreen.id,
       screenName: newScreen.name,
       purpose: newScreen.purpose,
       screenDescription: newScreen.layoutDescription,
+      code: htmlCode, // 🔥 THIS IS THE KEY FIX
     });
 
     return NextResponse.json({
       success: true,
-      screen: newScreen,
+      screen: {
+        screenId: newScreen.id,
+        screenName: newScreen.name,
+        purpose: newScreen.purpose,
+        screenDescription: newScreen.layoutDescription,
+        code: htmlCode,
+      },
     });
   } catch (err: any) {
     console.error("ADD SCREEN ERROR:", err);
     return NextResponse.json(
-      { error: "Gemini failed", message: err?.message },
+      { error: "Failed to add screen", message: err?.message },
       { status: 500 }
     );
   }
 }
 
-/* ================= DELETE SCREEN (UNCHANGED) ================= */
+/* ================= DELETE SCREEN ================= */
 export async function DELETE(req: NextRequest) {
   try {
     const user = await currentUser();
