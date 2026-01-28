@@ -185,13 +185,36 @@ export default function ScreenHandler({
 
   /* ================= DELETE ================= */
   const handleDelete = async () => {
-    await axios.delete("/api/generate-config", {
-      data: { projectId, screenId: screen.screenId },
-    });
-
-    toast.success("Screen deleted");
-    setRefreshData((v: boolean) => !v);
+    try {
+      if (!projectId || !screen?.screenId) {
+        toast.error("Invalid screen or project");
+        return;
+      }
+  
+      await axios.delete("/api/generate-config", {
+        data: {
+          projectId,
+          screenId: screen.screenId,
+        },
+      });
+  
+      toast.success("Screen deleted successfully");
+  
+      // trigger re-fetch / re-render
+      setRefreshData((prev: boolean) => !prev);
+    } catch (error: any) {
+      console.error("DELETE SCREEN ERROR:", error);
+  
+      const message =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to delete screen";
+  
+      toast.error(message);
+    }
   };
+  
+  
 
   /* ================= RENDER ================= */
   return (
