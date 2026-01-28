@@ -25,12 +25,11 @@ export default function PlaygroundHero({
   takeScreenshot,
 }: Props) {
   /* ------------------------------------------------------------------ */
-  /* Layout config – MUST be stable across renders                       */
+  /* Layout config – STABLE across renders                               */
   /* ------------------------------------------------------------------ */
 
   const isMobile = projectDetail?.device === "mobile";
 
-  // ✅ Always defined → dependency array size NEVER changes
   const SCREEN_WIDTH = isMobile ? 430 : 1100;
   const SCREEN_HEIGHT = isMobile ? 820 : 780;
   const GAP_X = isMobile ? 40 : 80;
@@ -47,16 +46,31 @@ export default function PlaygroundHero({
 
   const [panningEnabled, setPanningEnabled] = useState(true);
 
-  // 🔹 iframe registry (callback ref target)
+  // 🔹 iframe registry
   const iframeRefs = useRef<(HTMLIFrameElement | null)[]>([]);
 
+  // ✅ NEW: ensure iframe content is fully ready before screenshot
+  const [iframesReady, setIframesReady] = useState(false);
+
   /* ------------------------------------------------------------------ */
-  /* Screenshot effect (stable deps)                                     */
+  /* Screenshot effect (CRASH SAFE)                                      */
   /* ------------------------------------------------------------------ */
 
   useEffect(() => {
-    if (!takeScreenshot || !projectId) return;
-    if (!iframeRefs.current.length) return;
+    if (!takeScreenshot) return;
+    if (!projectId) return;
+    if (!iframesReady) return;
+
+    // 🔒 HARD GUARD — prevents CanvasGradient NaN crash
+    if (
+      !Number.isFinite(SCREEN_WIDTH) ||
+      !Number.isFinite(SCREEN_HEIGHT) ||
+      SCREEN_WIDTH <= 0 ||
+      SCREEN_HEIGHT <= 0
+    ) {
+      console.warn("Screenshot skipped: invalid dimensions");
+      return;
+    }
 
     onTakeScreenshot(
       iframeRefs,
@@ -65,11 +79,14 @@ export default function PlaygroundHero({
       GAP_X,
       projectId
     ).then(() => {
-      window.dispatchEvent(new Event("project-screenshot-updated"));
+      window.dispatchEvent(
+        new Event("project-screenshot-updated")
+      );
     });
   }, [
     takeScreenshot,
     projectId,
+    iframesReady,
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
     GAP_X,
@@ -130,7 +147,9 @@ export default function PlaygroundHero({
               </button>
             </div>
 
-            <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
+            <TransformComponent
+              wrapperStyle={{ width: "100%", height: "100%" }}
+            >
               <div className="relative">
                 {screens.map((screen, index) => {
                   const x = index * (SCREEN_WIDTH + GAP_X);
@@ -165,6 +184,19 @@ export default function PlaygroundHero({
                       iframeRef={(iframe: HTMLIFrameElement | null) => {
                         iframeRefs.current[index] = iframe;
                         iframeRefs.current.length = screens.length;
+
+                        // ✅ iframe readiness check
+                        if (
+                          iframe &&
+                          iframeRefs.current.every(
+                            (f) =>
+                              f &&
+                              f.contentDocument?.readyState ===
+                                "complete"
+                          )
+                        ) {
+                          setIframesReady(true);
+                        }
                       }}
                     />
                   );
