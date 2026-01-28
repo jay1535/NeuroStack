@@ -14,7 +14,8 @@ export async function createUserIfNotExists() {
 
   const email = user.primaryEmailAddress.emailAddress;
 
-  const existingUser = await db
+  /* ================= FETCH USER ================= */
+  const existingUsers = await db
     .select({
       id: usersTable.id,
       name: usersTable.name,
@@ -22,26 +23,47 @@ export async function createUserIfNotExists() {
       credits: usersTable.credits,
     })
     .from(usersTable)
-    .where(eq(usersTable.email, email))
-    .limit(1);
+    .where(eq(usersTable.email, email));
 
-  if (existingUser.length > 0) {
-    return existingUser[0];
+  if (existingUsers.length > 0) {
+    return existingUsers[0];
   }
 
-  const result = await db
-    .insert(usersTable)
-    .values({
-      name: user.fullName ?? "User",
-      email,
-      credits: 10,
-    })
-    .returning({
-      id: usersTable.id,
-      name: usersTable.name,
-      email: usersTable.email,
-      credits: usersTable.credits,
-    });
+  /* ================= INSERT USER ================= */
+  try {
+    const inserted = await db
+      .insert(usersTable)
+      .values({
+        name: user.fullName ?? "User",
+        email,
+        credits: 10,
+      })
+      .returning({
+        id: usersTable.id,
+        name: usersTable.name,
+        email: usersTable.email,
+        credits: usersTable.credits,
+      });
 
-  return result[0];
+    return inserted[0];
+  } catch (err: any) {
+    // race-condition fallback
+    if (err?.message?.includes("duplicate")) {
+      const fallback = await db
+        .select({
+          id: usersTable.id,
+          name: usersTable.name,
+          email: usersTable.email,
+          credits: usersTable.credits,
+        })
+        .from(usersTable)
+        .where(eq(usersTable.email, email));
+
+      if (fallback.length > 0) {
+        return fallback[0];
+      }
+    }
+
+    throw err;
+  }
 }
