@@ -15,9 +15,14 @@ import {
 
 
 export const usersTable = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: integer("id")
+    .primaryKey()
+    .generatedAlwaysAsIdentity(),
+
   name: text("name").notNull(),
+
   email: text("email").notNull().unique(),
+
   credits: integer("credits").notNull().default(10),
 });
 

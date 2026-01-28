@@ -7,18 +7,53 @@ import type { RefObject } from "react";
 
 const captureIframeFully = async (
   iframe: HTMLIFrameElement
-): Promise<HTMLCanvasElement> => {
+): Promise<HTMLCanvasElement | null> => {
+  // 🔒 HARD SAFETY CHECKS
+  if (!iframe.isConnected) return null;
+
   const doc = iframe.contentDocument;
-  if (!doc) throw new Error("iframe not ready");
+  const win = iframe.contentWindow;
+
+  if (!doc || !win) return null;
+  if (!doc.body || !doc.documentElement) return null;
+  if (!doc.defaultView) return null;
 
   // Allow layout & fonts to settle
-  await new Promise((r) => setTimeout(r, 200));
+  await new Promise((r) => requestAnimationFrame(r));
+  await new Promise((r) => requestAnimationFrame(r));
 
   const html = doc.documentElement;
   const body = doc.body;
 
-  const width = Math.max(html.scrollWidth, body.scrollWidth);
-  const height = Math.max(html.scrollHeight, body.scrollHeight);
+  // ✅ SAFE DIMENSIONS (CRITICAL FIX)
+  const width = Math.max(
+    1,
+    Math.floor(
+      Math.max(
+        html.scrollWidth,
+        body.scrollWidth,
+        html.offsetWidth,
+        body.offsetWidth
+      )
+    )
+  );
+
+  const height = Math.max(
+    1,
+    Math.floor(
+      Math.max(
+        html.scrollHeight,
+        body.scrollHeight,
+        html.offsetHeight,
+        body.offsetHeight
+      )
+    )
+  );
+
+  // 🚫 Prevent non-finite values (THIS FIXES addColorStop crash)
+  if (!Number.isFinite(width) || !Number.isFinite(height)) {
+    return null;
+  }
 
   return html2canvas(body, {
     backgroundColor: null,
@@ -29,9 +64,25 @@ const captureIframeFully = async (
     scale: window.devicePixelRatio || 1,
 
     useCORS: true,
-    allowTaint: true,
+    allowTaint: false, // ❗ MUST be false for gradients
     imageTimeout: 0,
     logging: false,
+
+    // 🔥 STRIP PROBLEMATIC STYLES
+    onclone: (clonedDoc) => {
+      clonedDoc.querySelectorAll<HTMLElement>("*").forEach((el) => {
+        const style = getComputedStyle(el);
+
+        if (style.backgroundImage.includes("gradient")) {
+          el.style.backgroundImage = "none";
+        }
+
+        if (style.backdropFilter !== "none") {
+          el.style.backdropFilter = "none";
+          (el.style as any).webkitBackdropFilter = "none";
+        }
+      });
+    },
   });
 };
 
@@ -39,14 +90,15 @@ const captureIframeFully = async (
 
 export const onTakeScreenshot = async (
   iframeRefs: RefObject<(HTMLIFrameElement | null)[]>,
-  _SCREEN_WIDTH: number, // kept for compatibility
+  _SCREEN_WIDTH: number,
   _SCREEN_HEIGHT: number,
   GAP: number,
   projectId?: string
 ): Promise<string | undefined> => {
   try {
     const iframes = iframeRefs.current?.filter(
-      (iframe): iframe is HTMLIFrameElement => iframe !== null
+      (iframe): iframe is HTMLIFrameElement =>
+        iframe !== null && iframe.isConnected
     );
 
     if (!iframes || !iframes.length) return;
@@ -58,7 +110,7 @@ export const onTakeScreenshot = async (
 
     for (const iframe of iframes) {
       const canvas = await captureIframeFully(iframe);
-      shots.push(canvas);
+      if (canvas) shots.push(canvas);
     }
 
     if (!shots.length) return;
@@ -70,12 +122,14 @@ export const onTakeScreenshot = async (
       shots.reduce((acc, s) => acc + s.width, 0) +
       GAP * scale * (shots.length - 1);
 
+    if (!Number.isFinite(totalWidth) || !Number.isFinite(maxHeight)) return;
+
     const out = document.createElement("canvas");
     out.width = totalWidth;
     out.height = maxHeight;
 
     const ctx = out.getContext("2d");
-    if (!ctx) throw new Error("Canvas context failed");
+    if (!ctx) return;
 
     ctx.clearRect(0, 0, out.width, out.height);
 
@@ -86,24 +140,15 @@ export const onTakeScreenshot = async (
       offsetX += shot.width + GAP * scale;
     }
 
-    /* 4️⃣ DOWNLOAD */
-    const imageBase64 = out.toDataURL("image/png");
+    /* 4️⃣ EXPORT */
+    const imageBase64 = out.toDataURL("image/png", 0.92);
 
-    const link = document.createElement("a");
-    link.href = imageBase64;
-    link.download = "project-screenshot.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 
     /* 5️⃣ UPLOAD */
-    const uploadRes = await axios.post("/api/upload", {
-      imageBase64,
-    });
-
+    const uploadRes = await axios.post("/api/upload", { imageBase64 });
     const screenshotUrl: string = uploadRes.data.url;
 
-    /* 6️⃣ SAVE URL */
+    /* 6️⃣ SAVE */
     if (projectId) {
       await axios.post("/api/project/screenshot", {
         projectId,
@@ -111,10 +156,7 @@ export const onTakeScreenshot = async (
       });
     }
 
-    toast.success("Screenshot saved & downloaded", {
-      id: "screenshot",
-    });
-
+    toast.success("Screenshot saved", { id: "screenshot" });
     return screenshotUrl;
   } catch (err) {
     console.error(err);
