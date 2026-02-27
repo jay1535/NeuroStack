@@ -11,6 +11,7 @@ import {
   Home,
   LayoutDashboard,
   Tag,
+  SunMoon,
   LogIn,
   Phone,
 } from "lucide-react";
@@ -29,7 +30,7 @@ const GITHUB_URL = "https://github.com/jay1535";
 const INSTAGRAM_URL = "https://www.instagram.com/jayant._.762/";
 
 export default function AppHeader() {
-  const pathname = usePathname(); // ✅ CALLED ONCE
+  const pathname = usePathname();
   const isDashboard = pathname.startsWith("/dashboard");
 
   const { theme, systemTheme } = useTheme();
@@ -72,22 +73,10 @@ export default function AppHeader() {
             {mounted && (
               <SignedIn>
                 <>
-                  <NavLink href="/" label="Home" pathname={pathname} />
-                  <NavLink
-                    href="/dashboard"
-                    label="Dashboard"
-                    pathname={pathname}
-                  />
-                  <NavLink
-                    href="/product/pricing"
-                    label="Pricing"
-                    pathname={pathname}
-                  />
-                  <NavLink
-                    href="/company/contact"
-                    label="Contact"
-                    pathname={pathname}
-                  />
+                  <NavLink href="/" label="Home" />
+                  <NavLink href="/dashboard" label="Dashboard" />
+                  <NavLink href="/product/pricing" label="Pricing" />
+                  <NavLink href="/company/contact" label="Contact" />
                 </>
               </SignedIn>
             )}
@@ -174,31 +163,49 @@ export default function AppHeader() {
                     href="/"
                     icon={<Home size={18} />}
                     label="Home"
-                    pathname={pathname}
                     onClick={() => setMenuOpen(false)}
                   />
                   <SidebarButton
                     href="/dashboard"
                     icon={<LayoutDashboard size={18} />}
                     label="Dashboard"
-                    pathname={pathname}
                     onClick={() => setMenuOpen(false)}
                   />
                   <SidebarButton
                     href="/product/pricing"
                     icon={<Tag size={18} />}
                     label="Pricing"
-                    pathname={pathname}
                     onClick={() => setMenuOpen(false)}
                   />
                   <SidebarButton
                     href="/company/contact"
                     icon={<Phone size={18} />}
                     label="Contact"
-                    pathname={pathname}
                     onClick={() => setMenuOpen(false)}
                   />
                 </nav>
+
+ {/* ===== EPIC MOBILE THEME TOGGLE ===== */}
+<div className="px-4 py-6 border-t">
+  <div className="flex items-center justify-between">
+
+    <div>
+      <p className="text-sm font-semibold">Appearance</p>
+     
+    </div>
+
+    <div className="relative">
+      {/* Gradient Glow Background */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 rounded-full blur opacity-60 animate-pulse" />
+
+      {/* Glass Toggle Container */}
+      <div className="relative bg-white/70 dark:bg-black/60 backdrop-blur-xl border border-purple-500/20 shadow-xl rounded-full p-1 transition-all duration-300 hover:scale-105">
+        <ThemeToggleButton />
+      </div>
+    </div>
+
+  </div>
+</div>
 
                 <div className="mt-auto px-4 py-4 border-t flex gap-3 items-center">
                   <UserButton />
@@ -215,15 +222,8 @@ export default function AppHeader() {
 
 /* ================= SUB COMPONENTS ================= */
 
-function NavLink({
-  href,
-  label,
-  pathname,
-}: {
-  href: string;
-  label: string;
-  pathname: string;
-}) {
+function NavLink({ href, label }: { href: string; label: string }) {
+  const pathname = usePathname();
   const active = pathname === href;
 
   return (
@@ -237,37 +237,6 @@ function NavLink({
       >
         {label}
       </span>
-    </Link>
-  );
-}
-
-function SidebarButton({
-  href,
-  icon,
-  label,
-  pathname,
-  onClick,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-  pathname: string;
-  onClick: () => void;
-}) {
-  const active = pathname === href;
-
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition ${
-        active
-          ? "bg-purple-600/15 text-purple-700"
-          : "hover:bg-purple-600/10"
-      }`}
-    >
-      {icon}
-      {label}
     </Link>
   );
 }
@@ -286,6 +255,36 @@ function IconButton({
     >
       {children}
     </button>
+  );
+}
+
+function SidebarButton({
+  href,
+  icon,
+  label,
+  onClick,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  const pathname = usePathname();
+  const active = pathname === href;
+
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition ${
+        active
+          ? "bg-purple-600/15 text-purple-700"
+          : "hover:bg-purple-600/10"
+      }`}
+    >
+      {icon}
+      {label}
+    </Link>
   );
 }
 
